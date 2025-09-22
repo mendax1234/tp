@@ -35,7 +35,7 @@ public class Parser {
         switch (commandWord) {
 
         case MajorCommand.COMMAND_WORD:
-            return new MajorCommand();
+            return prepareMajorCommand(arguments);
 
         case ElectiveCommand.COMMAND_WORD:
             return new ElectiveCommand();
@@ -58,4 +58,24 @@ public class Parser {
             return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
         }
     }
+
+    /**
+     * Parses arguments in the context of the major command.
+     *
+     * @param args full command args string
+     * @return the prepared command
+     */
+    private Command prepareMajorCommand(String args) {
+        if (args.isEmpty()) {
+            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, MajorCommand.MESSAGE_USAGE));
+        }
+        String[] majorAndMinor = args.split(MajorCommand.MINOR_REGEX, 2);
+        String minor = majorAndMinor.length > 1 ? majorAndMinor[1].trim() : "";
+        String[] majorAndSpecialise = majorAndMinor[0].split(MajorCommand.SPECIALISATION_REGEX, 2);
+        String specialisation = majorAndSpecialise.length > 1 ? majorAndSpecialise[1].trim() : "";
+        String major = majorAndSpecialise[0].trim();
+        return new MajorCommand(major, specialisation, minor);
+    }
+
+
 }
