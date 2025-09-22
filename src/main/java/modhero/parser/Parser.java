@@ -1,6 +1,10 @@
 package modhero.parser;
 
-import modhero.commands.*;
+import modhero.commands.AddCommand;
+import modhero.commands.Command;
+import modhero.commands.ExitCommand;
+import modhero.commands.IncorrectCommand;
+
 
 public class Parser {
     public Command parseCommand(String input) {
