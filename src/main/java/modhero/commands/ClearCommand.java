@@ -12,6 +12,7 @@ public class ClearCommand extends Command {
 
     @Override
     public CommandResult execute() {
-        return new CommandResult(MESSAGE_USAGE);
+        data.clearTimetable();
+        return new CommandResult("Reset the timetable.");
     }
 }

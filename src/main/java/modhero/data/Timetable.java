@@ -65,4 +65,13 @@ public class Timetable {
             }
         }
     }
+
+    /** Clear all modules in the timetable */
+    public void clearTimetable() {
+        for (List<List<Module>> year : timetable) {
+            for (List<Module> sem : year) {
+                sem.clear();
+            }
+        }
+    }
 }
