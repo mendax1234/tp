@@ -1,6 +1,6 @@
 package modhero.data.modules;
 
-import java.util.list;
+import java.util.List;
 
 public class Module {
     private String code;    // e.g. CS2113
