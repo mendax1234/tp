@@ -43,7 +43,7 @@ public class ModHero {
             String userCommandText = ui.readCommand();
             command = new Parser().parseCommand(userCommandText);
             CommandResult result = executeCommand(command);
-            System.out.println(result.getFeedbackToUser());
+            ui.showResultToUser(result);
         } while (!ExitCommand.isExit(command));
     }
 
