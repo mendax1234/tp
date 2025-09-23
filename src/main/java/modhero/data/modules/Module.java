@@ -1,5 +1,7 @@
 package modhero.data.modules;
 
+import modhero.storage.Serialiser;
+
 import java.util.List;
 
 public class Module {
@@ -38,4 +40,8 @@ public class Module {
         return prerequisites;
     }
 
+    public String toFormatedString() {
+        Serialiser sm = new Serialiser();
+        return sm.serialiseMessage(code) + sm.serialiseMessage(name) + sm.serialiseMessage(Integer.toString(mc)) + sm.serialiseMessage(type) + sm.serialiseList(prerequisites);
+    }
 }
