@@ -7,7 +7,7 @@ public class Module {
     private String name;    // e.g. Software Engineering
     private int mc;         // e.g. modular credits
     private String type;    // e.g. core, elective, etc.
-    private List<String> prerequisites // e.g. ["CS1010", "CS1231"]
+    private List<String> prerequisites; // e.g. ["CS1010", "CS1231"]
 
     public Module(String code, String name, int mc, String type, List<String> prerequisites) {
         this.code = code;
