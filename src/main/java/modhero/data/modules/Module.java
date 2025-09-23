@@ -17,4 +17,25 @@ public class Module {
         this.prerequisites = prerequisites;
     }
 
+    /** Get functions */
+    public String getCode() {
+        return code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getMc() {
+        return mc;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public List<String> getPrerequisites() {
+        return prerequisites;
+    }
+
 }
