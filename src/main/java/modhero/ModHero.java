@@ -26,7 +26,7 @@ public class ModHero {
      */
     private void start() {
         this.ui = new Ui();
-        this.timetable = new Timetable();
+        this.timetable = new Timetable(4, 4);
         ui.showWelcome();
     }
 
