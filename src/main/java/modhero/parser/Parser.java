@@ -82,7 +82,7 @@ public class Parser {
 
     private Command prepareElectiveCommand(String args) {
         if (args.isEmpty()) {
-            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, MajorCommand.MESSAGE_USAGE));
+            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ElectiveCommand.MESSAGE_USAGE));
         }
         List<String> electiveList = new ArrayList<>();
         String[] argsList =  args.split(" ");
