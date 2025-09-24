@@ -9,8 +9,13 @@ import modhero.commands.HelpCommand;
 import modhero.commands.IncorrectCommand;
 import modhero.commands.MajorCommand;
 import modhero.commands.ScheduleCommand;
+import modhero.data.Timetable;
 
 import static modhero.common.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Parses user input.
@@ -37,8 +42,17 @@ public class Parser {
         case MajorCommand.COMMAND_WORD:
             return prepareMajorCommand(arguments);
 
+        /* Parses arguments in the context of the elective command.*/
         case ElectiveCommand.COMMAND_WORD:
-            return new ElectiveCommand();
+            String[] argumentsArray = arguments.trim().split(" ");
+            if (argumentsArray.length < 3) {
+                return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ElectiveCommand.MESSAGE_USAGE));
+            }
+            int year = Integer.parseInt(argumentsArray[0]);
+            int semester = Integer.parseInt(argumentsArray[1]);
+            List<String> moduleCodes = Arrays.asList(Arrays.copyOfRange(argumentsArray, 2, argumentsArray.length));
+            Timetable timetablePlaceholder = new Timetable(4, 2);
+            return new ElectiveCommand(timetablePlaceholder, year, semester, moduleCodes);
 
         case DeleteCommand.COMMAND_WORD:
             return new DeleteCommand();
@@ -58,6 +72,7 @@ public class Parser {
             return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
         }
     }
+
 
     /**
      * Parses arguments in the context of the major command.

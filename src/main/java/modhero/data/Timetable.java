@@ -22,12 +22,12 @@ public class Timetable {
 
     /** Add a module to a specific year and term */
     public void addModule(int year, int term, Module module) {
-        timetable.get(year).get(term).add(module);
+        timetable.get(year-1).get(term-1).add(module);
     }
 
     /** Remove a module by code */
     public boolean removeModule(int year, int term, String moduleCode) {
-        return timetable.get(year).get(term)
+        return timetable.get(year-1).get(term-1)
                 .removeIf(m -> m.getCode().equals(moduleCode));
     }
 
