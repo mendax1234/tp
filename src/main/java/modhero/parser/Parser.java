@@ -44,15 +44,7 @@ public class Parser {
 
         /* Parses arguments in the context of the elective command.*/
         case ElectiveCommand.COMMAND_WORD:
-            String[] argumentsArray = arguments.trim().split(" ");
-            if (argumentsArray.length < 3) {
-                return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ElectiveCommand.MESSAGE_USAGE));
-            }
-            int year = Integer.parseInt(argumentsArray[0]);
-            int semester = Integer.parseInt(argumentsArray[1]);
-            List<String> moduleCodes = Arrays.asList(Arrays.copyOfRange(argumentsArray, 2, argumentsArray.length));
-            Timetable timetablePlaceholder = new Timetable(4, 2);
-            return new ElectiveCommand(timetablePlaceholder, year, semester, moduleCodes);
+            return prepareElectiveCommand(arguments);
 
         case DeleteCommand.COMMAND_WORD:
             return new DeleteCommand();
@@ -92,5 +84,21 @@ public class Parser {
         return new MajorCommand(major, specialisation, minor);
     }
 
+    /**
+     * Parses arguments in the context of the elective command.
+     *
+     * @param arguments full command args string
+     * @return the prepared command
+     */
+    private Command prepareElectiveCommand(String arguments) {
+        String[] argumentsArray = arguments.trim().split(" ");
+        if (argumentsArray.length < 3) {
+            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ElectiveCommand.MESSAGE_USAGE));
+        }
+        int year = Integer.parseInt(argumentsArray[0]);
+        int term = Integer.parseInt(argumentsArray[1]);
+        List<String> moduleCodes = Arrays.asList(Arrays.copyOfRange(argumentsArray, 2, argumentsArray.length));
+        return new ElectiveCommand(year, term, moduleCodes);
+    }
 
 }
