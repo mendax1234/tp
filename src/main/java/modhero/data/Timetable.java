@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Timetable {
-    final int COL_WIDTH = 15; // standard column width for all cells
+    private final int COL_WIDTH = 15; // standard column width for all cells
     private List<List<List<Module>>> timetable;
 
     public Timetable(int numYears, int numTermsPerYear) {
@@ -50,7 +50,6 @@ public class Timetable {
 
     /** Pretty-print timetable */
     public void printTimetable() {
-
         for (int year = 0; year < timetable.size(); year++) {
             System.out.println("=".repeat(COL_WIDTH * timetable.get(year).size() + timetable.get(year).size() + 1));
             String yearTitle = "YEAR " + (year + 1);
@@ -64,7 +63,7 @@ public class Timetable {
             // Header row
             System.out.print("|");
             for (int term = 0; term < yearTerms.size(); term++) {
-                String header = "Semester " + (term + 1);
+                String header = "Term " + (term + 1);
                 System.out.print(padCell(header, COL_WIDTH) + "|");
             }
             System.out.println();

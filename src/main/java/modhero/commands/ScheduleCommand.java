@@ -12,6 +12,7 @@ public class ScheduleCommand extends Command {
 
     @Override
     public CommandResult execute() {
+        data.printTimetable();
         return new CommandResult(MESSAGE_USAGE);
     }
 }
