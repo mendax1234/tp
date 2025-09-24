@@ -10,6 +10,9 @@ import modhero.commands.IncorrectCommand;
 import modhero.commands.MajorCommand;
 import modhero.commands.ScheduleCommand;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static modhero.common.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 
 /**
@@ -38,7 +41,7 @@ public class Parser {
             return prepareMajorCommand(arguments);
 
         case ElectiveCommand.COMMAND_WORD:
-            return new ElectiveCommand();
+            return prepareElectiveCommand(arguments);
 
         case DeleteCommand.COMMAND_WORD:
             return new DeleteCommand();
@@ -75,6 +78,18 @@ public class Parser {
         String specialisation = majorAndSpecialise.length > 1 ? majorAndSpecialise[1].trim() : "";
         String major = majorAndSpecialise[0].trim();
         return new MajorCommand(major, specialisation, minor);
+    }
+
+    private Command prepareElectiveCommand(String args) {
+        if (args.isEmpty()) {
+            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ElectiveCommand.MESSAGE_USAGE));
+        }
+        List<String> electiveList = new ArrayList<>();
+        String[] argsList =  args.split(" ");
+        for (String arg : argsList) {
+            electiveList.add(arg);
+        }
+        return new ElectiveCommand(electiveList);
     }
 
 
