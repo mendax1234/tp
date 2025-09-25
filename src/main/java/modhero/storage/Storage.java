@@ -22,6 +22,7 @@ public class Storage {
 
     public Storage(String filePath) {
         this.filePath = filePath;
+        allModules = new ModuleList();
     }
 
     /**

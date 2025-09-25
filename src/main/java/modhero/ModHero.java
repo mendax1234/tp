@@ -36,6 +36,7 @@ public class ModHero {
         this.coreList = new ModuleList();
         ui.showWelcome();
         this.storage = new Storage("");
+        storage.loadAllModules();
     }
 
     /** Prints the goodbye message and exits. */

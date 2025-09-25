@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModuleList {
-    private  final List<Module> moduleList = new ArrayList<>();
+    private  final List<Module> moduleList;
+
+    public ModuleList() { this.moduleList = new ArrayList<>(); }
 
     public void add(Module module) {
         moduleList.add(module);
