@@ -31,7 +31,7 @@ public class ElectiveCommand extends Command {
         for (String elective : electives) {
             String electiveName = "placeholder";
             int numberOfMC = 0;
-            String type = "placeholder";
+            String type = "elective";
             List<String> prerequisites = new ArrayList<>();
             Module module = new Module(elective, electiveName, numberOfMC, type, prerequisites);
             electiveList.add(module);

@@ -23,6 +23,7 @@ public class DeleteCommand extends Command {
     }
 
 
+    /** Searches for the corresponding module in electiveList and deletes it if found.*/
     @Override
     public CommandResult execute() {
         StringBuilder feedback = new StringBuilder("Electives removed: ");
