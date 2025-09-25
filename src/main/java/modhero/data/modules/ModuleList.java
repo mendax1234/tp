@@ -9,7 +9,7 @@ import java.util.List;
  * Provides basic operations to add or remove modules.
  */
 public class ModuleList {
-    private  final List<Module> moduleList = new ArrayList<>();
+    private final List<Module> moduleList = new ArrayList<>();
 
     /**
      * Adds a module to the list.
@@ -29,4 +29,12 @@ public class ModuleList {
     public void remove(int taskIndex) {
         moduleList.remove(taskIndex);
     }
+
+    /**
+     * Get module list
+     */
+    public List<Module> getList() {
+        return moduleList;
+    }
+
 }

@@ -2,6 +2,7 @@ package modhero.data.modules;
 
 import modhero.storage.Serialiser;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -72,4 +73,11 @@ public class Module {
                 sm.serialiseMessage(type) +
                 sm.serialiseList(prerequisites);
     }
+
+    public static Comparator<Module> ModuleCodeComparator = new Comparator<Module>() {
+        @Override
+        public int compare(Module module1, Module module2) {
+            return module1.code.compareToIgnoreCase(module2.code);
+        }
+    };
 }
