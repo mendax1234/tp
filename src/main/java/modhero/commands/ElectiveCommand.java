@@ -1,6 +1,7 @@
 package modhero.commands;
 
 import modhero.data.modules.Module;
+import modhero.data.modules.ModuleList;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class ElectiveCommand extends Command {
         StringBuilder feedback = new StringBuilder("Electives added: ");
 
         for (String elective : electives) {
-            Module module = storage.findModuleByCode(elective);
+            Module module = electiveList.findModuleByCode(elective);
             if (module != null) {
                 electiveList.add(module);
                 feedback.append(elective).append(" ");

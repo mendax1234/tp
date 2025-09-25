@@ -15,6 +15,8 @@ public class ModHero {
     private ModuleList electiveList;
     private ModuleList coreList;
     private Storage storage;
+    private ModuleList allModules;
+    private ModuleList tempModuleList;
 
     public static void main(String[] args) {
         new ModHero().run();
@@ -32,11 +34,14 @@ public class ModHero {
     private void start() {
         this.ui = new Ui();
         this.timetable = new Timetable(4, 4);
-        this.electiveList = new ModuleList();
-        this.coreList = new ModuleList();
-        ui.showWelcome();
-        this.storage = new Storage("");
+        this.tempModuleList = new ModuleList();
+        this.storage = new Storage("./src/main/java/modhero/data/data.txt", tempModuleList);
         storage.loadAllModules();
+        this.electiveList = new ModuleList(storage);
+        this.coreList = new ModuleList(storage);
+        ui.showWelcome();
+        this.allModules = new ModuleList(storage);
+
     }
 
     /** Prints the goodbye message and exits. */

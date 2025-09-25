@@ -20,9 +20,9 @@ public class Storage {
 
     private final String filePath;
 
-    public Storage(String filePath) {
+    public Storage(String filePath, ModuleList tempModuleList) {
         this.filePath = filePath;
-        allModules = new ModuleList();
+        allModules = tempModuleList;
     }
 
     /**
@@ -105,18 +105,5 @@ public class Storage {
         }
     }
 
-    /**
-     * Returns the required module.
-     *
-     * @return a Module with the given module code
-     */
-    public Module findModuleByCode(String code) {
-        for (Module m : allModules.getModuleList()) {
-            if (m.getCode().equals(code)) {
-                return m;
-            }
-        }
-        return null;
-    }
-
+    public ModuleList getAllModules() { return allModules; }
 }
