@@ -20,7 +20,6 @@ public class ModHero {
     private ModuleList coreList;
     private Storage storage;
     private ModuleList allModules;
-    private ModuleList tempModuleList;
 
     /**
      * Launches the ModHero application.
@@ -47,14 +46,12 @@ public class ModHero {
     private void start() {
         this.ui = new Ui();
         this.timetable = new Timetable(4, 4);
-        this.tempModuleList = new ModuleList();
-        this.storage = new Storage("./src/main/java/modhero/data/data.txt", tempModuleList);
+        this.allModules = new ModuleList();
+        this.storage = new Storage("./src/main/java/modhero/data/data.txt", allModules);
         storage.loadAllModules();
         this.electiveList = new ModuleList(storage);
         this.coreList = new ModuleList(storage);
         ui.showWelcome();
-        this.allModules = new ModuleList(storage);
-
     }
 
     /**

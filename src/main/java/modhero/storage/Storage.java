@@ -25,11 +25,11 @@ public class Storage {
      * Creates a new {@code Storage} tied to the specified file path.
      *
      * @param filePath the path of the file to load from or save to
-     * @param tempModuleList ModuleList that will store all modules loaded from the file
+     * @param allModules ModuleList that will store all modules loaded from the file
      */
-    public Storage(String filePath, ModuleList tempModuleList) {
+    public Storage(String filePath, ModuleList allModules) {
         this.filePath = filePath;
-        allModules = tempModuleList;
+        this.allModules = allModules;
     }
 
     /**

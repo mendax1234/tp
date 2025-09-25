@@ -3,6 +3,9 @@ package modhero.data.modules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
 import modhero.storage.Storage;
 
 /**
@@ -15,6 +18,7 @@ import modhero.storage.Storage;
  */
 public class ModuleList {
     private  final List<Module> moduleList;
+    private final Map<String, Module> moduleHashMap;
 
     /** Optional reference to Storage for performing global lookups. */
     private Storage storage;
@@ -28,6 +32,7 @@ public class ModuleList {
     public ModuleList(Storage storage) {
         this.storage = storage;
         this.moduleList = new ArrayList<>();
+        this.moduleHashMap = new HashMap<>();
     }
 
     /**
@@ -37,6 +42,7 @@ public class ModuleList {
      */
     public ModuleList() {
         this.moduleList = new ArrayList<>();
+        this.moduleHashMap = new HashMap<>();
     }
 
     /**
@@ -46,6 +52,7 @@ public class ModuleList {
      */
     public void add(Module module) {
         moduleList.add(module);
+        moduleHashMap.put(module.getCode(), module);
     }
 
     /**
@@ -55,7 +62,8 @@ public class ModuleList {
      * @throws IndexOutOfBoundsException if the index is invalid
      */
     public void remove(int taskIndex) {
-        moduleList.remove(taskIndex);
+        Module removedModule = moduleList.remove(taskIndex);
+        moduleHashMap.remove(removedModule.getCode());
     }
 
     /**
@@ -65,19 +73,23 @@ public class ModuleList {
      * @return a Module with the given module code
      */
     public Module findModuleByCode(String code) {
-        for (Module m : storage.getAllModules().getList()) {
-            if (m.getCode().equals(code)) {
-                return m;
-            }
-        }
-        return null;
+        return storage.getAllModules().getHashMap().get(code);
     }
+
+
+    /*public Module findModuleByCode(String code) {
+        for (Module m : storage.getAllModules().getList()) { if (m.getCode().equals(code)) { return m; } } return null;
+    }*/
 
     /**
      * Get module list
      */
     public List<Module> getList() {
         return moduleList;
+    }
+
+    public Map<String, Module> getHashMap() {
+        return moduleHashMap;
     }
 
 }
