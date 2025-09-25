@@ -7,12 +7,14 @@ import modhero.data.Timetable;
 import modhero.data.modules.ModuleList;
 import modhero.parser.Parser;
 import modhero.ui.Ui;
+import modhero.storage.Storage;
 
 public class ModHero {
     private Ui ui;
     private Timetable timetable;
     private ModuleList electiveList;
     private ModuleList coreList;
+    private Storage storage;
 
     public static void main(String[] args) {
         new ModHero().run();
@@ -33,6 +35,7 @@ public class ModHero {
         this.electiveList = new ModuleList();
         this.coreList = new ModuleList();
         ui.showWelcome();
+        this.storage = new Storage("");
     }
 
     /** Prints the goodbye message and exits. */
@@ -54,7 +57,7 @@ public class ModHero {
 
     private CommandResult executeCommand(Command command) {
         try {
-            command.setData(timetable, electiveList, coreList);
+            command.setData(timetable, electiveList, coreList, storage);
             CommandResult result = command.execute();
             return result;
         } catch (Exception e) {

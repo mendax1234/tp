@@ -29,13 +29,13 @@ public class ElectiveCommand extends Command {
         StringBuilder feedback = new StringBuilder("Electives added: ");
 
         for (String elective : electives) {
-            String electiveName = "placeholder";
-            int numberOfMC = 0;
-            String type = "elective";
-            List<String> prerequisites = new ArrayList<>();
-            Module module = new Module(elective, electiveName, numberOfMC, type, prerequisites);
-            electiveList.add(module);
-            feedback.append(elective).append(" ");
+            Module module = storage.findModuleByCode(elective);
+            if (module != null) {
+                electiveList.add(module);
+                feedback.append(elective).append(" ");
+            } else {
+                feedback.append("\nElective ").append(elective).append(" not found in master list\n");
+            }
         }
         feedback.append("\n");
         return new CommandResult(feedback.toString());
