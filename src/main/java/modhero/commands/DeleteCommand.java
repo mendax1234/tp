@@ -36,7 +36,7 @@ public class DeleteCommand extends Command {
                     electiveList.remove(i);
                     feedback.append(elective).append(" ");
                     isFound = true;
-                    break; // stop after deleting the first match
+                    break;
                 }
             }
 
