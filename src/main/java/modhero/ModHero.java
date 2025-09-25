@@ -8,16 +8,29 @@ import modhero.data.modules.ModuleList;
 import modhero.parser.Parser;
 import modhero.ui.Ui;
 
+/**
+ * Entry point of the ModHero application.
+ * Handles initialization, user interaction loop, and program termination.
+ */
 public class ModHero {
     private Ui ui;
     private Timetable timetable;
     private ModuleList electiveList;
     private ModuleList coreList;
 
+    /**
+     * Launches the ModHero application.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         new ModHero().run();
     }
 
+    /**
+     * Runs the application by initializing resources,
+     * starting the command loop, and performing cleanup.
+     */
     public void run() {
         start();
         runCommandLoopUntilExitCommand();
@@ -35,13 +48,17 @@ public class ModHero {
         ui.showWelcome();
     }
 
-    /** Prints the goodbye message and exits. */
+    /**
+     * Prints the goodbye message and exits.
+     */
     private void exit() {
         ui.showBye();
         ui.close();
     }
 
-    /** Reads the user command and executes it, until the user issues the exit command. */
+    /**
+     * Continuously reads and executes user commands until the exit command is received.
+     */
     private void runCommandLoopUntilExitCommand() {
         Command command;
         do {
@@ -52,6 +69,12 @@ public class ModHero {
         } while (!ExitCommand.isExit(command));
     }
 
+    /**
+     * Executes the given command and returns its result.
+     *
+     * @param command The user command to execute.
+     * @return The result of executing the command.
+     */
     private CommandResult executeCommand(Command command) {
         try {
             command.setData(timetable, electiveList, coreList);
