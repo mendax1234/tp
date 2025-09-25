@@ -100,7 +100,7 @@ public class Storage {
             int numberOfMC = 0;
             String type = "placeholder";
             List<String> prerequisites = new ArrayList<>();
-            modhero.data.modules.Module module = new Module(code, electiveName, numberOfMC, type, prerequisites);
+            Module module = new Module(code, electiveName, numberOfMC, type, prerequisites);
             allModules.add(module);
         }
     }
