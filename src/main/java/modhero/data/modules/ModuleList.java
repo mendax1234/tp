@@ -14,4 +14,8 @@ public class ModuleList {
     public void remove(int taskIndex) {
         moduleList.remove(taskIndex);
     }
+
+    public List<Module> getModuleList() {
+        return moduleList;
+    }
 }

@@ -50,7 +50,7 @@ public class Parser {
             return prepareElectiveCommand(arguments);
 
         case DeleteCommand.COMMAND_WORD:
-            return new DeleteCommand();
+            return prepareDeleteCommand(arguments);
 
         case ScheduleCommand.COMMAND_WORD:
             return new ScheduleCommand();
@@ -97,6 +97,18 @@ public class Parser {
             electiveList.add(arg);
         }
         return new ElectiveCommand(electiveList);
+    }
+
+    private Command prepareDeleteCommand(String args) {
+        if (args.isEmpty()) {
+            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+        }
+        List<String> electiveList = new ArrayList<>();
+        String[] argsList =  args.split(" ");
+        for (String arg : argsList) {
+            electiveList.add(arg);
+        }
+        return new DeleteCommand(electiveList);
     }
 
 }

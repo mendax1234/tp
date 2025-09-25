@@ -1,6 +1,8 @@
 package modhero.data;
 
 import modhero.data.modules.Module;
+import modhero.data.modules.ModuleList;
+
 import java.util.ArrayList;
 import java.util.List;
 
