@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Loading from and saving to a text file.
+ * Handles loading from and saving to a text file.
+ * Provides persistence for data by reading and writing plain text.
  */
 public class Storage {
 
@@ -20,6 +21,12 @@ public class Storage {
 
     private final String filePath;
 
+    /**
+     * Creates a new {@code Storage} tied to the specified file path.
+     *
+     * @param filePath the path of the file to load from or save to
+     * @param tempModuleList ModuleList that will store all modules loaded from the file
+     */
     public Storage(String filePath, ModuleList tempModuleList) {
         this.filePath = filePath;
         allModules = tempModuleList;

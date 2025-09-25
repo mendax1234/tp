@@ -6,10 +6,21 @@ import modhero.data.modules.ModuleList;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a multi-year academic timetable, storing modules organized
+ * by year and term.
+ */
 public class Timetable {
     private final int COL_WIDTH = 15; // standard column width for all cells
     private List<List<List<Module>>> timetable;
 
+    /**
+     * Creates a timetable structure for the specified number of years and terms.
+     * Each year contains a list of terms, which in turn contain modules.
+     *
+     * @param numYears number of academic years
+     * @param numTermsPerYear number of terms per year
+     */
     public Timetable(int numYears, int numTermsPerYear) {
         timetable = new ArrayList<>();
 
@@ -23,23 +34,46 @@ public class Timetable {
         }
     }
 
-    /** Add a module to a specific year and term */
+    /**
+     * Adds a module to a specific year and term.
+     *
+     * @param year the year index (0-based)
+     * @param term the term index (0-based)
+     * @param module the module to add
+     */
     public void addModule(int year, int term, Module module) {
         timetable.get(year-1).get(term-1).add(module);
     }
 
-    /** Remove a module by code */
+    /**
+     * Removes a module from a specific year and term by module code.
+     *
+     * @param year the year index (0-based)
+     * @param term the term index (0-based)
+     * @param moduleCode the code of the module to remove
+     * @return {@code true} if a module was removed, {@code false} otherwise
+     */
     public boolean removeModule(int year, int term, String moduleCode) {
         return timetable.get(year-1).get(term-1)
                 .removeIf(m -> m.getCode().equals(moduleCode));
     }
 
-    /** Get modules for a specific year and term */
+    /**
+     * Retrieves the list of modules for a given year and term.
+     *
+     * @param year the year index (0-based)
+     * @param term the term index (0-based)
+     * @return list of modules in the specified term
+     */
     public List<Module> getModules(int year, int term) {
         return timetable.get(year).get(term);
     }
 
-    /** Get all modules across all years/semesters */
+    /**
+     * Retrieves all modules across all years and terms in the timetable.
+     *
+     * @return a flat list of all modules
+     */
     public List<Module> getAllModules() {
         List<Module> all = new ArrayList<>();
         for (List<List<Module>> year : timetable) {
@@ -50,7 +84,10 @@ public class Timetable {
         return all;
     }
 
-    /** Pretty-print timetable */
+    /**
+     * Prints a formatted view of the timetable to the console,
+     * organized by year and term in table format.
+     */
     public void printTimetable() {
         for (int year = 0; year < timetable.size(); year++) {
             System.out.println("=".repeat(COL_WIDTH * timetable.get(year).size() + timetable.get(year).size() + 1));
@@ -91,7 +128,14 @@ public class Timetable {
         }
     }
 
-    // Helper to print time table that pads text to ensure columns align
+    /**
+     * Pads the given text with spaces or truncates it so that
+     * it fits within a fixed-width table cell.
+     *
+     * @param text the text to pad
+     * @param width the fixed width of the cell
+     * @return the padded (or truncated) string
+     */
     private String padCell(String text, int width) {
         if (text.length() >= width) {
             return text.substring(0, width - 1) + " "; // truncate if too long
@@ -100,7 +144,9 @@ public class Timetable {
         return text + " ".repeat(spaces);
     }
 
-    /** Clear all modules in the timetable */
+    /**
+     * Removes all modules from the entire timetable.
+     */
     public void clearTimetable() {
         for (List<List<Module>> year : timetable) {
             for (List<Module> sem : year) {

@@ -31,7 +31,7 @@ public class DeleteCommand extends Command {
         for (String elective : electives) {
             boolean isFound = false;
             for (int i = 0; i < electives.size(); i++) {
-                Module module = electiveList.getModuleList().get(i);
+                Module module = electiveList.getList().get(i);
                 if (module.getCode().equals(elective)) {
                     electiveList.remove(i);
                     feedback.append(elective).append(" ");
