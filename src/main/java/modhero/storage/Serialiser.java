@@ -51,7 +51,7 @@ public class Serialiser {
     }
 
     /**
-     * Deserialise serialised string in array.
+     * Deserialises serialised string in array.
      *
      * @param serialisedMessage array of string from store data
      * @return the deserialised array

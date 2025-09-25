@@ -4,25 +4,48 @@ import java.util.Scanner;
 
 import modhero.commands.CommandResult;
 
+/**
+ * Handles all interactions with the user, including displaying messages
+ * and reading user input.
+ */
 public class Ui {
     private Scanner scanner;
 
+    /**
+     * Creates a new {@code Ui} with a scanner for reading user input.
+     */
     public Ui() {
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Displays the welcome message when the program starts.
+     */
     public void showWelcome() {
         System.out.println("Welcome to ModHero");
     }
 
+    /**
+     * Displays the goodbye message when the program exits.
+     */
     public void showBye() {
         System.out.println("Bye");
     }
 
+    /**
+     * Reads a command entered by the user from the console.
+     *
+     * @return The trimmed user input string.
+     */
     public String readCommand() {
         return scanner.nextLine().trim();
     }
 
+    /**
+     * Displays the result of a command execution to the user.
+     *
+     * @param result The {@code CommandResult} containing feedback and relevant module information.
+     */
     public void showResultToUser(CommandResult result) {
         System.out.println(result.getFeedbackToUser());
 
@@ -35,7 +58,9 @@ public class Ui {
         }
     }
 
-
+    /**
+     * Closes the scanner used for reading user input.
+     */
     public void close() {
         scanner.close();
     }
