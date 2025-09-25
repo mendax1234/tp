@@ -4,12 +4,15 @@ import modhero.commands.Command;
 import modhero.commands.CommandResult;
 import modhero.commands.ExitCommand;
 import modhero.data.Timetable;
+import modhero.data.modules.ModuleList;
 import modhero.parser.Parser;
 import modhero.ui.Ui;
 
 public class ModHero {
     private Ui ui;
     private Timetable timetable;
+    private ModuleList electiveList;
+    private ModuleList coreList;
 
     public static void main(String[] args) {
         new ModHero().run();
@@ -27,6 +30,8 @@ public class ModHero {
     private void start() {
         this.ui = new Ui();
         this.timetable = new Timetable(4, 4);
+        this.electiveList = new ModuleList();
+        this.coreList = new ModuleList();
         ui.showWelcome();
     }
 
@@ -49,7 +54,7 @@ public class ModHero {
 
     private CommandResult executeCommand(Command command) {
         try {
-            command.setData(timetable);
+            command.setData(timetable, electiveList, coreList);
             CommandResult result = command.execute();
             return result;
         } catch (Exception e) {

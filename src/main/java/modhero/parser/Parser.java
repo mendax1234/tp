@@ -11,6 +11,9 @@ import modhero.commands.MajorCommand;
 import modhero.commands.ScheduleCommand;
 import modhero.data.Timetable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static modhero.common.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 
 import java.util.List;
@@ -84,21 +87,16 @@ public class Parser {
         return new MajorCommand(major, specialisation, minor);
     }
 
-    /**
-     * Parses arguments in the context of the elective command.
-     *
-     * @param arguments full command args string
-     * @return the prepared command
-     */
-    private Command prepareElectiveCommand(String arguments) {
-        String[] argumentsArray = arguments.trim().split(" ");
-        if (argumentsArray.length < 3) {
+    private Command prepareElectiveCommand(String args) {
+        if (args.isEmpty()) {
             return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ElectiveCommand.MESSAGE_USAGE));
         }
-        int year = Integer.parseInt(argumentsArray[0]);
-        int term = Integer.parseInt(argumentsArray[1]);
-        List<String> moduleCodes = Arrays.asList(Arrays.copyOfRange(argumentsArray, 2, argumentsArray.length));
-        return new ElectiveCommand(year, term, moduleCodes);
+        List<String> electiveList = new ArrayList<>();
+        String[] argsList =  args.split(" ");
+        for (String arg : argsList) {
+            electiveList.add(arg);
+        }
+        return new ElectiveCommand(electiveList);
     }
 
 }

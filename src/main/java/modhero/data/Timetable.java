@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Timetable {
+    private final int COL_WIDTH = 15; // standard column width for all cells
     private List<List<List<Module>>> timetable;
 
     public Timetable(int numYears, int numTermsPerYear) {
@@ -50,20 +51,51 @@ public class Timetable {
     /** Pretty-print timetable */
     public void printTimetable() {
         for (int year = 0; year < timetable.size(); year++) {
-            System.out.println("Year " + (year + 1) + ":");
-            for (int term = 0; term < timetable.get(year).size(); term++) {
-                System.out.print("  Semester " + (term + 1) + ": ");
-                List<Module> modules = timetable.get(year).get(term);
-                if (modules.isEmpty()) {
-                    System.out.println("No modules");
-                } else {
-                    for (Module m : modules) {
-                        System.out.print(m.getCode() + " ");
-                    }
-                    System.out.println();
-                }
+            System.out.println("=".repeat(COL_WIDTH * timetable.get(year).size() + timetable.get(year).size() + 1));
+            String yearTitle = "YEAR " + (year + 1);
+            int tableWidth = COL_WIDTH * timetable.get(year).size() + timetable.get(year).size() + 1;
+            int padding = (tableWidth - yearTitle.length()) / 2;
+            System.out.println(" ".repeat(Math.max(0, padding)) + yearTitle);
+            System.out.println("=".repeat(COL_WIDTH * timetable.get(year).size() + timetable.get(year).size() + 1));
+
+            List<List<Module>> yearTerms = timetable.get(year);
+
+            // Header row
+            System.out.print("|");
+            for (int term = 0; term < yearTerms.size(); term++) {
+                String header = "Term " + (term + 1);
+                System.out.print(padCell(header, COL_WIDTH) + "|");
             }
+            System.out.println();
+
+            // Find max rows needed
+            int maxModules = 0;
+            for (List<Module> termModules : yearTerms) {
+                maxModules = Math.max(maxModules, termModules.size());
+            }
+
+            // Print modules row by row
+            for (int row = 0; row < maxModules; row++) {
+                System.out.print("|");
+                for (List<Module> termModules : yearTerms) {
+                    String content = (row < termModules.size()) ? termModules.get(row).getCode() : "";
+                    System.out.print(padCell(content, COL_WIDTH) + "|");
+                }
+                System.out.println();
+            }
+
+            System.out.println("=".repeat(COL_WIDTH * timetable.get(year).size() + timetable.get(year).size() + 1));
+            System.out.println();
         }
+    }
+
+    // Helper to print time table that pads text to ensure columns align
+    private String padCell(String text, int width) {
+        if (text.length() >= width) {
+            return text.substring(0, width - 1) + " "; // truncate if too long
+        }
+        int spaces = width - text.length();
+        return text + " ".repeat(spaces);
     }
 
     /** Clear all modules in the timetable */
