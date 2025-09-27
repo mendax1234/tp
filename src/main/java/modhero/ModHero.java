@@ -7,6 +7,7 @@ import modhero.data.Timetable;
 import modhero.data.modules.ModuleList;
 import modhero.parser.Parser;
 import modhero.ui.Ui;
+import modhero.storage.Storage;
 
 /**
  * Entry point of the ModHero application.
@@ -17,6 +18,8 @@ public class ModHero {
     private Timetable timetable;
     private ModuleList electiveList;
     private ModuleList coreList;
+    private Storage storage;
+    private ModuleList allModules;
 
     /**
      * Launches the ModHero application.
@@ -43,8 +46,11 @@ public class ModHero {
     private void start() {
         this.ui = new Ui();
         this.timetable = new Timetable(4, 4);
-        this.electiveList = new ModuleList();
-        this.coreList = new ModuleList();
+        this.allModules = new ModuleList();
+        this.storage = new Storage("./src/main/java/modhero/data/data.txt", allModules);
+        storage.loadAllModules();
+        this.electiveList = new ModuleList(storage);
+        this.coreList = new ModuleList(storage);
         ui.showWelcome();
     }
 
@@ -77,7 +83,7 @@ public class ModHero {
      */
     private CommandResult executeCommand(Command command) {
         try {
-            command.setData(timetable, electiveList, coreList);
+            command.setData(timetable, electiveList, coreList, storage);
             CommandResult result = command.execute();
             return result;
         } catch (Exception e) {

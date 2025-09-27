@@ -2,6 +2,7 @@ package modhero.commands;
 
 import modhero.data.Timetable;
 import modhero.data.modules.ModuleList;
+import modhero.storage.Storage;
 
 /**
  * Abstract base class for all commands in the ModHero application.
@@ -12,6 +13,8 @@ public abstract class Command {
     protected Timetable data;
     protected ModuleList electiveList;
     protected ModuleList coreList;
+    protected Storage storage;
+
 
     /**
      * Sets the data context for the command, including the timetable
@@ -20,11 +23,13 @@ public abstract class Command {
      * @param data the timetable to operate on
      * @param electiveList the list of elective modules
      * @param coreList the list of core modules
+     * @param storage the storage manager used for loading and saving data
      */
-    public void setData(Timetable data, ModuleList electiveList, ModuleList coreList) {
+    public void setData(Timetable data, ModuleList electiveList, ModuleList coreList, Storage storage) {
         this.data = data;
         this.electiveList = electiveList;
         this.coreList = coreList;
+        this.storage = storage;
     }
 
     /**

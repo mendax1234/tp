@@ -33,6 +33,7 @@ public class Module {
         this.prerequisites = prerequisites;
     }
 
+
     /** Getters */
 
     /** @return the module code */

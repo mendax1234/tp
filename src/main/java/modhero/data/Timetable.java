@@ -1,6 +1,8 @@
 package modhero.data;
 
 import modhero.data.modules.Module;
+import modhero.data.modules.ModuleList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +42,7 @@ public class Timetable {
      * @param module the module to add
      */
     public void addModule(int year, int term, Module module) {
-        timetable.get(year).get(term).add(module);
+        timetable.get(year-1).get(term-1).add(module);
     }
 
     /**
@@ -52,7 +54,7 @@ public class Timetable {
      * @return {@code true} if a module was removed, {@code false} otherwise
      */
     public boolean removeModule(int year, int term, String moduleCode) {
-        return timetable.get(year).get(term)
+        return timetable.get(year-1).get(term-1)
                 .removeIf(m -> m.getCode().equals(moduleCode));
     }
 

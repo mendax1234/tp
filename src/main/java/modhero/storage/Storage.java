@@ -1,5 +1,8 @@
 package modhero.storage;
 
+import modhero.data.modules.Module;
+import modhero.data.modules.ModuleList;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -14,15 +17,19 @@ import java.util.Scanner;
  */
 public class Storage {
 
+    private ModuleList allModules;
+
     private final String filePath;
 
     /**
      * Creates a new {@code Storage} tied to the specified file path.
      *
      * @param filePath the path of the file to load from or save to
+     * @param allModules ModuleList that will store all modules loaded from the file
      */
-    public Storage(String filePath) {
+    public Storage(String filePath, ModuleList allModules) {
         this.filePath = filePath;
+        this.allModules = allModules;
     }
 
     /**
@@ -88,4 +95,22 @@ public class Storage {
         fileWriter.write(textToAdd);
         fileWriter.close();
     }
+
+    /**
+     * Loads all modules from a data file, assuming that the file at filePath contains list of all NUS modules.
+     *
+     */
+    public void loadAllModules() {
+        List<String> allModulesList = load();
+        for (String code : allModulesList) {
+            String electiveName = "placeholder";
+            int numberOfMC = 0;
+            String type = "placeholder";
+            List<String> prerequisites = new ArrayList<>();
+            Module module = new Module(code, electiveName, numberOfMC, type, prerequisites);
+            allModules.add(module);
+        }
+    }
+
+    public ModuleList getAllModules() { return allModules; }
 }
