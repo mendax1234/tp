@@ -1,11 +1,15 @@
 package modhero.storage;
 
+import modhero.data.modules.Module;
+import modhero.data.modules.ModuleList;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -87,5 +91,23 @@ public class Storage {
         FileWriter fileWriter = new FileWriter(filePath);
         fileWriter.write(textToAdd);
         fileWriter.close();
+    }
+
+    /**
+     * Loads all modules from a data file, assuming that the file at filePath contains list of all NUS modules.
+     *
+     */
+    public void loadAllModulesData(Map<String, Module> allModulesData) {
+        Serialiser serialiser = new Serialiser();
+        List<String> rawModulesList = load();
+        List<List<String>> allModulesList = serialiser.deserialiseList(rawModulesList);
+        for (List<String> moduleArgs : allModulesList) {
+            try {
+                Module module = new Module(moduleArgs.get(0), moduleArgs.get(1), Integer.parseInt(moduleArgs.get(2)), moduleArgs.get(3), serialiser.deserialiseMessage(moduleArgs.get(4)));
+                allModulesData.put(module.getCode(), module);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid module code");
+            }
+        }
     }
 }
