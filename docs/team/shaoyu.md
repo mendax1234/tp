@@ -1,4 +1,4 @@
-# John Doe - Project Portfolio Page
+# Shao Yu - Project Portfolio Page
 
 ## Overview
 
