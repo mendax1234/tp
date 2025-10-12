@@ -69,4 +69,14 @@ public class ModuleList {
         return moduleList;
     }
 
+
+    public Module getModuleByCode(String code){
+        for (Module module : moduleList){
+            if (module.getCode().equals(code)){
+                return module;
+            }
+        }
+        return null; //add proper exception handling here later
+    }
+
 }
