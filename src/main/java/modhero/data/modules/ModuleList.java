@@ -1,27 +1,30 @@
 package modhero.data.modules;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+import modhero.storage.Storage;
 
 /**
- * A simple list wrapper for {@link Module} objects.
- * Provides basic operations to add or remove modules.
+ * A wrapper class around a {@link List} of {@link Module} objects.
+ * <p>
+ * Provides basic operations to add, remove, and search for modules.
+ * A Storage reference may optionally be provided to lookup the
+ * list of all modules.
+ * <p>
  */
 public class ModuleList {
-    private final ArrayList<Module> moduleList;
+    private  final List<Module> moduleList;
 
     /**
-     * Initializes an empty modulelist
+     * Creates a {@code ModuleList} backed by a new empty list,
+     * without any storage reference.
+     * Use this constructor when no global module lookup is required.
      */
     public ModuleList() {
         this.moduleList = new ArrayList<>();
-    }
-
-    /**
-     * Initializes the module list using an existing module list
-     * @param moduleList an existing module list
-     */
-    public ModuleList(ArrayList<Module> moduleList) {
-        this.moduleList = new ArrayList<>(moduleList);
     }
 
     /**
@@ -40,47 +43,39 @@ public class ModuleList {
      * @throws IndexOutOfBoundsException if the index is invalid
      */
     public void remove(int taskIndex) {
-        moduleList.remove(taskIndex);
+        Module removedModule = moduleList.remove(taskIndex);
     }
 
     /**
-     * Gets the size of the module list
-     * @return the size of the module list
+     * Returns the required module.
+     *
+     * @param code the module code to search for
+     * @return a Module with the given module code
      */
-    public int size() {
-        return moduleList.size();
-    }
+//    public Module findModuleByCode(String code) {
+////        return storage.getAllModules().getHashMap().get(code);
+//    }
+//
+//
+//    /*public Module findModuleByCode(String code) {
+//        for (Module m : storage.getAllModules().getList()) { if (m.getCode().equals(code)) { return m; } } return null;
+//    }*/
 
     /**
-     * Get the specified course based on the index
-     * @return the module at index
-     */
-    public Module getModule(int index) {
-        return moduleList.get(index);
-    }
-
-    /**
-     * Merge the targetList into the current module list
-     * @param targetList the target module list that you want to merge
-     * @return the merged module list
-     */
-    public ModuleList merge(ModuleList targetList) {
-        ArrayList<Module> merged = new ArrayList<>(this.moduleList);
-        merged.addAll(targetList.getList());
-        return new ModuleList(merged);
-    }
-
-    /**
-     * Gets the module list
+     * Get module list
      */
     public ArrayList<Module> getList() {
         return moduleList;
     }
 
-    /**
-     * Sorts the modules in the module list
-     */
-    public void sort() {
-        moduleList.sort(Module.ModuleCodeComparator);
+
+    public Module getModuleByCode(String code){
+        for (Module module : moduleList){
+            if (module.getCode().equals(code)){
+                return module;
+            }
+        }
+        return null; //add proper exception handling here later
     }
+
 }

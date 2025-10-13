@@ -9,11 +9,16 @@ import modhero.commands.HelpCommand;
 import modhero.commands.IncorrectCommand;
 import modhero.commands.MajorCommand;
 import modhero.commands.ScheduleCommand;
+import modhero.data.Timetable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static modhero.common.Constants.MESSAGE_INVALID_COMMAND_FORMAT;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Parses user input.
@@ -40,11 +45,12 @@ public class Parser {
         case MajorCommand.COMMAND_WORD:
             return prepareMajorCommand(arguments);
 
+        /* Parses arguments in the context of the elective command.*/
         case ElectiveCommand.COMMAND_WORD:
             return prepareElectiveCommand(arguments);
 
         case DeleteCommand.COMMAND_WORD:
-            return new DeleteCommand();
+            return prepareDeleteCommand(arguments);
 
         case ScheduleCommand.COMMAND_WORD:
             return new ScheduleCommand();
@@ -61,6 +67,7 @@ public class Parser {
             return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
         }
     }
+
 
     /**
      * Parses arguments in the context of the major command.
@@ -91,4 +98,17 @@ public class Parser {
         }
         return new ElectiveCommand(electiveList);
     }
+
+    private Command prepareDeleteCommand(String args) {
+        if (args.isEmpty()) {
+            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+        }
+        List<String> electiveList = new ArrayList<>();
+        String[] argsList =  args.split(" ");
+        for (String arg : argsList) {
+            electiveList.add(arg);
+        }
+        return new DeleteCommand(electiveList);
+    }
+
 }
