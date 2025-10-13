@@ -74,11 +74,4 @@ public class Module {
                 sm.serialiseMessage(type) +
                 sm.serialiseList(prerequisites);
     }
-
-    public static Comparator<Module> ModuleCodeComparator = new Comparator<Module>() {
-        @Override
-        public int compare(Module module1, Module module2) {
-            return module1.code.compareToIgnoreCase(module2.code);
-        }
-    };
 }
