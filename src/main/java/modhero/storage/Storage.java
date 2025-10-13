@@ -40,14 +40,14 @@ public class Storage {
     /**
      * Loads the file contents into a list of strings, each line a list element.
      *
-     * @return list of lines from file, or null if file not found
+     * @return list of lines from file, or empty list if file not found
      */
     public List<String> load() {
         try {
             ensureFileDirectoryExist();
             return readFromFile();
         } catch (FileNotFoundException e) {
-            return null;
+            return new ArrayList<>();
         }
     }
 
