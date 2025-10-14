@@ -1,6 +1,5 @@
 package modhero.data.modules;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -65,7 +64,7 @@ public class ModuleList {
     /**
      * Get module list
      */
-    public List<Module> getList() {
+    public ArrayList<Module> getList() {
         return moduleList;
     }
 

@@ -14,7 +14,7 @@ import modhero.data.Timetable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static modhero.common.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static modhero.common.Constants.MESSAGE_INVALID_COMMAND_FORMAT;
 
 import java.util.List;
 import java.util.ArrayList;

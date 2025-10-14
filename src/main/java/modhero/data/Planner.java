@@ -1,5 +1,8 @@
 package modhero.data;
 
+import static modhero.common.Constants.NUM_TERMS;
+import static modhero.common.Constants.NUM_YEARS;
+
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
 
@@ -21,10 +24,12 @@ public class Planner {
 
     public Planner(Timetable timetable, ModuleList coreList, ModuleList electiveList) {
         this.timetable = timetable;
-        moduleList = new ArrayList<>(coreList.getList());
-        moduleList.addAll(electiveList.getList());
+        this.moduleList = coreList.merge(electiveList);
     }
 
+    /**
+     * Plan the Timetable given the moduleList
+     */
     public void planTimeTable() {
         topologicallySortModuleList();
         addToTimetable();
