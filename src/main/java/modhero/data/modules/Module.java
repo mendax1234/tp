@@ -15,13 +15,6 @@ public class Module {
     private int mc;         // e.g. modular credits
     private String type;    // e.g. core, elective, etc.
     private List<String> prerequisites; // e.g. ["CS1010", "CS1231"]
-    // TODO: Sort based on the prequisite in the future
-    public static Comparator<Module> ModuleCodeComparator = new Comparator<Module>() {
-        @Override
-        public int compare(Module module1, Module module2) {
-            return module1.code.compareToIgnoreCase(module2.code);
-        }
-    };
 
     /**
      * Creates a new Module object.
