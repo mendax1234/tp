@@ -24,7 +24,8 @@ public class Planner {
 
     public Planner(Timetable timetable, ModuleList coreList, ModuleList electiveList) {
         this.timetable = timetable;
-        this.moduleList = coreList.merge(electiveList);
+        moduleList = new ArrayList<>(coreList.getList());
+        moduleList.addAll(electiveList.getList());
     }
 
     /**

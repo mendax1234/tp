@@ -47,24 +47,9 @@ public class ModuleList {
     }
 
     /**
-     * Returns the required module.
-     *
-     * @param code the module code to search for
-     * @return a Module with the given module code
-     */
-//    public Module findModuleByCode(String code) {
-////        return storage.getAllModules().getHashMap().get(code);
-//    }
-//
-//
-//    /*public Module findModuleByCode(String code) {
-//        for (Module m : storage.getAllModules().getList()) { if (m.getCode().equals(code)) { return m; } } return null;
-//    }*/
-
-    /**
      * Get module list
      */
-    public ArrayList<Module> getList() {
+    public List<Module> getList() {
         return moduleList;
     }
 

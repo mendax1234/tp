@@ -54,7 +54,7 @@ public class ModHero {
      */
     private void start() {
         this.ui = new Ui();
-        this.timetable = new Timetable(4, 4);
+        this.timetable = new Timetable();
         this.storage = new Storage("data/data.txt");
         this.majorStorage = new Storage("data/majorData.txt");
         this.allModulesData = new HashMap<>();

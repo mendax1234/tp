@@ -44,13 +44,4 @@ public abstract class Command {
      */
     public abstract CommandResult execute();
 
-    /**
-     * Indicates whether this command should terminate the application.
-     * By default, commands do not exit.
-     *
-     * @return {@code true} if this command exits the application, {@code false} otherwise
-     */
-    public boolean isExit() {
-        return false;
-    }
 }
