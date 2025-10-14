@@ -1,5 +1,7 @@
 package modhero.commands;
 
+import modhero.data.major.Major;
+
 /**
  * Defines your primary degree major, which ModHero uses to load graduation requirements.
  */
@@ -25,6 +27,11 @@ public class MajorCommand extends Command {
 
     @Override
     public CommandResult execute() {
+        Major majorObj = allMajorsData.get(major);
+        if (majorObj == null) {
+            return new CommandResult("Failed to retrieve major " + major);
+        }
+        coreList = majorObj.getModules();
         return new CommandResult(major + "|" + specialisation + "|" + minor);
     }
 }
