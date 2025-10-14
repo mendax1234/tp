@@ -16,7 +16,7 @@ import modhero.storage.Storage;
  * <p>
  */
 public class ModuleList {
-    private  final List<Module> moduleList;
+    private List<Module> moduleList;
 
     /**
      * Creates a {@code ModuleList} backed by a new empty list,
@@ -48,6 +48,8 @@ public class ModuleList {
 
     /**
      * Get module list
+     *
+     * @return moduleList
      */
     public List<Module> getList() {
         return moduleList;
@@ -61,6 +63,15 @@ public class ModuleList {
             }
         }
         return null; //add proper exception handling here later
+    }
+
+    /**
+     * Replace all module in the list with new list
+     *
+     * @param newList to be replaced with
+     */
+    public void setList(List<Module> newList) {
+        this.moduleList = newList;
     }
 
 }

@@ -31,7 +31,7 @@ public class MajorCommand extends Command {
         if (majorObj == null) {
             return new CommandResult("Failed to retrieve major " + major);
         }
-        coreList = majorObj.getModules();
+        coreList.setList(majorObj.getModules().getList());
         return new CommandResult(major + "|" + specialisation + "|" + minor);
     }
 }

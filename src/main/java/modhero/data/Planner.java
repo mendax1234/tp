@@ -57,6 +57,8 @@ public class Planner {
     }
 
     private void topologicallySortModuleList (){
+        prereqGraph = new PrereqGraph(moduleList);
+        sortedModuleList = new ArrayList<>();
         HashMap<String, List<String>> graphToSort = prereqGraph.getGraph();
         while (!graphToSort.isEmpty()){
             for (String key : graphToSort.keySet()) {
