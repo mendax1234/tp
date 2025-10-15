@@ -9,30 +9,27 @@ import modhero.data.modules.ModuleList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Algorithm to plan the timetable
  */
 public class Planner {
-    public static final Logger logger = Logger.getLogger(Planner.class.getName());
-
     private final Timetable timetable;
     private final List<Module> moduleList;
     private List<Module> sortedModuleList;
-    private PrereqGraph prereqGraph;
+    private  PrereqGraph prereqGraph;
+
+    final int years = 4;
+    final int terms = 4;
 
     public Planner(Timetable timetable, ModuleList coreList, ModuleList electiveList) {
-        assert timetable != null : "Timetable must not be null";
-        assert coreList != null : "Core list must not be null";
-        assert electiveList != null : "Elective list must not be null";
-
         this.timetable = timetable;
-        this.moduleList = new ArrayList<>(coreList.getList());
-        this.moduleList.addAll(electiveList.getList());
+        moduleList = new ArrayList<Module>();
 
-        logger.log(Level.FINE, () -> String.format("Planner initialised with %d modules", moduleList.size()));
+        List <Module> coreAsArrayList = coreList.getList();
+        List <Module> electivesAsArrayList = electiveList.getList();
+        moduleList.addAll(coreAsArrayList);
+        moduleList.addAll(electivesAsArrayList);
     }
 
     /**
@@ -40,6 +37,10 @@ public class Planner {
      */
     public void planTimeTable() {
         topologicallySortModuleList();
+        for ( Module module: sortedModuleList){
+            String moduleCode = module.getCode();
+            System.out.println(moduleCode);
+        }
         addToTimetable();
     }
 
@@ -48,9 +49,18 @@ public class Planner {
         prereqGraph = new PrereqGraph(moduleList);
     }
 
-    private void trimPrereqGraph(HashMap<String, List<String>> graphToSort, String entry){
-        for ( List<String> value : graphToSort.values()){
-            value.remove(entry);
+    private void trimPrereqGraph(HashMap<String, List<String>> graphToSort, ArrayList<String> entriesToRemove){
+
+        for (String key: entriesToRemove){
+            List<String>  preReqs = graphToSort.get(key);
+            for ( String preReq: preReqs){
+                if (entriesToRemove.contains(preReq)){
+                    preReqs.remove(preReq);
+                }
+            }
+            if (entriesToRemove.contains(key)){
+                graphToSort.remove(key);
+            }
         }
     }
 
@@ -68,26 +78,22 @@ public class Planner {
         sortedModuleList = new ArrayList<>();
         HashMap<String, List<String>> graphToSort = prereqGraph.getGraph();
         while (!graphToSort.isEmpty()){
+            ArrayList<String> entriesToRemove = new ArrayList<>();
             for (String key : graphToSort.keySet()) {
                 if ( graphToSort.get(key).isEmpty()){
                     Module currentModule = findModuleByCode(key);
                     sortedModuleList.add(currentModule);
-                    graphToSort.remove(key);
-                    trimPrereqGraph(graphToSort, key);
+                    entriesToRemove.add(key);
                 }
             }
-            for (String key : graphToSort.keySet()) {
-                if ( graphToSort.get(key).isEmpty()){
-                    trimPrereqGraph(graphToSort, key);
-                }
-            }
+            trimPrereqGraph(graphToSort, entriesToRemove);
         }
     }
 
     public void addToTimetable() {
         for (int i = 0; i < sortedModuleList.size(); i++) {
-            int year = (i / NUM_TERMS) % NUM_YEARS;
-            int term = i % NUM_TERMS;
+            int year = (i / terms) % years;
+            int term = i % terms;
             Module module = moduleList.get(i);
             timetable.addModule(year, term, module);
         }
