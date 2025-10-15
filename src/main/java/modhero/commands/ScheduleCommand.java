@@ -1,6 +1,7 @@
 package modhero.commands;
 
 import modhero.data.Planner;
+import modhero.data.modules.Module;
 
 /**
  * Generates a personalised 4-year study plan, factoring in prerequisites, NUSMods module availability, exchanges, and graduation requirements.

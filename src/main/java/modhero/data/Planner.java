@@ -24,8 +24,12 @@ public class Planner {
 
     public Planner(Timetable timetable, ModuleList coreList, ModuleList electiveList) {
         this.timetable = timetable;
-        moduleList = new ArrayList<>(coreList.getList());
-        moduleList.addAll(electiveList.getList());
+        moduleList = new ArrayList<Module>();
+
+        List <Module> coreAsArrayList = coreList.getList();
+        List <Module> electivesAsArrayList = electiveList.getList();
+        moduleList.addAll(coreAsArrayList);
+        moduleList.addAll(electivesAsArrayList);
     }
 
     /**
@@ -33,6 +37,10 @@ public class Planner {
      */
     public void planTimeTable() {
         topologicallySortModuleList();
+        for ( Module module: sortedModuleList){
+            String moduleCode = module.getCode();
+            System.out.println(moduleCode);
+        }
         addToTimetable();
     }
 
@@ -41,9 +49,18 @@ public class Planner {
         prereqGraph = new PrereqGraph(moduleList);
     }
 
-    private void trimPrereqGraph(HashMap<String, List<String>> graphToSort, String entry){
-        for ( List<String> value : graphToSort.values()){
-            value.remove(entry);
+    private void trimPrereqGraph(HashMap<String, List<String>> graphToSort, ArrayList<String> entriesToRemove){
+
+        for (String key: entriesToRemove){
+            List<String>  preReqs = graphToSort.get(key);
+            for ( String preReq: preReqs){
+                if (entriesToRemove.contains(preReq)){
+                    preReqs.remove(preReq);
+                }
+            }
+            if (entriesToRemove.contains(key)){
+                graphToSort.remove(key);
+            }
         }
     }
 
@@ -61,19 +78,15 @@ public class Planner {
         sortedModuleList = new ArrayList<>();
         HashMap<String, List<String>> graphToSort = prereqGraph.getGraph();
         while (!graphToSort.isEmpty()){
+            ArrayList<String> entriesToRemove = new ArrayList<>();
             for (String key : graphToSort.keySet()) {
                 if ( graphToSort.get(key).isEmpty()){
                     Module currentModule = findModuleByCode(key);
                     sortedModuleList.add(currentModule);
-                    graphToSort.remove(key);
-                    trimPrereqGraph(graphToSort, key);
+                    entriesToRemove.add(key);
                 }
             }
-            for (String key : graphToSort.keySet()) {
-                if ( graphToSort.get(key).isEmpty()){
-                    trimPrereqGraph(graphToSort, key);
-                }
-            }
+            trimPrereqGraph(graphToSort, entriesToRemove);
         }
     }
 
