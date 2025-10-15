@@ -2,10 +2,8 @@ package modhero.data.modules;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-
-import modhero.storage.Storage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A wrapper class around a {@link List} of {@link Module} objects.
@@ -16,6 +14,8 @@ import modhero.storage.Storage;
  * <p>
  */
 public class ModuleList {
+    public static final Logger logger = Logger.getLogger(ModuleList.class.getName());
+
     private List<Module> moduleList;
 
     /**
@@ -33,7 +33,11 @@ public class ModuleList {
      * @param module the module to add
      */
     public void add(Module module) {
+        assert module != null : "add module cannot be null";
+
         moduleList.add(module);
+
+        logger.log(Level.FINEST, "Added module: " + module);
     }
 
     /**
@@ -43,7 +47,11 @@ public class ModuleList {
      * @throws IndexOutOfBoundsException if the index is invalid
      */
     public void remove(int taskIndex) {
+        assert taskIndex >= 0 && taskIndex < moduleList.size() : "remove taskIndex out of bounds";
+
         Module removedModule = moduleList.remove(taskIndex);
+
+        logger.log(Level.FINEST, "Removed module: " + removedModule);
     }
 
     /**
@@ -57,6 +65,7 @@ public class ModuleList {
 
 
     public Module getModuleByCode(String code){
+        assert code != null : "getModuleByCode code cannot be null";
         for (Module module : moduleList){
             if (module.getCode().equals(code)){
                 return module;
@@ -72,6 +81,7 @@ public class ModuleList {
      */
     public void setList(List<Module> newList) {
         this.moduleList = newList;
+        logger.log(Level.FINEST, "Module List has been replaced");
     }
 
 }
