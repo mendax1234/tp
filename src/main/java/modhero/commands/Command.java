@@ -1,9 +1,9 @@
 package modhero.commands;
 
 import modhero.data.Timetable;
+import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
-import modhero.storage.Storage;
 
 import java.util.Map;
 
@@ -17,6 +17,7 @@ public abstract class Command {
     protected ModuleList electiveList;
     protected ModuleList coreList;
     protected Map<String, Module> allModulesData;
+    protected Map<String, Major> allMajorsData;
 
 
     /**
@@ -28,11 +29,12 @@ public abstract class Command {
      * @param coreList the list of core modules
      * @param allModulesData the hashmap for loading and saving data
      */
-    public void setData(Timetable data, ModuleList electiveList, ModuleList coreList, Map<String, Module> allModulesData) {
+    public void setData(Timetable data, ModuleList electiveList, ModuleList coreList, Map<String, Module> allModulesData, Map<String, Major> allMajorsData) {
         this.data = data;
         this.electiveList = electiveList;
         this.coreList = coreList;
         this.allModulesData = allModulesData;
+        this.allMajorsData = allMajorsData;
     }
 
     /**
@@ -42,13 +44,4 @@ public abstract class Command {
      */
     public abstract CommandResult execute();
 
-    /**
-     * Indicates whether this command should terminate the application.
-     * By default, commands do not exit.
-     *
-     * @return {@code true} if this command exits the application, {@code false} otherwise
-     */
-    public boolean isExit() {
-        return false;
-    }
 }

@@ -16,7 +16,7 @@ import modhero.storage.Storage;
  * <p>
  */
 public class ModuleList {
-    private  final List<Module> moduleList;
+    private List<Module> moduleList;
 
     /**
      * Creates a {@code ModuleList} backed by a new empty list,
@@ -47,24 +47,11 @@ public class ModuleList {
     }
 
     /**
-     * Returns the required module.
-     *
-     * @param code the module code to search for
-     * @return a Module with the given module code
-     */
-//    public Module findModuleByCode(String code) {
-////        return storage.getAllModules().getHashMap().get(code);
-//    }
-//
-//
-//    /*public Module findModuleByCode(String code) {
-//        for (Module m : storage.getAllModules().getList()) { if (m.getCode().equals(code)) { return m; } } return null;
-//    }*/
-
-    /**
      * Get module list
+     *
+     * @return moduleList
      */
-    public ArrayList<Module> getList() {
+    public List<Module> getList() {
         return moduleList;
     }
 
@@ -76,6 +63,15 @@ public class ModuleList {
             }
         }
         return null; //add proper exception handling here later
+    }
+
+    /**
+     * Replace all module in the list with new list
+     *
+     * @param newList to be replaced with
+     */
+    public void setList(List<Module> newList) {
+        this.moduleList = newList;
     }
 
 }

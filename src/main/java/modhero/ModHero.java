@@ -4,8 +4,10 @@ import modhero.commands.Command;
 import modhero.commands.CommandResult;
 import modhero.commands.ExitCommand;
 import modhero.data.Timetable;
+import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
+import modhero.exception.CorruptedDataFileException;
 import modhero.parser.Parser;
 import modhero.ui.Ui;
 import modhero.storage.Storage;
@@ -23,7 +25,10 @@ public class ModHero {
     private ModuleList electiveList;
     private ModuleList coreList;
     private Storage storage;
+    private Storage majorStorage;
     private Map<String, Module> allModulesData;
+    private Map<String, Major> allMajorsData;
+
 
     /**
      * Launches the ModHero application.
@@ -49,10 +54,19 @@ public class ModHero {
      */
     private void start() {
         this.ui = new Ui();
-        this.timetable = new Timetable(4, 4);
+        this.timetable = new Timetable();
         this.storage = new Storage("data/data.txt");
+        this.majorStorage = new Storage("data/majorData.txt");
         this.allModulesData = new HashMap<>();
-        storage.loadAllModulesData(allModulesData);
+        this.allMajorsData = new HashMap<>();
+        try {
+            storage.loadAllModulesData(allModulesData);
+            majorStorage.loadAllMajorsData(allModulesData, allMajorsData);
+        } catch (CorruptedDataFileException e) {
+            System.out.println("Corrupted data file");
+            storage.save("");
+            majorStorage.save("");
+        }
         this.electiveList = new ModuleList();
         this.coreList = new ModuleList();
         ui.showWelcome();
@@ -87,7 +101,7 @@ public class ModHero {
      */
     private CommandResult executeCommand(Command command) {
         try {
-            command.setData(timetable, electiveList, coreList, allModulesData);
+            command.setData(timetable, electiveList, coreList, allModulesData, allMajorsData);
             CommandResult result = command.execute();
             return result;
         } catch (Exception e) {

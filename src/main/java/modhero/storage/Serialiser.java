@@ -1,5 +1,7 @@
 package modhero.storage;
 
+import modhero.exception.CorruptedDataFileException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +43,13 @@ public class Serialiser {
      * @param serialisedList list of serialised strings
      * @return the deserialised nested list
      */
-    public List<List<String>> deserialiseList(List<String> serialisedList) {
+    public List<List<String>> deserialiseList(List<String> serialisedList) throws CorruptedDataFileException {
         List<List<String>> deserialisedList = new ArrayList<>();
         for (String serialisedMessage : serialisedList) {
             List<String> message = deserialiseMessage(serialisedMessage);
+            if (message == null) {
+                throw new CorruptedDataFileException();
+            }
             deserialisedList.add(message);
         }
         return deserialisedList;
@@ -65,19 +70,19 @@ public class Serialiser {
             int delimiterIndex = serialisedMessage.indexOf(DELIMITER, currentIndex);
             boolean isDelimiterMissing = delimiterIndex == -1;
             if (isDelimiterMissing) {
-                break;
+                return null;
             }
 
             int argumentLength = parseArgumentLength(serialisedMessage, currentIndex, delimiterIndex);
             boolean isArgumentLengthCorrupted = argumentLength == -1;
             if (isArgumentLengthCorrupted) {
-                break;
+                return null;
             }
 
             currentIndex = delimiterIndex + DELIMITER.length();
             int nextIndex = currentIndex + argumentLength;
             if (nextIndex > serialisedTaskLength) {
-                break;
+                return null;
             }
 
             String argument = serialisedMessage.substring(currentIndex, nextIndex);

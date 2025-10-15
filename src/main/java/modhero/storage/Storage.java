@@ -1,13 +1,16 @@
 package modhero.storage;
 
+import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
+import modhero.exception.CorruptedDataFileException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -33,8 +36,20 @@ public class Storage {
      * Ensures that the directory for the file path exists.
      * Creates directories if not present.
      */
-    public void ensureFileDirectoryExist() {
+    private void ensureFileDirectoryExist() {
         new File(filePath).getParentFile().mkdirs();
+    }
+
+    /**
+     * Ensures that the file exists.
+     * Creates file if not present.
+     * @throws IOException if an I/O error occurs during creating
+     */
+    private void ensureFileExist() throws IOException {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
     }
 
     /**
@@ -45,8 +60,11 @@ public class Storage {
     public List<String> load() {
         try {
             ensureFileDirectoryExist();
+            ensureFileExist();
             return readFromFile();
         } catch (FileNotFoundException e) {
+            return new ArrayList<>();
+        } catch (IOException e) {
             return new ArrayList<>();
         }
     }
@@ -97,7 +115,7 @@ public class Storage {
      * Loads all modules from a data file, assuming that the file at filePath contains list of all NUS modules.
      *
      */
-    public void loadAllModulesData(Map<String, Module> allModulesData) {
+    public void loadAllModulesData(Map<String, Module> allModulesData) throws CorruptedDataFileException {
         Serialiser serialiser = new Serialiser();
         List<String> rawModulesList = load();
         List<List<String>> allModulesList = serialiser.deserialiseList(rawModulesList);
@@ -109,5 +127,43 @@ public class Storage {
                 System.out.println("Invalid module code");
             }
         }
+    }
+
+    /**
+     * Loads all modules from a data file, assuming that the file at filePath contains list of all NUS modules.
+     *
+     */
+    public void loadAllMajorsData(Map<String, Module> allModulesData, Map<String, Major> allMajorsData) throws CorruptedDataFileException {
+        Serialiser serialiser = new Serialiser();
+        List<String> rawMajorsList = load();
+        List<List<String>> allMajorsList = serialiser.deserialiseList(rawMajorsList);
+        for (List<String> majorArgs : allMajorsList) {
+            try {
+                Major major = new Major(majorArgs.get(0), majorArgs.get(1), createModuleList(allModulesData, serialiser.deserialiseMessage(majorArgs.get(2))));
+                allMajorsData.put(major.getabbrName(), major);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid major abbrName");
+            }
+        }
+    }
+
+    /**
+     * Return ModuleList for major object.
+     *
+     * @param allModulesData hashmap to get modules object from
+     * @param moduleCodes modules code in a list of string
+     * @return ModuleList
+     */
+    private ModuleList createModuleList(Map<String, Module> allModulesData, List<String> moduleCodes) {
+        ModuleList moduleList = new ModuleList();
+        for (String code : moduleCodes) {
+            Module module = allModulesData.get(code);
+            if (module != null) {
+                moduleList.add(module);
+            } else {
+                System.out.println("Get from NUS API");
+            }
+        }
+        return moduleList;
     }
 }

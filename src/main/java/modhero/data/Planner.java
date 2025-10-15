@@ -24,7 +24,8 @@ public class Planner {
 
     public Planner(Timetable timetable, ModuleList coreList, ModuleList electiveList) {
         this.timetable = timetable;
-        this.moduleList = coreList.merge(electiveList);
+        moduleList = new ArrayList<>(coreList.getList());
+        moduleList.addAll(electiveList.getList());
     }
 
     /**
@@ -56,6 +57,8 @@ public class Planner {
     }
 
     private void topologicallySortModuleList (){
+        prereqGraph = new PrereqGraph(moduleList);
+        sortedModuleList = new ArrayList<>();
         HashMap<String, List<String>> graphToSort = prereqGraph.getGraph();
         while (!graphToSort.isEmpty()){
             for (String key : graphToSort.keySet()) {
