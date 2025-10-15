@@ -5,31 +5,36 @@ import static modhero.common.Constants.NUM_YEARS;
 
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
+import modhero.parser.Parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Algorithm to plan the timetable
  */
 public class Planner {
+    public static final Logger logger = Logger.getLogger(Parser.class.getName());
+
     private final Timetable timetable;
     private final List<Module> moduleList;
     private List<Module> sortedModuleList;
-    private  PrereqGraph prereqGraph;
-
-    final int years = 4;
-    final int terms = 4;
+    private PrereqGraph prereqGraph;
 
     public Planner(Timetable timetable, ModuleList coreList, ModuleList electiveList) {
-        this.timetable = timetable;
-        moduleList = new ArrayList<Module>();
+        assert timetable != null : "Timetable must not be null";
+        assert coreList != null : "Core list must not be null";
+        assert electiveList != null : "Elective list must not be null";
 
+        this.timetable = timetable;
+        this.moduleList = new ArrayList<Module>();
         List <Module> coreAsArrayList = coreList.getList();
         List <Module> electivesAsArrayList = electiveList.getList();
-        moduleList.addAll(coreAsArrayList);
-        moduleList.addAll(electivesAsArrayList);
+        this.moduleList.addAll(coreAsArrayList);
+        this.moduleList.addAll(electivesAsArrayList);
     }
 
     /**
@@ -92,8 +97,8 @@ public class Planner {
 
     public void addToTimetable() {
         for (int i = 0; i < sortedModuleList.size(); i++) {
-            int year = (i / terms) % years;
-            int term = i % terms;
+            int year = (i / NUM_TERMS) % NUM_YEARS;
+            int term = i % NUM_TERMS;
             Module module = moduleList.get(i);
             timetable.addModule(year, term, module);
         }
