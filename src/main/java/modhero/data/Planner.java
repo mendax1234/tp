@@ -9,23 +9,30 @@ import modhero.data.modules.ModuleList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Algorithm to plan the timetable
  */
 public class Planner {
+    public static final Logger logger = Logger.getLogger(Planner.class.getName());
+
     private final Timetable timetable;
     private final List<Module> moduleList;
     private List<Module> sortedModuleList;
-    private  PrereqGraph prereqGraph;
-
-    final int years = 4;
-    final int terms = 4;
+    private PrereqGraph prereqGraph;
 
     public Planner(Timetable timetable, ModuleList coreList, ModuleList electiveList) {
+        assert timetable != null : "Timetable must not be null";
+        assert coreList != null : "Core list must not be null";
+        assert electiveList != null : "Elective list must not be null";
+
         this.timetable = timetable;
-        moduleList = new ArrayList<>(coreList.getList());
-        moduleList.addAll(electiveList.getList());
+        this.moduleList = new ArrayList<>(coreList.getList());
+        this.moduleList.addAll(electiveList.getList());
+
+        logger.log(Level.FINE, () -> String.format("Planner initialised with %d modules", moduleList.size()));
     }
 
     /**
@@ -79,8 +86,8 @@ public class Planner {
 
     public void addToTimetable() {
         for (int i = 0; i < sortedModuleList.size(); i++) {
-            int year = (i / terms) % years;
-            int term = i % terms;
+            int year = (i / NUM_TERMS) % NUM_YEARS;
+            int term = i % NUM_TERMS;
             Module module = moduleList.get(i);
             timetable.addModule(year, term, module);
         }

@@ -4,16 +4,19 @@ import static modhero.common.Constants.NUM_TERMS;
 import static modhero.common.Constants.NUM_YEARS;
 
 import modhero.data.modules.Module;
-import modhero.data.modules.ModuleList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a multi-year academic timetable, storing modules organized
  * by year and term.
  */
 public class Timetable {
+    public static final Logger logger = Logger.getLogger(Timetable.class.getName());
+
     private final int COL_WIDTH = 15; // standard column width for all cells
     private List<List<List<Module>>> timetable;
 
@@ -33,6 +36,8 @@ public class Timetable {
             }
             timetable.add(yearSemesters);
         }
+
+        logger.log(Level.FINE, () -> String.format("Timetable initialised for %d years and %d terms", NUM_YEARS, NUM_TERMS));
     }
 
     /**
@@ -43,7 +48,12 @@ public class Timetable {
      * @param module the module to add
      */
     public void addModule(int year, int term, Module module) {
+        assert year >= 0 && year <= NUM_YEARS : "addModule year out of bounds";
+        assert term >= 0 && term <= NUM_TERMS : "addModule term out of bounds";
+        assert module != null : "addModule module must not be null";
+
         timetable.get(year).get(term).add(module);
+        logger.log(Level.FINEST, () -> String.format("Module %s added to year %d term %d", module.getCode(), year, term));
     }
 
     /**
@@ -55,8 +65,17 @@ public class Timetable {
      * @return {@code true} if a module was removed, {@code false} otherwise
      */
     public boolean removeModule(int year, int term, String moduleCode) {
-        return timetable.get(year-1).get(term-1)
+        assert year >= 0 && year <= NUM_YEARS : "addModule year out of bounds";
+        assert term >= 0 && term <= NUM_TERMS : "addModule term out of bounds";
+        assert moduleCode != null : "removeModule moduleCode must not be null";
+
+        boolean hasRemoved = timetable.get(year-1).get(term-1)
                 .removeIf(m -> m.getCode().equals(moduleCode));
+
+        if (hasRemoved) {
+            logger.log(Level.FINEST, () -> String.format("Module %s removed from year %d term %d", moduleCode, year, term));
+        }
+        return hasRemoved;
     }
 
     /**
@@ -67,6 +86,9 @@ public class Timetable {
      * @return list of modules in the specified term
      */
     public List<Module> getModules(int year, int term) {
+        assert year >= 0 && year <= NUM_YEARS : "addModule year out of bounds";
+        assert term >= 0 && term <= NUM_TERMS : "addModule term out of bounds";
+
         return timetable.get(year).get(term);
     }
 
@@ -129,7 +151,7 @@ public class Timetable {
         }
     }
 
-    /**
+     /**
      * Pads the given text with spaces or truncates it so that
      * it fits within a fixed-width table cell.
      *
