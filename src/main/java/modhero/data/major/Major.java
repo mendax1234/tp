@@ -2,12 +2,15 @@ package modhero.data.major;
 
 import modhero.data.modules.ModuleList;
 
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Major {
-    private String name;    // e.g. Computer Engineering
-    private String abbrName;         // e.g. CEG
-    private ModuleList moduleList;
+    public static final Logger logger = Logger.getLogger(Major.class.getName());
+
+    private final String name;
+    private final String abbrName;
+    private final ModuleList moduleList;
 
     /**
      * Creates a new major object.
@@ -17,17 +20,28 @@ public class Major {
      * @param moduleList the list of core module object
      */
     public Major(String name, String abbrName, ModuleList moduleList) {
+        assert name != null && !name.isEmpty() : "Major name must not be empty";
+        assert abbrName != null && !abbrName.isEmpty() : "Major abbreviation must not be empty";
+        assert moduleList != null : "Module list must not be null";
+
         this.name = name;
         this.abbrName = abbrName;
         this.moduleList = moduleList;
+
+        logger.log(Level.FINEST, () -> "Major created: " + name + " (" + abbrName + ")");
     }
 
-    /** @return the module code */
-    public String getabbrName() {
+    /** @return the major name */
+    public String getName() {
+        return name;
+    }
+
+    /** @return the abbreviation major name */
+    public String getAbbrName() {
         return abbrName;
     }
 
-    /** @return the modules */
+    /** @return the modules*/
     public ModuleList getModules() {
         return moduleList;
     }

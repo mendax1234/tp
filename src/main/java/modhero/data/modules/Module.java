@@ -2,14 +2,17 @@ package modhero.data.modules;
 
 import modhero.storage.Serialiser;
 
-import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a module at NUS, including its code, name, modular credits,
  * type, and prerequisites.
  */
 public class Module {
+    public static final Logger logger = Logger.getLogger(Module.class.getName());
+
     private String code;    // e.g. CS2113
     private String name;    // e.g. Software Engineering
     private int mc;         // e.g. modular credits
@@ -26,11 +29,18 @@ public class Module {
      * @param prerequisites the list of prerequisite module codes
      */
     public Module(String code, String name, int mc, String type, List<String> prerequisites) {
+        assert code != null && !code.isEmpty() : "Module code must not be empty";
+        assert name != null && !name.isEmpty() : "Module name must not be empty";
+        assert type != null && !type.isEmpty() : "Module type must not be empty";
+        assert prerequisites != null : "Prerequisites list must not be null";
+
         this.code = code;
         this.name = name;
         this.mc = mc;
         this.type = type;
         this.prerequisites = prerequisites;
+
+        logger.log(Level.FINEST, "Module created: " + name + " (" + code + ")");
     }
 
 
@@ -67,11 +77,16 @@ public class Module {
      * @return the serialized module string
      */
     public String toFormatedString() {
-        Serialiser sm = new Serialiser();
-        return sm.serialiseMessage(code) +
-                sm.serialiseMessage(name) +
-                sm.serialiseMessage(Integer.toString(mc)) +
-                sm.serialiseMessage(type) +
-                sm.serialiseList(prerequisites);
+        logger.log(Level.FINEST, "Serialising module: " + code);
+
+        Serialiser serialiser = new Serialiser();
+        String formattedString = serialiser.serialiseMessage(code)
+                + serialiser.serialiseMessage(name)
+                + serialiser.serialiseMessage(Integer.toString(mc))
+                + serialiser.serialiseMessage(type)
+                + serialiser.serialiseList(prerequisites);
+
+        logger.log(Level.FINEST, "Successful serialising module: " + code);
+        return formattedString;
     }
 }

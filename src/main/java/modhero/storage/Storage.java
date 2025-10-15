@@ -10,16 +10,18 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handles loading from and saving to a text file.
  * Provides persistence for data by reading and writing plain text.
  */
 public class Storage {
+    private static final Logger logger = Logger.getLogger(Storage.class.getName());
 
     private final String filePath;
 
@@ -29,6 +31,8 @@ public class Storage {
      * @param filePath the path of the file to load from or save to
      */
     public Storage(String filePath) {
+        assert filePath != null && !filePath.isEmpty() : "File path must not be empty";
+
         this.filePath = filePath;
     }
 
@@ -38,6 +42,8 @@ public class Storage {
      */
     private void ensureFileDirectoryExist() {
         new File(filePath).getParentFile().mkdirs();
+
+        logger.log(Level.FINEST, "Ensured directory existence");
     }
 
     /**
@@ -50,6 +56,8 @@ public class Storage {
         if (!file.exists()) {
             file.createNewFile();
         }
+
+        logger.log(Level.FINEST, "Ensured file existence");
     }
 
     /**
@@ -58,13 +66,14 @@ public class Storage {
      * @return list of lines from file, or empty list if file not found
      */
     public List<String> load() {
+        logger.log(Level.FINEST, "Loading file: " + filePath);
+
         try {
             ensureFileDirectoryExist();
             ensureFileExist();
             return readFromFile();
-        } catch (FileNotFoundException e) {
-            return new ArrayList<>();
         } catch (IOException e) {
+            logger.log(Level.WARNING, "Failed to load file, " + e);
             return new ArrayList<>();
         }
     }
@@ -82,6 +91,8 @@ public class Storage {
         while (s.hasNext()) {
             rawTaskList.add(s.nextLine());
         }
+
+        logger.log(Level.FINEST, "Read file has " + rawTaskList.size() + " of sentences: ");
         return rawTaskList;
     }
 
@@ -91,11 +102,14 @@ public class Storage {
      * @param textToAdd the text content to save
      */
     public void save(String textToAdd) {
+        assert textToAdd != null : "save textToAdd must not be null";
+        logger.log(Level.FINEST, "Saving file: " + filePath);
+
         try {
             ensureFileDirectoryExist();
             writeToFile(textToAdd);
         } catch (IOException e) {
-            System.out.println("Failed save file");
+            logger.log(Level.WARNING, "Failed to save file" + e);
         }
     }
 
@@ -106,9 +120,13 @@ public class Storage {
      * @throws IOException if an I/O error occurs during writing
      */
     private void writeToFile(String textToAdd) throws IOException {
+        assert textToAdd != null : "writeToFile textToAdd must not be null";
+
         FileWriter fileWriter = new FileWriter(filePath);
         fileWriter.write(textToAdd);
         fileWriter.close();
+
+        logger.log(Level.FINEST, "Save file characters: " + textToAdd.length());
     }
 
     /**
@@ -116,15 +134,25 @@ public class Storage {
      *
      */
     public void loadAllModulesData(Map<String, Module> allModulesData) throws CorruptedDataFileException {
+        assert allModulesData != null : "loadAllModulesData allModulesData must not be null";
+        logger.log(Level.FINEST, "Loading all modules data");
+
         Serialiser serialiser = new Serialiser();
         List<String> rawModulesList = load();
         List<List<String>> allModulesList = serialiser.deserialiseList(rawModulesList);
         for (List<String> moduleArgs : allModulesList) {
+            if (moduleArgs.size() != 5) {
+                logger.log(Level.WARNING, "Incorrect number of arguments for module: " + moduleArgs.size());
+                break;
+            }
             try {
-                Module module = new Module(moduleArgs.get(0), moduleArgs.get(1), Integer.parseInt(moduleArgs.get(2)), moduleArgs.get(3), serialiser.deserialiseMessage(moduleArgs.get(4)));
+                Module module = new Module(moduleArgs.get(0), moduleArgs.get(1), Integer.parseInt(moduleArgs.get(2)),
+                        moduleArgs.get(3), serialiser.deserialiseMessage(moduleArgs.get(4)));
                 allModulesData.put(module.getCode(), module);
+                allModulesData.put(module.getName(), module);
+                logger.log(Level.FINEST, "Added module into database: " + module.getCode());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid module code");
+                logger.log(Level.WARNING, "Unable to parse module credit: " + moduleArgs.get(2));
             }
         }
     }
@@ -133,17 +161,26 @@ public class Storage {
      * Loads all modules from a data file, assuming that the file at filePath contains list of all NUS modules.
      *
      */
-    public void loadAllMajorsData(Map<String, Module> allModulesData, Map<String, Major> allMajorsData) throws CorruptedDataFileException {
+    public void loadAllMajorsData(Map<String, Module> allModulesData, Map<String, Major> allMajorsData)
+            throws CorruptedDataFileException {
+        assert allModulesData != null : "loadAllMajorsData allModulesData must not be null";
+        assert allMajorsData != null : "loadAllMajorsData allMajorsData must not be null";
+        logger.log(Level.FINEST, "Loading all major data");
+
+
         Serialiser serialiser = new Serialiser();
         List<String> rawMajorsList = load();
         List<List<String>> allMajorsList = serialiser.deserialiseList(rawMajorsList);
         for (List<String> majorArgs : allMajorsList) {
-            try {
-                Major major = new Major(majorArgs.get(0), majorArgs.get(1), createModuleList(allModulesData, serialiser.deserialiseMessage(majorArgs.get(2))));
-                allMajorsData.put(major.getabbrName(), major);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid major abbrName");
+            if (majorArgs.size() != 3) {
+                logger.log(Level.WARNING, "Incorrect number of arguments for major: " + majorArgs.size());
+                break;
             }
+            Major major = new Major(majorArgs.get(0), majorArgs.get(1),
+                    createModuleList(allModulesData, serialiser.deserialiseMessage(majorArgs.get(2))));
+            allMajorsData.put(major.getAbbrName(), major);
+            allMajorsData.put(major.getName(), major);
+            logger.log(Level.FINEST, "Added major into database: " + major.getAbbrName());
         }
     }
 
@@ -161,7 +198,7 @@ public class Storage {
             if (module != null) {
                 moduleList.add(module);
             } else {
-                System.out.println("Get from NUS API");
+                logger.log(Level.WARNING, "Missing module for major: " + code);
             }
         }
         return moduleList;
