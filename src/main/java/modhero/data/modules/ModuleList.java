@@ -63,7 +63,6 @@ public class ModuleList {
         return moduleList;
     }
 
-
     public Module getModuleByCode(String code){
         assert code != null : "getModuleByCode code cannot be null";
         for (Module module : moduleList){
@@ -84,4 +83,19 @@ public class ModuleList {
         logger.log(Level.FINEST, "Module List has been replaced");
     }
 
+    /**
+     *  Get the number of modules in the module list
+     * @return the size of the module list
+     */
+    public int size() {
+        return this.moduleList.size();
+    }
+
+    /**
+     * Know whether the module list is empty or not
+     * @return the state of whether the module list is empty
+     */
+    public boolean isEmpty() {
+        return this.moduleList.isEmpty();
+    }
 }

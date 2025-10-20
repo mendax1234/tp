@@ -54,6 +54,7 @@ public class ModHero {
      * starting the command loop, and performing cleanup.
      */
     public void run() {
+        assert false: "dummy assertion set to fail";
         setLoggerIntensity();
         logger.log(Level.INFO, "Starting ModHero");
         start();
@@ -146,7 +147,7 @@ public class ModHero {
         Major.logger.setLevel(Level.INFO);
         Module.logger.setLevel(Level.INFO);
         ModuleList.logger.setLevel(Level.INFO);
-        Planner.logger.setLevel(Level.INFO);
+        // Planner.logger.setLevel(Level.INFO);
         Timetable.logger.setLevel(Level.INFO);
     }
 }

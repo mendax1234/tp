@@ -20,7 +20,7 @@ public class TimetableTest {
 
     @BeforeEach
     void setUp() {
-        timetable = new Timetable(4, 4);
+        timetable = new Timetable(); // Use the no-argument constructor
         cs1010 = new Module("CS1010", "Programming Methodology", 4, "core", List.of());
         cs2040 = new Module("CS2040", "Data Structures", 4, "core", List.of("CS1010"));
         cs2100 = new Module("CS2100", "Computer Organisation", 4, "core", List.of("CS1010"));
@@ -45,16 +45,20 @@ public class TimetableTest {
         timetable.addModule(0, 0, cs1010);
         timetable.addModule(0, 1, cs2040);
 
-        boolean removed = timetable.removeModule(1, 1, "CS1010"); // removeModule uses 1-based indexing internally
+        // Call removeModule with 0-based indexing
+        boolean removed = timetable.removeModule(0, 0, "CS1010");
         assertTrue(removed, "Expected CS1010 to be removed");
 
         // CS1010 should be gone now
         assertTrue(timetable.getModules(0, 0).isEmpty());
+        // CS2040 should still be there
+        assertFalse(timetable.getModules(0, 1).isEmpty());
     }
 
     @Test
     void testRemoveModuleNonExistentReturnsFalse() {
-        boolean result = timetable.removeModule(1, 1, "NON_EXISTENT");
+        // Use 0-based indexing
+        boolean result = timetable.removeModule(0, 0, "NON_EXISTENT");
         assertFalse(result, "Should return false when module does not exist");
     }
 
@@ -78,20 +82,14 @@ public class TimetableTest {
 
         timetable.clearTimetable();
 
-        // Every term in every year should now be empty
-        for (int year = 0; year < 4; year++) {
-            for (int term = 0; term < 4; term++) {
-                assertTrue(timetable.getModules(year, term).isEmpty(), "Expected all modules cleared");
-            }
-        }
+        // Assuming NUM_YEARS and NUM_TERMS are 4
+        // A better test would be to check getAllModules
+        assertEquals(0, timetable.getAllModules().size(), "Timetable should be empty after clear");
     }
 
     @Test
     void testEmptyTimetableInitially() {
-        for (int year = 0; year < 4; year++) {
-            for (int term = 0; term < 4; term++) {
-                assertTrue(timetable.getModules(year, term).isEmpty(), "Timetable should start empty");
-            }
-        }
+        // A simpler way to test this
+        assertEquals(0, timetable.getAllModules().size(), "Timetable should start empty");
     }
 }

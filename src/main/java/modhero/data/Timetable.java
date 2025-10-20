@@ -48,8 +48,8 @@ public class Timetable {
      * @param module the module to add
      */
     public void addModule(int year, int term, Module module) {
-        assert year >= 0 && year <= NUM_YEARS : "addModule year out of bounds";
-        assert term >= 0 && term <= NUM_TERMS : "addModule term out of bounds";
+        assert year >= 0 && year < NUM_YEARS : "addModule year out of bounds";
+        assert term >= 0 && term < NUM_TERMS : "addModule term out of bounds";
         assert module != null : "addModule module must not be null";
 
         timetable.get(year).get(term).add(module);
@@ -65,11 +65,11 @@ public class Timetable {
      * @return {@code true} if a module was removed, {@code false} otherwise
      */
     public boolean removeModule(int year, int term, String moduleCode) {
-        assert year >= 0 && year <= NUM_YEARS : "addModule year out of bounds";
-        assert term >= 0 && term <= NUM_TERMS : "addModule term out of bounds";
+        assert year >= 0 && year < NUM_YEARS : "removeModule year out of bounds";
+        assert term >= 0 && term < NUM_TERMS : "removeModule term out of bounds";
         assert moduleCode != null : "removeModule moduleCode must not be null";
 
-        boolean hasRemoved = timetable.get(year-1).get(term-1)
+        boolean hasRemoved = timetable.get(year).get(term)
                 .removeIf(m -> m.getCode().equals(moduleCode));
 
         if (hasRemoved) {
@@ -86,8 +86,8 @@ public class Timetable {
      * @return list of modules in the specified term
      */
     public List<Module> getModules(int year, int term) {
-        assert year >= 0 && year <= NUM_YEARS : "addModule year out of bounds";
-        assert term >= 0 && term <= NUM_TERMS : "addModule term out of bounds";
+        assert year >= 0 && year < NUM_YEARS : "getModules year out of bounds";
+        assert term >= 0 && term < NUM_TERMS : "getModules term out of bounds";
 
         return timetable.get(year).get(term);
     }
@@ -151,7 +151,7 @@ public class Timetable {
         }
     }
 
-     /**
+    /**
      * Pads the given text with spaces or truncates it so that
      * it fits within a fixed-width table cell.
      *
