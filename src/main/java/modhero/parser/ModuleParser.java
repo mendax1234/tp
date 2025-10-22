@@ -1,5 +1,6 @@
 package modhero.parser;
 
+import modhero.data.modules.Prerequisites;
 import modhero.data.modules.Module;
 
 import java.util.ArrayList;
@@ -14,7 +15,11 @@ public class ModuleParser {
     private static final Logger logger = Logger.getLogger(ModuleParser.class.getName());
     private final JsonExtractor extractor = new JsonExtractor();
 
-    private final int MAX_MC  = 20;
+    private final String CODE = "moduleCode";
+    private final String NAME = "title";
+    private final String MC = "moduleCredit";
+    private final String PREREQ = "prereqTree";
+    private final int MAX_MC = 20;
 
     /**
      * Parses the JSON representation of a module into a Module object.
@@ -27,10 +32,10 @@ public class ModuleParser {
             return null;
         }
 
-        String code = extractor.getArg(json, "moduleCode");
-        String name = extractor.getArg(json, "title");
-        String mc = extractor.getArg(json, "moduleCredit");
-        String prereq = extractor.getArg(json, "prereqTree");
+        String code = extractor.getArg(json, CODE);
+        String name = extractor.getArg(json, NAME);
+        String mc = extractor.getArg(json, MC);
+        String prereq = extractor.getArg(json, PREREQ);
 
         if (!isValidRawData(code, name, mc, prereq)) {
             logger.log(Level.WARNING, () -> String.format("Module retrieved contains null %s, %s, %s, %s", code, name, mc, prereq));
@@ -38,14 +43,15 @@ public class ModuleParser {
         }
 
         int parsedMc = parseModuleCredit(mc);
-        List<String> parsedPrereq = parsePrereq(prereq);
+        List<List<String>> parsedPrereq = parsePrereq(prereq);
 
         if (!isValidParsedData(parsedMc, parsedPrereq)) {
             logParsingErrors(parsedMc, parsedPrereq, mc, prereq);
             return null;
         }
 
-        return new Module(code, name, parsedMc, "core", parsedPrereq);
+        Prerequisites parsedPrereqObj = new Prerequisites(parsedPrereq);
+        return new Module(code, name, parsedMc, "core", parsedPrereqObj);
     }
 
     /**
@@ -68,7 +74,7 @@ public class ModuleParser {
      * @param parsedPrereq The list of parsed prerequisite module codes.
      * @return True if both parsed values are valid, false otherwise.
      */
-    private boolean isValidParsedData(int parsedMc, List<String> parsedPrereq) {
+    private boolean isValidParsedData(int parsedMc, List<List<String>> parsedPrereq) {
         return parsedMc != -1 && !parsedPrereq.isEmpty();
     }
 
@@ -80,7 +86,7 @@ public class ModuleParser {
      * @param mc The original module credit string that failed to parse.
      * @param prereq The original prerequisite string that failed to parse.
      */
-    private void logParsingErrors(int parsedMc, List<String> parsedPrereq, String mc, String prereq) {
+    private void logParsingErrors(int parsedMc, List<List<String>> parsedPrereq, String mc, String prereq) {
         if (parsedMc == -1) {
             logger.log(Level.WARNING, "Unable to parse module credit: " + mc);
         }
@@ -94,8 +100,7 @@ public class ModuleParser {
      * Validates that the credit is within the acceptable range (1-20).
      *
      * @param rawText The raw module credit string.
-     * @return The parsed module credit as an integer, or -1 if parsing fails
-     *         or the value is out of range.
+     * @return The parsed module credit as an integer, or -1 if parsing fails or the value is out of range.
      */
     private Integer parseModuleCredit(String rawText) {
         try {
@@ -110,83 +115,136 @@ public class ModuleParser {
     }
 
     /**
-     * Parses the prerequisite tree JSON string and extracts module codes.
+     * Recursively parses a prerequisite tree JSON string and extracts all valid module code combinations.
+     * The JSON structure contains nested "or" and "and" logical operators with module code leaves.
      *
-     * @param rawText The prerequisite tree as a JSON string.
-     * @return A list of prerequisite module codes, or an empty list if parsing fails.
+     * @param json The prerequisite tree as a JSON string from NUSMods API.
+     * @return A list of lists, where each inner list represents one valid combination of module codes that satisfies the prerequisite requirement.
      */
-    private List<String> parsePrereq(String rawText) {
-        String arrayContent = extractArrayContent(rawText);
-        if (arrayContent == null) {
-            return new ArrayList<>();
+    public static List<List<String>> parsePrereq(String json) {
+        json = json.trim();
+        // Parse JSON object (either "or" or "and")
+        if (json.startsWith("{")) {
+            int fieldNameStart = json.indexOf('\"') + 1;
+            int fieldNameEnd = json.indexOf('\"', fieldNameStart);
+            String logicOperator = json.substring(fieldNameStart, fieldNameEnd);
+            String childArrayText = extractArrayValue(json);
+
+            List<List<String>> parsedCombinations = new ArrayList<>();
+            if (logicOperator.equals("or")) {
+                // OR: collect all child combinations as separate options
+                List<String> childBranches = splitTopLevel(childArrayText.substring(1, childArrayText.length() - 1), ',');
+                for (String branch : childBranches) {
+                    List<List<String>> branchCombinations = parsePrereq(branch.trim());
+                    parsedCombinations.addAll(branchCombinations);
+                }
+            } else if (logicOperator.equals("and")) {
+                // AND: compute cartesian product of all child combinations
+                List<String> childBranches = splitTopLevel(childArrayText.substring(1, childArrayText.length() - 1), ',');
+                List<List<List<String>>> childCombinationsGroups = new ArrayList<>();
+                for (String branch : childBranches) {
+                    childCombinationsGroups.add(parsePrereq(branch.trim()));
+                }
+                parsedCombinations = cartesianProduct(childCombinationsGroups);
+            }
+            return parsedCombinations;
         }
-
-        String[] entries = splitArrayEntries(arrayContent);
-        return parseModuleCodes(entries);
-    }
-
-    /**
-     * Extracts the content within square brackets from a JSON array string.
-     *
-     * @param json The JSON string containing an array.
-     * @return The content between the square brackets, or null if no array is found.
-     */
-    private String extractArrayContent(String json) {
-        int arrayStart = json.indexOf('[');
-        int arrayEnd = json.lastIndexOf(']');
-
-        if (arrayStart == -1 || arrayEnd == -1) {
-            return null;
+        // Parse JSON array
+        else if (json.startsWith("[")) {
+            List<String> childBranches = splitTopLevel(json.substring(1, json.length() - 1), ',');
+            List<List<String>> parsedCombinations = new ArrayList<>();
+            for (String branch : childBranches) {
+                parsedCombinations.addAll(parsePrereq(branch.trim()));
+            }
+            return parsedCombinations;
         }
-
-        return json.substring(arrayStart + 1, arrayEnd);
+        // Parse leaf node (module code string like "CS2113:D")
+        else {
+            String moduleCode = json.replaceAll("[\"']", "").split(":")[0];
+            List<String> singleCombo = new ArrayList<>();
+            singleCombo.add(moduleCode);
+            List<List<String>> result = new ArrayList<>();
+            result.add(singleCombo);
+            return result;
+        }
     }
 
     /**
-     * Splits a JSON array content string into individual entries by comma.
+     * Extracts the array value (including brackets) from a JSON object string.
+     * Finds the first '[' and last ']' and returns the substring between them (inclusive).
      *
-     * @param arrayContent The content of the JSON array (without brackets).
-     * @return An array of individual entry strings.
+     * @param jsonObject A JSON object string containing an array value.
+     * @return The array portion of the JSON string, including the brackets.
      */
-    private String[] splitArrayEntries(String arrayContent) {
-        return arrayContent.split(",");
+    private static String extractArrayValue(String jsonObject) {
+        int arrayStart = jsonObject.indexOf('[');
+        int arrayEnd = jsonObject.lastIndexOf(']');
+        return jsonObject.substring(arrayStart, arrayEnd + 1);
     }
 
-
     /**
-     * Parses module codes from an array of JSON entry strings.
+     * Splits a string by a delimiter, but only at the top level (ignoring delimiters inside nested structures).
+     * This method respects quoted strings and nested JSON objects/arrays.
      *
-     * @param entries The array of JSON entry strings.
-     * @return A list of extracted module codes.
+     * @param input     The string to split (typically the content inside a JSON array).
+     * @param delimiter The character to split by (typically ',').
+     * @return A list of substrings split at top-level delimiters only.
      */
-    private List<String> parseModuleCodes(String[] entries) {
-        List<String> moduleCodes = new ArrayList<>();
-
-        for (String entry : entries) {
-            String moduleCode = extractModuleCode(entry);
-            if (moduleCode != null) {
-                moduleCodes.add(moduleCode);
+    private static List<String> splitTopLevel(String input, char delimiter) {
+        List<String> elements = new ArrayList<>();
+        StringBuilder currentElement = new StringBuilder();
+        int nestingDepth = 0;
+        boolean insideQuotes = false;
+        for (int i = 0; i < input.length(); ++i) {
+            char currentChar = input.charAt(i);
+            if (currentChar == '"' || currentChar == '\'') {
+                insideQuotes = !insideQuotes;
+                currentElement.append(currentChar);
+            } else if (!insideQuotes && (currentChar == '[' || currentChar == '{')) {
+                nestingDepth++;
+                currentElement.append(currentChar);
+            } else if (!insideQuotes && (currentChar == ']' || currentChar == '}')) {
+                nestingDepth--;
+                currentElement.append(currentChar);
+            } else if (!insideQuotes && currentChar == delimiter && nestingDepth == 0) {
+                elements.add(currentElement.toString().trim());
+                currentElement.setLength(0);
+            } else {
+                currentElement.append(currentChar);
             }
         }
-
-        return moduleCodes;
+        if (!currentElement.isEmpty()) {
+            elements.add(currentElement.toString().trim());
+        }
+        return elements;
     }
 
     /**
-     * Extracts a module code from a single JSON entry string.
-     * Expects format like "CS2113:D" and extracts the part before the colon.
+     * Computes the cartesian product of multiple lists of module code combinations.
+     * Used to combine results from "and" prerequisite branches.
+     * <p>
+     * Example: Given [[A, B], [C]] and [[X], [Y]], produces:
+     * [[A, X], [A, Y], [B, X], [B, Y], [C, X], [C, Y]]
      *
-     * @param entry A single JSON entry string.
-     * @return The extracted module code, or null if the format is invalid.
+     * @param groupsOfCombinations A list of groups, where each group contains multiple possible module code combinations.
+     * @return A list of all possible combinations formed by taking one element from each group and merging them.
      */
-    private String extractModuleCode(String entry) {
-        int quoteStart = entry.indexOf('"');
-        int colon = entry.indexOf(':');
+    private static List<List<String>> cartesianProduct(List<List<List<String>>> groupsOfCombinations) {
+        List<List<String>> cartesianResult = new ArrayList<>();
+        if (groupsOfCombinations == null || groupsOfCombinations.isEmpty()) return cartesianResult;
+        cartesianResult.add(new ArrayList<>());
 
-        if (quoteStart != -1 && colon != -1) {
-            return entry.substring(quoteStart + 1, colon);
+        for (List<List<String>> combinationGroup : groupsOfCombinations) {
+            List<List<String>> nextResult = new ArrayList<>();
+            for (List<String> partialCombo : cartesianResult) {
+                for (List<String> newCombo : combinationGroup) {
+                    List<String> combined = new ArrayList<>(partialCombo);
+                    combined.addAll(newCombo);
+                    nextResult.add(combined);
+                }
+            }
+            cartesianResult = nextResult;
         }
-
-        return null;
+        return cartesianResult;
     }
 }
