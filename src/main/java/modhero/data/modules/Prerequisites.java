@@ -2,6 +2,7 @@ package modhero.data.modules;
 
 import modhero.storage.Serialiser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,6 +11,10 @@ public class Prerequisites {
     public static final Logger logger = Logger.getLogger(Prerequisites.class.getName());
 
     private List<List<String>> prereq;
+
+    public Prerequisites() {
+        this.prereq = new ArrayList<>();
+    }
 
     public Prerequisites(List<List<String>> prereq) {
         this.prereq = prereq;
