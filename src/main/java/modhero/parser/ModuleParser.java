@@ -15,10 +15,10 @@ public class ModuleParser {
     private static final Logger logger = Logger.getLogger(ModuleParser.class.getName());
     private final JsonExtractor extractor = new JsonExtractor();
 
-    private final String CODE = "moduleCode";
-    private final String NAME = "title";
-    private final String MC = "moduleCredit";
-    private final String PREREQ = "prereqTree";
+    public final String CODE = "moduleCode";
+    public final String NAME = "title";
+    public final String MC = "moduleCredit";
+    public final String PREREQ = "prereqTree";
     private final int MAX_MC = 20;
 
     /**
@@ -37,20 +37,23 @@ public class ModuleParser {
         String mc = extractor.getArg(json, MC);
         String prereq = extractor.getArg(json, PREREQ);
 
-        if (!isValidRawData(code, name, mc, prereq)) {
+        if (!isValidRawData(code, name, mc)) {
             logger.log(Level.WARNING, () -> String.format("Module retrieved contains null %s, %s, %s, %s", code, name, mc, prereq));
             return null;
         }
 
         int parsedMc = parseModuleCredit(mc);
-        List<List<String>> parsedPrereq = parsePrereq(prereq);
-
-        if (!isValidParsedData(parsedMc, parsedPrereq)) {
-            logParsingErrors(parsedMc, parsedPrereq, mc, prereq);
+        if (parsedMc == -1) {
+            logger.log(Level.WARNING, "Unable to parse module credit: " + mc);
             return null;
         }
 
-        Prerequisites parsedPrereqObj = new Prerequisites(parsedPrereq);
+        Prerequisites parsedPrereqObj = new Prerequisites();
+        if (prereq != null) {
+            List<List<String>> parsedPrereq = parsePrereq(prereq);
+            parsedPrereqObj = new Prerequisites(parsedPrereq);
+        }
+
         return new Module(code, name, parsedMc, "core", parsedPrereqObj);
     }
 
@@ -60,39 +63,10 @@ public class ModuleParser {
      * @param code The module code.
      * @param name The module name/title.
      * @param mc The module credit as a string.
-     * @param prereq The prerequisite tree as a JSON string.
      * @return True if all fields are non-null, false otherwise.
      */
-    private boolean isValidRawData(String code, String name, String mc, String prereq) {
-        return code != null && name != null && mc != null && prereq != null;
-    }
-
-    /**
-     * Validates that parsed data is valid (module credit is positive and prerequisites exist).
-     *
-     * @param parsedMc The parsed module credit value.
-     * @param parsedPrereq The list of parsed prerequisite module codes.
-     * @return True if both parsed values are valid, false otherwise.
-     */
-    private boolean isValidParsedData(int parsedMc, List<List<String>> parsedPrereq) {
-        return parsedMc != -1 && !parsedPrereq.isEmpty();
-    }
-
-    /**
-     * Logs warnings when parsing fails for module credit or prerequisites.
-     *
-     * @param parsedMc The parsed module credit value (-1 indicates parsing failure).
-     * @param parsedPrereq The list of parsed prerequisite module codes (empty indicates failure).
-     * @param mc The original module credit string that failed to parse.
-     * @param prereq The original prerequisite string that failed to parse.
-     */
-    private void logParsingErrors(int parsedMc, List<List<String>> parsedPrereq, String mc, String prereq) {
-        if (parsedMc == -1) {
-            logger.log(Level.WARNING, "Unable to parse module credit: " + mc);
-        }
-        if (parsedPrereq.isEmpty()) {
-            logger.log(Level.WARNING, "Unable to parse prerequisites: " + prereq);
-        }
+    private boolean isValidRawData(String code, String name, String mc) {
+        return code != null && name != null && mc != null;
     }
 
     /**
@@ -105,7 +79,7 @@ public class ModuleParser {
     private Integer parseModuleCredit(String rawText) {
         try {
             int moduleCredit = Integer.parseInt(rawText);
-            if (moduleCredit > 0 && moduleCredit <= MAX_MC) {
+            if (moduleCredit >= 0 && moduleCredit <= MAX_MC) {
                 return moduleCredit;
             }
             return -1;
@@ -146,15 +120,6 @@ public class ModuleParser {
                     childCombinationsGroups.add(parsePrereq(branch.trim()));
                 }
                 parsedCombinations = cartesianProduct(childCombinationsGroups);
-            }
-            return parsedCombinations;
-        }
-        // Parse JSON array
-        else if (json.startsWith("[")) {
-            List<String> childBranches = splitTopLevel(json.substring(1, json.length() - 1), ',');
-            List<List<String>> parsedCombinations = new ArrayList<>();
-            for (String branch : childBranches) {
-                parsedCombinations.addAll(parsePrereq(branch.trim()));
             }
             return parsedCombinations;
         }

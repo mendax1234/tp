@@ -2,6 +2,7 @@ package modhero.data.modules;
 
 import modhero.storage.Serialiser;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,6 +39,21 @@ public class Module {
         this.mc = mc;
         this.type = type;
         this.prerequisites = prerequisites;
+
+        logger.log(Level.FINEST, "Module created: " + name + " (" + code + ")");
+    }
+
+    public Module(String code, String name, int mc, String type, List<String> prerequisites) {
+        assert code != null && !code.isEmpty() : "Module code must not be empty";
+        assert name != null && !name.isEmpty() : "Module name must not be empty";
+        assert type != null && !type.isEmpty() : "Module type must not be empty";
+        assert prerequisites != null : "Prerequisites list must not be null";
+
+        this.code = code;
+        this.name = name;
+        this.mc = mc;
+        this.type = type;
+        this.prerequisites = new Prerequisites(List.of(prerequisites));
 
         logger.log(Level.FINEST, "Module created: " + name + " (" + code + ")");
     }
