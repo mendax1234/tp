@@ -36,7 +36,7 @@ public class NusmodsApiClient {
      * @param acadYear The academic year in format "YYYY-YYYY" (e.g., "2025-2026").
      * @param moduleCode The module code (e.g., "CS2113").
      * @return The raw JSON response as a string.
-     * @throws Exception If the HTTP request fails or encounters network issues.
+     * @throws Exception If the HTTP request fails, encounters network issues, or returns a non-200 status.
      */
     private String fetchModuleData(String acadYear, String moduleCode) throws Exception {
         String url = "https://api.nusmods.com/v2/" + acadYear + "/modules/" + moduleCode + ".json";
@@ -47,6 +47,11 @@ public class NusmodsApiClient {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        int status = response.statusCode();
+        if (status != 200) {
+            throw new Exception("Failed to fetch module data: HTTP " + status);
+        }
 
         return response.body();
     }
