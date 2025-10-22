@@ -34,9 +34,7 @@ public class Ui {
         │ Type 'help' to see what I can do.                            │
         │ Example: major Computer Science specialisation AI            │
         │                                                              │
-        │ Your data is safely auto-saved in ./data/modhero.json        │
-        │                                                              │
-        │ Ready? Let’s start shaping your 4-year roadmap. 🚀           │
+        │ Ready? Let’s start shaping your university journey!          │
         └──────────────────────────────────────────────────────────────┘
         """);
     }
