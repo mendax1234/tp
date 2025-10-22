@@ -20,71 +20,80 @@ public class PlannerTest {
 
     @BeforeEach
     void setUp() {
-        timetable = new Timetable(4, 4); // 4 years × 4 terms
+        timetable = new Timetable();
 
         coreList = new ModuleList();
-        coreList.add(new Module("CS2040", "Data Structures", 4, "core", List.of()));
-        coreList.add(new Module("CS1010", "Programming Methodology", 4, "core", List.of()));
-        coreList.add(new Module("CS1231", "Discrete Structures", 4, "core", List.of()));
-
         electiveList = new ModuleList();
-        electiveList.add(new Module("CS3243", "AI", 4, "elective", List.of()));
+
+        // Level 2 dependency
+        coreList.add(new Module("CS2040", "Data Structures", 4, "core", List.of("CS1231")));
+
+        // Level 0 dependencies (no prereqs)
+        coreList.add(new Module("CS1010", "Programming Methodology", 4, "core", List.of()));
         electiveList.add(new Module("CS2100", "Computer Organisation", 4, "elective", List.of()));
-    }
 
-    @Test
-    void testSortModuleListOrdersByCode() {
-        Planner planner = new Planner(timetable, coreList, electiveList);
-        planner.sortModuleList();
+        // Level 1 dependencies
+        coreList.add(new Module("CS1231", "Discrete Structures", 4, "core", List.of("CS1010")));
+        electiveList.add(new Module("CS3243", "AI", 4, "elective", List.of("CS2100")));
 
-        // Use reflection to check internal module list order (indirectly)
-        // The sorted order should be alphabetically by module code (case-insensitive)
-        List<String> expectedOrder = List.of("CS1010", "CS1231", "CS2040", "CS2100", "CS3243");
-
-        // extract module codes after sorting
-        List<String> actualOrder = coreList.getList().stream()
-                .map(Module::getCode)
-                .sorted(String::compareToIgnoreCase)
-                .toList();
-
-        assertEquals(expectedOrder, actualOrder);
+        // The internal moduleList (insertion order) will be:
+        // [CS2040, CS1010, CS1231, CS2100, CS3243]
     }
 
     @Test
     void testAddToTimetablePlacesModulesCorrectly() {
         Planner planner = new Planner(timetable, coreList, electiveList);
-        planner.planTimeTable(); // sorts + distributes
-
-        // Since there are 5 modules and 4 terms/year × 4 years = 16 slots,
-        // they should be placed one per term starting from Year 0 Term 0.
+        planner.planTimeTable(); // Runs topological sort + adds to timetable
 
         int totalModules = timetable.getAllModules().size();
         assertEquals(5, totalModules, "All modules should be placed in timetable");
 
-        // Check that the first few placements follow the pattern
+        // Level 0 modules
         assertEquals("CS1010", timetable.getModules(0, 0).get(0).getCode());
-        assertEquals("CS1231", timetable.getModules(0, 1).get(0).getCode());
+        assertEquals("CS2100", timetable.getModules(0, 1).get(0).getCode());
+
+        // Level 1 modules
+        assertEquals("CS1231", timetable.getModules(0, 2).get(0).getCode());
+        assertEquals("CS3243", timetable.getModules(0, 3).get(0).getCode());
+
+        // Level 2 module
+        // (i=4) -> year = (4/4) % 4 = 1, term = 4 % 4 = 0
+        assertEquals("CS2040", timetable.getModules(1, 0).get(0).getCode());
     }
 
     @Test
     void testEmptyListsHandledGracefully() {
-        Planner planner = new Planner(new Timetable(4, 4), new ModuleList(), new ModuleList());
-        planner.planTimeTable();
+        // This test was logically OK, but had weak assertions.
+        timetable = new Timetable(); // Use a fresh timetable
+        Planner planner = new Planner(timetable, new ModuleList(), new ModuleList());
 
-        // Timetable should remain empty
-        assertTrue(planner != null);
-        assertTrue(planner != null); // ensure no exceptions
+        // We can assert that it doesn't throw an exception
+        assertDoesNotThrow(() -> {
+            planner.planTimeTable();
+        });
+
+        // FIX 4: Add a more meaningful assertion
+        assertEquals(0, timetable.getAllModules().size(), "Timetable should be empty");
     }
 
     @Test
     void testDoesNotExceedTimetableCapacity() {
-        // create many modules (more than 16)
+        // This test is fine. It checks that the planner doesn't crash
+        // if module count > slot count.
+        // The planner's logic `(i / NUM_TERMS) % NUM_YEARS` will
+        // just wrap around and add modules to a slot that already has one.
+
+        timetable = new Timetable(); // Use a fresh 4x4 timetable
         ModuleList largeCoreList = new ModuleList();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 20; i++) { // 20 modules > 16 slots
             largeCoreList.add(new Module("CS" + (1000 + i), "Dummy", 4, "core", List.of()));
         }
 
-        Planner planner = new Planner(new Timetable(4, 4), largeCoreList, new ModuleList());
-        assertDoesNotThrow(planner::planTimeTable, "Planner should handle more modules than slots without error");
+        Planner planner = new Planner(timetable, largeCoreList, new ModuleList());
+        assertDoesNotThrow(planner::planTimeTable,
+                "Planner should handle more modules than slots without error");
+
+        // Optional: Check that all modules were added (in overlapping slots)
+        assertEquals(20, timetable.getAllModules().size());
     }
 }
