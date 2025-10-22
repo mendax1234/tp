@@ -12,6 +12,9 @@ public class ModuleRetriever {
 
     public Module getModule(String acadYear, String code) {
         String json = client.fetchModuleDataSafely(acadYear, code);
+        if (json == null) {
+            return null;
+        }
         return parser.parseModule(json);
     }
 }
