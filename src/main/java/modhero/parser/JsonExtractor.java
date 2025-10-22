@@ -1,9 +1,13 @@
 package modhero.parser;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Extract values from raw JSON strings.
  */
 public class JsonExtractor {
+    private static final Logger logger = Logger.getLogger(JsonExtractor.class.getName());
 
     /**
      * Extracts the value associated with a given key from a JSON string.
@@ -26,9 +30,10 @@ public class JsonExtractor {
             return extractJsonObject(json, valueStart);
         } else if (firstChar == '\"') {
             return extractJsonString(json, valueStart);
-        } else {
-            return extractRawValue(json, valueStart);
         }
+
+        logger.log(Level.WARNING, "Invalid data structure for key" + dataType);
+        return null;
     }
 
     /**
@@ -94,23 +99,5 @@ public class JsonExtractor {
         int quoteStart = startIdx + 1;
         int quoteEnd = json.indexOf('\"', quoteStart);
         return json.substring(quoteStart, quoteEnd);
-    }
-
-    /**
-     * Extracts a raw value (number, boolean, or null) from a JSON string.
-     *
-     * @param json The JSON string.
-     * @param startIdx The index where the raw value starts.
-     * @return The extracted raw value as a string.
-     */
-    private String extractRawValue(String json, int startIdx) {
-        int endIdx = startIdx;
-        while (endIdx < json.length() &&
-                (Character.isLetterOrDigit(json.charAt(endIdx))
-                        || json.charAt(endIdx) == '.'
-                        || json.charAt(endIdx) == '-')) {
-            endIdx++;
-        }
-        return json.substring(startIdx, endIdx);
     }
 }
