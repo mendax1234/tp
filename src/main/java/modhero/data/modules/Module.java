@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 /**
  * Represents a module at NUS, including its code, name, modular credits,
- * type, and prerequisites (which can include AND/OR combinations).
+ * type, and prerequisites.
  */
 public class Module {
     public static final Logger logger = Logger.getLogger(Module.class.getName());
@@ -17,11 +17,7 @@ public class Module {
     private String name;    // e.g. Software Engineering
     private int mc;         // e.g. modular credits
     private String type;    // e.g. core, elective, etc.
-
-    // Each inner list represents one valid combination of prerequisites (for OR/AND logic)
-    // e.g. [[CS1010], [CS2030, CS2040]] means:
-    // either take CS1010, OR (CS2030 AND CS2040)
-    private List<List<String>> prerequisites;
+    private List<String> prerequisites; // e.g. ["CS1010", "CS1231"]
 
     /**
      * Creates a new Module object.
@@ -30,9 +26,14 @@ public class Module {
      * @param name the module name
      * @param mc the number of modular credits
      * @param type the module type (e.g., core, elective)
-     * @param prerequisites nested prerequisite combinations
+     * @param prerequisites the list of prerequisite module codes
      */
-    public Module(String code, String name, int mc, String type, List<List<String>> prerequisites) {
+    public Module(String code, String name, int mc, String type, List<String> prerequisites) {
+        assert code != null && !code.isEmpty() : "Module code must not be empty";
+        assert name != null && !name.isEmpty() : "Module name must not be empty";
+        assert type != null && !type.isEmpty() : "Module type must not be empty";
+        assert prerequisites != null : "Prerequisites list must not be null";
+
         this.code = code;
         this.name = name;
         this.mc = mc;
@@ -42,57 +43,50 @@ public class Module {
         logger.log(Level.FINEST, "Module created: " + name + " (" + code + ")");
     }
 
+
     /** Getters */
 
+    /** @return the module code */
     public String getCode() {
         return code;
     }
 
+    /** @return the module name */
     public String getName() {
         return name;
     }
 
+    /** @return the number of modular credits */
     public int getMc() {
         return mc;
     }
 
+    /** @return the module type */
     public String getType() {
         return type;
     }
 
-    /**
-     * @return the nested list of prerequisite combinations
-     */
-    public List<List<String>> getPrerequisites() {
+    /** @return the list of prerequisite module codes */
+    public List<String> getPrerequisites() {
         return prerequisites;
     }
 
     /**
      * Returns a formatted string representation of the module for storage purposes.
-     * For simplicity, prerequisites are flattened into a readable string.
+     *
+     * @return the serialized module string
      */
-    public String toFormattedString() {
-        Serialiser sm = new Serialiser();
-        StringBuilder prereqBuilder = new StringBuilder();
+    public String toFormatedString() {
+        logger.log(Level.FINEST, "Serialising module: " + code);
 
-        if (prerequisites != null) {
-            for (List<String> combo : prerequisites) {
-                prereqBuilder.append(String.join(" & ", combo)).append(" | ");
-            }
-        }
+        Serialiser serialiser = new Serialiser();
+        String formattedString = serialiser.serialiseMessage(code)
+                + serialiser.serialiseMessage(name)
+                + serialiser.serialiseMessage(Integer.toString(mc))
+                + serialiser.serialiseMessage(type)
+                + serialiser.serialiseList(prerequisites);
 
-        return sm.serialiseMessage(code) +
-                sm.serialiseMessage(name) +
-                sm.serialiseMessage(Integer.toString(mc)) +
-                sm.serialiseMessage(type) +
-                sm.serialiseMessage(prereqBuilder.toString());
+        logger.log(Level.FINEST, "Successful serialising module: " + code);
+        return formattedString;
     }
-
-    /** Comparator for sorting by module code (case-insensitive). */
-    public static Comparator<Module> ModuleCodeComparator = new Comparator<Module>() {
-        @Override
-        public int compare(Module module1, Module module2) {
-            return module1.code.compareToIgnoreCase(module2.code);
-        }
-    };
 }

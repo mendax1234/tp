@@ -11,47 +11,20 @@ public class HelpCommand extends Command {
 
     public static final String COMMAND_WORD = "help";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Shows all available commands.\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Exits the program.\n"
             + "  Example: " + COMMAND_WORD;
 
     @Override
     public CommandResult execute() {
+        logger.log(Level.INFO, "Executing Help Command");
 
-        String helpMessage = """
-            ┌────────────────────────────────────────────────────────────┐
-            │                        ModHero Help                        │
-            ├────────────┬───────────────────────────────────────────────┤
-            │ Command    │ Description                                   │
-            ├────────────┼───────────────────────────────────────────────┤
-            │ help       │ Show this help message                        │
-            │            │ Format: help                                  │
-            │            │ Example: help                                 │
-            ├────────────┼───────────────────────────────────────────────┤
-            │ major      │ Specify your major                            │
-            │            │ Format: major MAJOR_NAME [specialisation ...] │
-            │            │ Example: major Computer Science ...           │
-            ├────────────┼───────────────────────────────────────────────┤
-            │ elective   │ Add elective modules                          │
-            │            │ Format: elective MODULE_CODE...               │
-            │            │ Example: elective CS2109S CS3230              │
-            ├────────────┼───────────────────────────────────────────────┤
-            │ delete     │ Remove elective modules                       │
-            │            │ Format: delete MODULE_CODE...                 │
-            │            │ Example: delete CS2109S                       │
-            ├────────────┼───────────────────────────────────────────────┤
-            │ schedule   │ Generate a recommended Year 1 & 2 plan        │
-            │            │ Format: schedule                              │
-            │            │ Example: schedule                             │
-            ├────────────┼───────────────────────────────────────────────┤
-            │ clear      │ Clear all modules in the plan                 │
-            │            │ Format: clear                                 │
-            │            │ Example: clear                                │
-            ├────────────┼───────────────────────────────────────────────┤
-            │ exit       │ Exit the program                              │
-            │            │ Format: exit                                  │
-            │            │ Example: exit                                 │
-            └────────────┴───────────────────────────────────────────────┘
-            """;
+        String helpMessage = MajorCommand.MESSAGE_USAGE
+                + '\n' + ElectiveCommand.MESSAGE_USAGE
+                + '\n' + DeleteCommand.MESSAGE_USAGE
+                + '\n' + ScheduleCommand.MESSAGE_USAGE
+                + '\n' + ClearCommand.MESSAGE_USAGE
+                + '\n' + HelpCommand.MESSAGE_USAGE
+                + '\n' + ExitCommand.MESSAGE_USAGE;
 
         return new CommandResult(helpMessage);
     }

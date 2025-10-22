@@ -21,9 +21,8 @@ public class Planner {
 
     private final Timetable timetable;
     private final List<Module> moduleList;
-
-    final int years = 4;
-    final int terms = 2;
+    private List<Module> sortedModuleList;
+    private PrereqGraph prereqGraph;
 
     public Planner(Timetable timetable, ModuleList coreList, ModuleList electiveList) {
         assert timetable != null : "Timetable must not be null";
