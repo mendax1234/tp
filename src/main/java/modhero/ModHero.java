@@ -68,7 +68,7 @@ public class ModHero {
     private void start() {
         logger.log(Level.INFO, "Start setting up data required");
         this.ui = new Ui();
-        this.timetable = new Timetable();
+        this.timetable = new Timetable(4, 2);
         this.storage = new Storage("data/data.txt");
         this.majorStorage = new Storage("data/majorData.txt");
         this.allModulesData = new HashMap<>();

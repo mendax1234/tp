@@ -57,9 +57,8 @@ public class Serialiser {
      * @param serialisedList list of serialised strings
      * @return the deserialised nested list
      */
-    public List<List<String>> deserialiseList(List<String> serialisedList) throws CorruptedDataFileException {
-        assert serialisedList != null && !serialisedList.isEmpty() : "deserialiseList list must not be null or empty";
-        logger.log(Level.FINEST, "Deserialising List");
+    public List<List<String>> deserialiseList(List<String> serialisedList) {
+        if (serialisedList == null) {return new ArrayList<>();}
 
         List<List<String>> deserialisedList = new ArrayList<>();
         for (String serialisedMessage : serialisedList) {

@@ -36,11 +36,8 @@ public class Storage {
         this.filePath = filePath;
     }
 
-    /**
-     * Ensures that the directory for the file path exists.
-     * Creates directories if not present.
-     */
-    private void ensureFileDirectoryExist() {
+    /** Ensures that the directory for the file path exists. */
+    public void ensureFileDirectoryExist() {
         new File(filePath).getParentFile().mkdirs();
 
         logger.log(Level.FINEST, "Ensured directory existence");
@@ -60,11 +57,7 @@ public class Storage {
         logger.log(Level.FINEST, "Ensured file existence");
     }
 
-    /**
-     * Loads the file contents into a list of strings, each line a list element.
-     *
-     * @return list of lines from file, or empty list if file not found
-     */
+    /** Loads the file contents into a list of strings, each line a list element. */
     public List<String> load() {
         logger.log(Level.FINEST, "Loading file: " + filePath);
 
@@ -78,12 +71,7 @@ public class Storage {
         }
     }
 
-    /**
-     * Reads all lines from the file at filePath.
-     *
-     * @return list of strings read line-by-line from the file
-     * @throws FileNotFoundException when the file does not exist
-     */
+    /** Reads all lines from the file at filePath. */
     private List<String> readFromFile() throws FileNotFoundException {
         File file = new File(filePath);
         Scanner s = new Scanner(file);
@@ -96,11 +84,7 @@ public class Storage {
         return rawTaskList;
     }
 
-    /**
-     * Saves the given text string to the file, overwriting any existing content.
-     *
-     * @param textToAdd the text content to save
-     */
+    /** Saves the given text string to the file, overwriting any existing content. */
     public void save(String textToAdd) {
         assert textToAdd != null : "save textToAdd must not be null";
         logger.log(Level.FINEST, "Saving file: " + filePath);
@@ -113,12 +97,7 @@ public class Storage {
         }
     }
 
-    /**
-     * Writes the provided text content to the file at filePath.
-     *
-     * @param textToAdd text to write to the file
-     * @throws IOException if an I/O error occurs during writing
-     */
+    /** Writes the provided text content to the file at filePath. */
     private void writeToFile(String textToAdd) throws IOException {
         assert textToAdd != null : "writeToFile textToAdd must not be null";
 
@@ -130,8 +109,8 @@ public class Storage {
     }
 
     /**
-     * Loads all modules from a data file, assuming that the file at filePath contains list of all NUS modules.
-     *
+     * Loads all modules from a data file, assuming that the file at filePath
+     * contains a serialized list of all NUS modules.
      */
     public void loadAllModulesData(Map<String, Module> allModulesData) throws CorruptedDataFileException {
         assert allModulesData != null : "loadAllModulesData allModulesData must not be null";
@@ -139,66 +118,41 @@ public class Storage {
 
         Serialiser serialiser = new Serialiser();
         List<String> rawModulesList = load();
+
+        if (rawModulesList == null) {
+            System.out.println("⚠️ No module data file found at " + filePath);
+            return;
+        }
+
         List<List<String>> allModulesList = serialiser.deserialiseList(rawModulesList);
+
         for (List<String> moduleArgs : allModulesList) {
             if (moduleArgs.size() != 5) {
                 logger.log(Level.WARNING, "Incorrect number of arguments for module: " + moduleArgs.size());
                 break;
             }
             try {
-                Module module = new Module(moduleArgs.get(0), moduleArgs.get(1), Integer.parseInt(moduleArgs.get(2)),
-                        moduleArgs.get(3), serialiser.deserialiseMessage(moduleArgs.get(4)));
+                // Convert old-style flat prerequisites to new nested structure
+                List<String> prereqFlat = serialiser.deserialiseMessage(moduleArgs.get(4));
+                List<List<String>> prereqNested = new ArrayList<>();
+                if (prereqFlat != null && !prereqFlat.isEmpty()) {
+                    prereqNested.add(prereqFlat); // Wrap old data in a single OR group
+                }
+
+                Module module = new Module(
+                        moduleArgs.get(0),
+                        moduleArgs.get(1),
+                        Integer.parseInt(moduleArgs.get(2)),
+                        moduleArgs.get(3),
+                        prereqNested
+                );
+
                 allModulesData.put(module.getCode(), module);
-                allModulesData.put(module.getName(), module);
-                logger.log(Level.FINEST, "Added module into database: " + module.getCode());
+
             } catch (NumberFormatException e) {
-                logger.log(Level.WARNING, "Unable to parse module credit: " + moduleArgs.get(2));
-            }
-        }
-    }
-
-    /**
-     * Loads all modules from a data file, assuming that the file at filePath contains list of all NUS modules.
-     *
-     */
-    public void loadAllMajorsData(Map<String, Module> allModulesData, Map<String, Major> allMajorsData)
-            throws CorruptedDataFileException {
-        assert allModulesData != null : "loadAllMajorsData allModulesData must not be null";
-        assert allMajorsData != null : "loadAllMajorsData allMajorsData must not be null";
-        logger.log(Level.FINEST, "Loading all major data");
-
-
-        Serialiser serialiser = new Serialiser();
-        List<String> rawMajorsList = load();
-        List<List<String>> allMajorsList = serialiser.deserialiseList(rawMajorsList);
-        for (List<String> majorArgs : allMajorsList) {
-            if (majorArgs.size() != 3) {
-                logger.log(Level.WARNING, "Incorrect number of arguments for major: " + majorArgs.size());
-                break;
-            }
-            Major major = new Major(majorArgs.get(0), majorArgs.get(1),
-                    createModuleList(allModulesData, serialiser.deserialiseMessage(majorArgs.get(2))));
-            allMajorsData.put(major.getAbbrName(), major);
-            allMajorsData.put(major.getName(), major);
-            logger.log(Level.FINEST, "Added major into database: " + major.getAbbrName());
-        }
-    }
-
-    /**
-     * Return ModuleList for major object.
-     *
-     * @param allModulesData hashmap to get modules object from
-     * @param moduleCodes modules code in a list of string
-     * @return ModuleList
-     */
-    private ModuleList createModuleList(Map<String, Module> allModulesData, List<String> moduleCodes) {
-        ModuleList moduleList = new ModuleList();
-        for (String code : moduleCodes) {
-            Module module = allModulesData.get(code);
-            if (module != null) {
-                moduleList.add(module);
-            } else {
-                logger.log(Level.WARNING, "Missing module for major: " + code);
+                System.out.println("Invalid MC value for module: " + moduleArgs);
+            } catch (Exception e) {
+                System.out.println("Error parsing module: " + e.getMessage());
             }
         }
         return moduleList;
