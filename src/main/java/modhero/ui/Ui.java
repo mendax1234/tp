@@ -24,7 +24,7 @@ public class Ui {
     public void showWelcome() {
         System.out.println("""
                 ┌───────────────────────────────────────────────────────────────────────────────┐
-                │                                 Welcome to ModHero                            │
+                │                               Welcome to ModHero                              │
                 ├───────────────────────────────────────────────────────────────────────────────┤
                 │ Hello there!                                                                  │
                 │                                                                               │
