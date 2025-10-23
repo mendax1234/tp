@@ -24,7 +24,7 @@ public class PrereqGraph {
 
         // For each module, add edges from each prerequisite → this module
         for (Module m : modules) {
-            graph.putIfAbsent(m.getCode(), new ArrayList<>(m.getPrerequisites()));
+//            graph.putIfAbsent(m.getCode(), new ArrayList<>(m.getPrerequisites()));
         }
            /* for (String prereq : m.getPrerequisites()) {
                 graph.computeIfAbsent(prereq, k -> new ArrayList<>()).add(m.getCode());

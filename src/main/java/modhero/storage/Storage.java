@@ -1,5 +1,6 @@
 package modhero.storage;
 
+import modhero.data.modules.Prerequisites;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
@@ -146,8 +147,14 @@ public class Storage {
                 break;
             }
             try {
+                List<String> deserialsedPrerequisites = serialiser.deserialiseMessage(moduleArgs.get(4));
+                List<List<String>> deserialsedPrerequisitesList = serialiser.deserialiseList(deserialsedPrerequisites);
+                if (!deserialsedPrerequisitesList.isEmpty()) {
+                    logger.log(Level.WARNING, "Unable to parse prerequisites: " + moduleArgs.get(4));
+                    break;
+                }
                 Module module = new Module(moduleArgs.get(0), moduleArgs.get(1), Integer.parseInt(moduleArgs.get(2)),
-                        moduleArgs.get(3), serialiser.deserialiseMessage(moduleArgs.get(4)));
+                        moduleArgs.get(3), new Prerequisites(deserialsedPrerequisitesList));
                 allModulesData.put(module.getCode(), module);
                 allModulesData.put(module.getName(), module);
                 logger.log(Level.FINEST, "Added module into database: " + module.getCode());

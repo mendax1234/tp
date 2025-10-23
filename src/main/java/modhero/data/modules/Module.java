@@ -17,7 +17,7 @@ public class Module {
     private String name;    // e.g. Software Engineering
     private int mc;         // e.g. modular credits
     private String type;    // e.g. core, elective, etc.
-    private List<String> prerequisites; // e.g. ["CS1010", "CS1231"]
+    private Prerequisites prerequisites; // e.g. ["CS1010", "CS1231"]
 
     /**
      * Creates a new Module object.
@@ -26,9 +26,9 @@ public class Module {
      * @param name the module name
      * @param mc the number of modular credits
      * @param type the module type (e.g., core, elective)
-     * @param prerequisites the list of prerequisite module codes
+     * @param prerequisites the object of prerequisite module codes
      */
-    public Module(String code, String name, int mc, String type, List<String> prerequisites) {
+    public Module(String code, String name, int mc, String type, Prerequisites prerequisites) {
         assert code != null && !code.isEmpty() : "Module code must not be empty";
         assert name != null && !name.isEmpty() : "Module name must not be empty";
         assert type != null && !type.isEmpty() : "Module type must not be empty";
@@ -39,6 +39,21 @@ public class Module {
         this.mc = mc;
         this.type = type;
         this.prerequisites = prerequisites;
+
+        logger.log(Level.FINEST, "Module created: " + name + " (" + code + ")");
+    }
+
+    public Module(String code, String name, int mc, String type, List<String> prerequisites) {
+        assert code != null && !code.isEmpty() : "Module code must not be empty";
+        assert name != null && !name.isEmpty() : "Module name must not be empty";
+        assert type != null && !type.isEmpty() : "Module type must not be empty";
+        assert prerequisites != null : "Prerequisites list must not be null";
+
+        this.code = code;
+        this.name = name;
+        this.mc = mc;
+        this.type = type;
+        this.prerequisites = new Prerequisites(List.of(prerequisites));
 
         logger.log(Level.FINEST, "Module created: " + name + " (" + code + ")");
     }
@@ -67,7 +82,7 @@ public class Module {
     }
 
     /** @return the list of prerequisite module codes */
-    public List<String> getPrerequisites() {
+    public Prerequisites getPrerequisites() {
         return prerequisites;
     }
 
@@ -84,7 +99,7 @@ public class Module {
                 + serialiser.serialiseMessage(name)
                 + serialiser.serialiseMessage(Integer.toString(mc))
                 + serialiser.serialiseMessage(type)
-                + serialiser.serialiseList(prerequisites);
+                + prerequisites.toFormatedString();
 
         logger.log(Level.FINEST, "Successful serialising module: " + code);
         return formattedString;
