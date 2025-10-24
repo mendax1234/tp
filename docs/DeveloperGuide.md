@@ -36,3 +36,14 @@
 ## Instructions for manual testing
 
 {Give instructions on how to do a manual product testing e.g., how to load sample data to be used for testing}
+
+
+## Storage Overview
+
+`Storage` is part of the `modhero.storage` package and is responsible for:
+- Maintaining file structure integrity.
+- Reading raw data lines from disk.
+- Writing serialized objects back to files.
+- Converting stored text data into in-memory objects (`Module`, `Major`, `Prerequisites`, `ModuleList`) through collaboration with the `Serialiser` class.
+
+Interactions mainly involve the `Serialiser` and the `modhero.data` model classes.
