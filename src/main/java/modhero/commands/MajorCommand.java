@@ -9,7 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Defines your primary degree major, which ModHero uses to load graduation requirements.
+ * Defines the user's primary degree major.
+ * Loads the relevant core modules and recommended study plan into the timetable.
  */
 public class MajorCommand extends Command {
     private static final Logger logger = Logger.getLogger(MajorCommand.class.getName());
@@ -26,20 +27,24 @@ public class MajorCommand extends Command {
     private final String specialisation;
     private final String minor;
 
+    /**
+     * Creates a MajorCommand to set the user's major.
+     *
+     * @param major          The user's major (e.g., "Computer Science" or "Computer Engineering")
+     * @param specialisation The chosen specialisation (optional)
+     * @param minor          The chosen minor (optional)
+     */
     public MajorCommand(String major, String specialisation, String minor) {
         assert major != null && !major.isEmpty() : "Major name must not be empty";
-
-        this.major = major;
+        this.major = major.trim();
         this.specialisation = specialisation;
         this.minor = minor;
 
-        // Fixed logger usage
         logger.log(Level.FINEST, () -> String.format(
-                "Created MajorCommand with major=%s, specialisation=%s, minor=%s",
-                major, specialisation, minor));
+                "Created MajorCommand: major=%s, specialisation=%s, minor=%s",
+                this.major, this.specialisation, this.minor));
     }
 
-    // Removed duplicate @Override
     @Override
     public CommandResult execute() {
         logger.log(Level.INFO, "Executing Major Command");
@@ -48,13 +53,18 @@ public class MajorCommand extends Command {
         ModuleList coreModules = majorData.getCoreModules(major);
 
         if (coreModules == null) {
-            return new CommandResult(
-                    "Sorry, " + major + " is not supported. Try 'Computer Science' or 'Computer Engineering'.");
+            return new CommandResult("Sorry, " + major
+                    + " is not supported. Try 'Computer Science' or 'Computer Engineering'.");
         }
 
-        // Load core modules into data structures
+        // Reset current timetable and core list
         coreList.setList(coreModules.getList());
         data.clearTimetable();
+
+        // Register all core modules in the global module map
+        for (Module m : coreModules.getList()) {
+            allModulesData.putIfAbsent(m.getCode(), m);
+        }
 
         // Populate timetable based on schedule map
         Map<String, int[]> scheduleMap = majorData.getSchedule(major);
@@ -63,7 +73,7 @@ public class MajorCommand extends Command {
             data.addModule(yAndS[0] - 1, yAndS[1] - 1, m);
         }
 
-        return new CommandResult(
-                "Major set to " + major + ". Type 'schedule' to view your 4-year plan!");
+        logger.log(Level.INFO, () -> "Major successfully set to " + major);
+        return new CommandResult("Major set to " + major + ". Type 'schedule' to view your 4-year plan!");
     }
 }
