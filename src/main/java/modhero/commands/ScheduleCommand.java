@@ -24,6 +24,6 @@ public class ScheduleCommand extends Command {
         Planner planner = new Planner(data, coreList, electiveList);
         planner.planTimeTable();
         data.printTimetable();
-        return new CommandResult(MESSAGE_USAGE);
+        return new CommandResult("Here's your recommended 4-year schedule above!");
     }
 }
