@@ -10,14 +10,18 @@ import java.util.logging.Logger;
 import static modhero.common.Constants.FORMATED_STRING_END_DELIMITER;
 import static modhero.common.Constants.FORMATED_STRING_START_DELIMITER;
 
+/**
+ * Provides utility methods for deserialising strings back into their original string lists.
+ */
 public class Deserialiser {
     private static final Logger logger = Logger.getLogger(Deserialiser.class.getName());
 
     /**
-     * Deserialises stored serialised array of string into nested lists.
+     * Deserialises a list of serialised strings into a nested list structure.
      *
-     * @param serialisedList list of serialised strings
-     * @return the deserialised nested list
+     * @param serialisedList the list of serialised strings to deserialise
+     * @return a nested list where each inner list contains the deserialised messages from one serialised string
+     * @throws CorruptedDataFileException if any serialised string is corrupted or cannot be parsed
      */
     public static List<List<String>> deserialiseList(List<String> serialisedList) throws CorruptedDataFileException {
         assert serialisedList != null && !serialisedList.isEmpty() : "deserialiseList list must not be null or empty";
@@ -38,10 +42,10 @@ public class Deserialiser {
     }
 
     /**
-     * Deserialises serialised string in array.
+     * Deserialises a single serialised string into a list of its component messages.
      *
-     * @param serialisedMessage array of string from store data
-     * @return the deserialised array
+     * @param serialisedMessage the serialised string to deserialise
+     * @return a list of deserialised messages
      */
     public static List<String> deserialiseMessage(String serialisedMessage) {
         assert serialisedMessage != null && !serialisedMessage.isEmpty() : "deserialiseMessage serialisedMessage must not be null or empty";
@@ -58,7 +62,7 @@ public class Deserialiser {
                 return null;
             }
 
-            int argumentLength = parseArgumentLength(serialisedMessage, currentIndex, delimiterIndex);
+            int argumentLength = parseComponentLength(serialisedMessage, currentIndex, delimiterIndex);
             boolean isArgumentLengthCorrupted = argumentLength == -1;
             if (isArgumentLengthCorrupted) {
                 logger.log(Level.WARNING, "Invalid argument length encountered, " + serialisedMessage);
@@ -82,21 +86,21 @@ public class Deserialiser {
     }
 
     /**
-     * Parses the length of the next argument from its string representation.
+     * Parses the length of the next component from its string representation.
      * Extracts the substring between 'start' and 'end', and converts it to an integer.
      *
      * @param serialisedTask the serialized string
-     * @param start the starting index of the substring
-     * @param end the ending index (exclusive) of the substring
+     * @param startIndex the starting index of the substring
+     * @param endIndex the ending index (exclusive) of the substring
      * @return the parsed integer length, or -1 if parsing fails
      */
-    private static int parseArgumentLength(String serialisedTask, int start, int end) {
+    private static int parseComponentLength(String serialisedTask, int startIndex, int endIndex) {
         assert serialisedTask != null && !serialisedTask.isEmpty() : "String serialisedTask must not be null or empty";
-        assert start >= 0 && start < serialisedTask.length() : "Integer start must be within the string length";
-        assert end >= 0 && end < serialisedTask.length() : "Integer end must be within the string length";
+        assert startIndex >= 0 && startIndex < serialisedTask.length() : "Integer start index must be within the string length";
+        assert endIndex >= 0 && endIndex < serialisedTask.length() : "Integer end index must be within the string length";
 
         try {
-            return Integer.parseInt(serialisedTask.substring(start, end));
+            return Integer.parseInt(serialisedTask.substring(startIndex, endIndex));
         } catch (NumberFormatException e) {
             return -1;
         }

@@ -1,26 +1,25 @@
 package modhero.common.util;
 
-import modhero.common.exceptions.CorruptedDataFileException;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static modhero.common.Constants.FORMATED_STRING_START_DELIMITER;
 import static modhero.common.Constants.FORMATED_STRING_END_DELIMITER;
+import static modhero.common.Constants.FORMATED_STRING_START_DELIMITER;
 
 /**
- * Serialises a string message into a format suitable for storage.
+ * Provides utility methods for serialising strings and string lists into a
+ * length-prefixed format suitable for persistent storage.
+ * Serialisation Format: [length of content][START_DELIMITER][content][END_DELIMITER]
  */
 public class Serialiser {
     private static final Logger logger = Logger.getLogger(Serialiser.class.getName());
 
     /**
-     * Serialise list of string to be suitable format for storing into text file.
+     * Serialises a list of strings into a format suitable for file storage.
      *
-     * @param messageList string of data to be stored
-     * @return the serialised string
+     * @param messageList the list of strings to serialise
+     * @return the serialised representation of the entire list
      */
     public static String serialiseList(List<String> messageList) {
         assert messageList != null : "serialiseList message list must not be null";
@@ -37,9 +36,9 @@ public class Serialiser {
     }
 
     /**
-     * Serialise string to be suitable format for storing into text file.
+     * Serialises a single string into a format suitable for file storage.
      *
-     * @param message string of data to be stored
+     * @param message the string to serialise
      * @return the serialised string
      */
     public static String serialiseMessage(String message) {
