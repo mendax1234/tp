@@ -1,7 +1,7 @@
 package modhero.storage;
 
-import modhero.major.Major;
-import modhero.modules.Module;
+import modhero.data.major.Major;
+import modhero.data.modules.Module;
 import modhero.common.exceptions.CorruptedDataFileException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package modhero.nusmods;
+package modhero.data.nusmods;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;

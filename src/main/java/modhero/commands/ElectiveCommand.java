@@ -1,6 +1,6 @@
 package modhero.commands;
 
-import modhero.modules.Module;
+import modhero.data.modules.Module;
 
 import java.util.List;
 import java.util.logging.Level;

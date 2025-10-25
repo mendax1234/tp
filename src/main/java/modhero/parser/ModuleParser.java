@@ -1,8 +1,8 @@
 package modhero.parser;
 
 import modhero.common.util.JsonUtil;
-import modhero.modules.Prerequisites;
-import modhero.modules.Module;
+import modhero.data.modules.Prerequisites;
+import modhero.data.modules.Module;
 
 import java.util.ArrayList;
 import java.util.List;

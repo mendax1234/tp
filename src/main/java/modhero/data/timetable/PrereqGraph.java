@@ -1,6 +1,6 @@
-package modhero.timetable;
+package modhero.data.timetable;
 
-import modhero.modules.Module;
+import modhero.data.modules.Module;
 import java.util.*;
 
 public class PrereqGraph {

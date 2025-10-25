@@ -1,7 +1,7 @@
-package modhero.nusmods;
+package modhero.data.nusmods;
 
 import modhero.parser.ModuleParser;
-import modhero.modules.Module;
+import modhero.data.modules.Module;
 
 /**
  * Retrieve NUS module information parse into module.

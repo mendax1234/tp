@@ -1,9 +1,9 @@
 package modhero.storage;
 
-import modhero.modules.Prerequisites;
-import modhero.major.Major;
-import modhero.modules.Module;
-import modhero.modules.ModuleList;
+import modhero.data.modules.Prerequisites;
+import modhero.data.major.Major;
+import modhero.data.modules.Module;
+import modhero.data.modules.ModuleList;
 import modhero.common.exceptions.CorruptedDataFileException;
 
 import java.io.File;

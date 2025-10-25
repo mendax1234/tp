@@ -1,6 +1,6 @@
 package modhero.commands;
 
-import modhero.modules.Module;
+import modhero.data.modules.Module;
 
 /**
  * Represents the result of executing a command.

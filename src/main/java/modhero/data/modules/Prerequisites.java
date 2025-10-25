@@ -1,4 +1,4 @@
-package modhero.modules;
+package modhero.data.modules;
 
 import modhero.storage.Serialiser;
 

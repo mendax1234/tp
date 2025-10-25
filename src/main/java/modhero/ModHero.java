@@ -1,26 +1,16 @@
 package modhero;
 
-import modhero.commands.ClearCommand;
+import static modhero.common.Constants.MAJOR_FILE_PATH;
+import static modhero.common.Constants.MODULES_FILE_PATH;
+
 import modhero.commands.Command;
 import modhero.commands.CommandResult;
-import modhero.commands.DeleteCommand;
-import modhero.commands.ElectiveCommand;
 import modhero.commands.ExitCommand;
-import modhero.commands.HelpCommand;
-import modhero.commands.MajorCommand;
-import modhero.commands.ScheduleCommand;
-import modhero.timetable.Planner;
-import modhero.timetable.Timetable;
-import modhero.major.Major;
-import modhero.modules.Module;
-import modhero.modules.ModuleList;
-import modhero.common.exceptions.CorruptedDataFileException;
+import modhero.common.util.LoggerConfig;
+import modhero.data.DataManager;
 import modhero.parser.Parser;
-import modhero.storage.Storage;
 import modhero.ui.Ui;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,15 +21,9 @@ import java.util.logging.Logger;
 public class ModHero {
     private static final Logger logger = Logger.getLogger(ModHero.class.getName());
 
-    //TODO: Handle all these members
     private Ui ui;
-    private Timetable timetable;
-    private ModuleList electiveList;
-    private ModuleList coreList;
-    private Storage storage;
-    private Storage majorStorage;
-    private Map<String, Module> allModulesData;
-    private Map<String, Major> allMajorsData;
+    private DataManager dataManager;
+    private Parser parser;
 
     /**
      * Launches the ModHero application.
@@ -55,7 +39,7 @@ public class ModHero {
      * starting the command loop, and performing cleanup.
      */
     public void run() {
-        setLoggerIntensity();
+        LoggerConfig.configureLoggers(Level.INFO);
         logger.log(Level.INFO, "Starting ModHero");
         start();
         runCommandLoopUntilExitCommand();
@@ -69,17 +53,8 @@ public class ModHero {
     private void start() {
         logger.log(Level.INFO, "Start setting up data required");
         this.ui = new Ui();
-        this.timetable = new Timetable();
-        // TODO: data.txt stores the modules that are in the timetable
-        // It stores the allModulesData now
-        this.storage = new Storage("data/data.txt");
-        // majorData.txt contains the graduation requirements for CS, CEG
-        this.majorStorage = new Storage("data/majorData.txt");
-        this.allModulesData = new HashMap<>();
-        this.allMajorsData = new HashMap<>();
-        this.electiveList = new ModuleList();
-        this.coreList = new ModuleList();
-        initiateStorageHashMap();
+        this.parser = new Parser();
+        this.dataManager = new DataManager(MODULES_FILE_PATH, MAJOR_FILE_PATH);
         logger.log(Level.INFO, "Completed setting up data required");
         ui.showWelcome();
     }
@@ -100,7 +75,7 @@ public class ModHero {
         do {
             String userCommandText = ui.readCommand();
             logger.log(Level.INFO, "Parsing command");
-            command = new Parser().parseCommand(userCommandText);
+            command = parser.parseCommand(userCommandText);
             CommandResult result = executeCommand(command);
             ui.showResultToUser(result);
         } while (!ExitCommand.isExit(command));
@@ -115,42 +90,19 @@ public class ModHero {
     private CommandResult executeCommand(Command command) {
         assert command != null : "Command must not be null";
         try {
-            command.setData(timetable, electiveList, coreList, allModulesData, allMajorsData);
+            command.setData(
+                    dataManager.getTimetable(),
+                    dataManager.getElectiveList(),
+                    dataManager.getCoreList(),
+                    dataManager.getAllModulesData(),
+                    dataManager.getAllMajorsData()
+            );
             CommandResult result = command.execute();
-            logger.log(Level.INFO, () -> "Command execution completed");
+            logger.log(Level.INFO, "Command execution completed");
             return result;
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Command execution failed", e);
             return new CommandResult(e.getMessage());
         }
-    }
-
-    private void initiateStorageHashMap() {
-        try {
-            storage.loadAllModulesData(allModulesData);
-            majorStorage.loadAllMajorsData(allModulesData, allMajorsData);
-        } catch (CorruptedDataFileException e) {
-            logger.log(Level.SEVERE, "Clearing corrupted file", e);
-            storage.save("");
-            majorStorage.save("");
-        }
-    }
-
-    private void setLoggerIntensity() {
-        logger.setLevel(Level.INFO);
-        Parser.logger.setLevel(Level.INFO);
-        Command.logger.setLevel(Level.INFO);
-        MajorCommand.logger.setLevel(Level.INFO);
-        ElectiveCommand.logger.setLevel(Level.INFO);
-        DeleteCommand.logger.setLevel(Level.INFO);
-        ScheduleCommand.logger.setLevel(Level.INFO);
-        ClearCommand.logger.setLevel(Level.INFO);
-        HelpCommand.logger.setLevel(Level.INFO);
-        ExitCommand.logger.setLevel(Level.INFO);
-        Major.logger.setLevel(Level.INFO);
-        Module.logger.setLevel(Level.INFO);
-        ModuleList.logger.setLevel(Level.INFO);
-        Planner.logger.setLevel(Level.INFO);
-        Timetable.logger.setLevel(Level.INFO);
     }
 }

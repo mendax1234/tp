@@ -6,8 +6,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import modhero.modules.Prerequisites;
-
 class PrerequisitesTest {
 
     @Test

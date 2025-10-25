@@ -1,6 +1,6 @@
 package modhero.parser;
 
-import modhero.modules.Module;
+import modhero.data.modules.Module;
 
 import org.junit.jupiter.api.Test;
 

@@ -6,4 +6,7 @@ public class Constants {
 
     public static final int NUM_TERMS = 4;
     public static final int NUM_YEARS = 4;
+
+    public static final String MODULES_FILE_PATH = "data/modules.txt";
+    public static final String MAJOR_FILE_PATH = "data/major.txt";
 }
