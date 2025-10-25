@@ -3,8 +3,10 @@ package modhero.parser;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class JsonExtractorTest {
-    private final JsonExtractor extractor = new JsonExtractor();
+import modhero.common.util.JsonUtil;
+
+class JsonUtilTest {
+    private final JsonUtil extractor = new JsonUtil();
 
     @Test
     void getArgReturnsNullWhenKeyMissing() {

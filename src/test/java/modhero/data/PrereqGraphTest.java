@@ -1,6 +1,8 @@
 package modhero.data;
 
 import modhero.data.modules.Module;
+import modhero.data.timetable.PrereqGraph;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

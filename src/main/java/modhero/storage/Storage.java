@@ -4,7 +4,7 @@ import modhero.data.modules.Prerequisites;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
-import modhero.exception.CorruptedDataFileException;
+import modhero.common.exceptions.CorruptedDataFileException;
 
 import java.io.File;
 import java.io.FileNotFoundException;

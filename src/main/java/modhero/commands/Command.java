@@ -1,6 +1,6 @@
 package modhero.commands;
 
-import modhero.data.Timetable;
+import modhero.data.timetable.Timetable;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;

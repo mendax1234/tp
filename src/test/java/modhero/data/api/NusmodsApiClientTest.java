@@ -1,12 +1,13 @@
 // NusmodsApiClientTest.java
 package modhero.data.api;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class NusmodsApiClientTest {
-    private final NusmodsApiClient client = new NusmodsApiClient();
+import modhero.data.nusmods.NusmodsAPIClient;
+
+class NusmodsAPIClientTest {
+    private final NusmodsAPIClient client = new NusmodsAPIClient();
 
     @Test
     void testFetchModuleDataSafelyValidModule() {

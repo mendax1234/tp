@@ -1,4 +1,4 @@
-package modhero.data;
+package modhero.data.timetable;
 
 import static modhero.common.Constants.NUM_TERMS;
 import static modhero.common.Constants.NUM_YEARS;

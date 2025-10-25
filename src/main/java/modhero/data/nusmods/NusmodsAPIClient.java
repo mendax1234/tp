@@ -1,4 +1,4 @@
-package modhero.data.api;
+package modhero.data.nusmods;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -10,8 +10,8 @@ import java.util.logging.Logger;
 /**
  * Make HTTP GET requests to the NUSMods API
  */
-public class NusmodsApiClient {
-    private static final Logger logger = Logger.getLogger(NusmodsApiClient.class.getName());
+public class NusmodsAPIClient {
+    private static final Logger logger = Logger.getLogger(NusmodsAPIClient.class.getName());
 
     /**
      * Safely fetches module data by handling exceptions.

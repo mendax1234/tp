@@ -1,4 +1,4 @@
-package modhero.data;
+package modhero.data.timetable;
 
 import modhero.data.modules.Module;
 import java.util.*;

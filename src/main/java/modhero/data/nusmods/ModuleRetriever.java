@@ -1,4 +1,4 @@
-package modhero.data.api;
+package modhero.data.nusmods;
 
 import modhero.parser.ModuleParser;
 import modhero.data.modules.Module;
@@ -7,7 +7,7 @@ import modhero.data.modules.Module;
  * Retrieve NUS module information parse into module.
  */
 public class ModuleRetriever {
-    private final NusmodsApiClient client = new NusmodsApiClient();
+    private final NusmodsAPIClient client = new NusmodsAPIClient();
     private final ModuleParser parser = new ModuleParser();
 
     public Module getModule(String acadYear, String code) {
