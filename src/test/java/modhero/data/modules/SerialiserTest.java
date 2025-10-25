@@ -1,9 +1,8 @@
-package modhero.storage;
+package modhero.data.modules;
 
 import modhero.common.exceptions.CorruptedDataFileException; // Must import the exception
 import modhero.common.util.Serialiser;
 import modhero.common.util.Deserialiser;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
