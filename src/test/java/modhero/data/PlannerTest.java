@@ -1,7 +1,10 @@
 package modhero.data;
 
-import modhero.data.modules.Module;
-import modhero.data.modules.ModuleList;
+import modhero.modules.Module;
+import modhero.modules.ModuleList;
+import modhero.timetable.Planner;
+import modhero.timetable.Timetable;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

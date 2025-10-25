@@ -1,6 +1,6 @@
 package modhero.storage;
 
-import modhero.exception.CorruptedDataFileException;
+import modhero.common.exceptions.CorruptedDataFileException;
 
 import java.util.ArrayList;
 import java.util.List;

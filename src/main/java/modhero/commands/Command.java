@@ -1,9 +1,9 @@
 package modhero.commands;
 
-import modhero.data.Timetable;
-import modhero.data.major.Major;
-import modhero.data.modules.Module;
-import modhero.data.modules.ModuleList;
+import modhero.timetable.Timetable;
+import modhero.major.Major;
+import modhero.modules.Module;
+import modhero.modules.ModuleList;
 
 import java.util.Map;
 import java.util.logging.Level;

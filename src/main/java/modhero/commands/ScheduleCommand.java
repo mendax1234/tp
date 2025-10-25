@@ -1,7 +1,6 @@
 package modhero.commands;
 
-import modhero.data.Planner;
-import modhero.data.modules.Module;
+import modhero.timetable.Planner;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

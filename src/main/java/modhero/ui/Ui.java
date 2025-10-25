@@ -3,7 +3,7 @@ package modhero.ui;
 import java.util.Scanner;
 
 import modhero.commands.CommandResult;
-import modhero.data.modules.Module;
+import modhero.modules.Module;
 
 /**
  * Handles all interactions with the user, including displaying messages

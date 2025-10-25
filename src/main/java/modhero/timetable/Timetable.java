@@ -1,9 +1,9 @@
-package modhero.data;
+package modhero.timetable;
 
 import static modhero.common.Constants.NUM_TERMS;
 import static modhero.common.Constants.NUM_YEARS;
 
-import modhero.data.modules.Module;
+import modhero.modules.Module;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,8 @@
 package modhero.parser;
 
-import modhero.data.modules.Prerequisites;
-import modhero.data.modules.Module;
+import modhero.common.util.JsonUtil;
+import modhero.modules.Prerequisites;
+import modhero.modules.Module;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +14,12 @@ import java.util.logging.Logger;
  */
 public class ModuleParser {
     private static final Logger logger = Logger.getLogger(ModuleParser.class.getName());
-    private final JsonExtractor extractor = new JsonExtractor();
 
-    public final String CODE = "moduleCode";
-    public final String NAME = "title";
-    public final String MC = "moduleCredit";
-    public final String PREREQ = "prereqTree";
-    private final int MAX_MC = 20;
+    public static final String CODE = "moduleCode";
+    public static final String NAME = "title";
+    public static final String MC = "moduleCredit";
+    public static final String PREREQ = "prereqTree";
+    private static final int MAX_MC = 20;
 
     /**
      * Parses the JSON representation of a module into a Module object.
@@ -32,13 +32,16 @@ public class ModuleParser {
             return null;
         }
 
-        String code = extractor.getArg(json, CODE);
-        String name = extractor.getArg(json, NAME);
-        String mc = extractor.getArg(json, MC);
-        String prereq = extractor.getArg(json, PREREQ);
+        // Use static methods from JsonUtil
+        String code = JsonUtil.getArg(json, CODE);
+        String name = JsonUtil.getArg(json, NAME);
+        String mc = JsonUtil.getArg(json, MC);
+        String prereq = JsonUtil.getArg(json, PREREQ);
 
         if (!isValidRawData(code, name, mc)) {
-            logger.log(Level.WARNING, () -> String.format("Module retrieved contains null %s, %s, %s, %s", code, name, mc, prereq));
+            logger.log(Level.WARNING, () ->
+                    String.format("Module retrieved contains null %s, %s, %s, %s", code, name, mc, prereq)
+            );
             return null;
         }
 
@@ -109,8 +112,7 @@ public class ModuleParser {
                 // OR: collect all child combinations as separate options
                 List<String> childBranches = splitTopLevel(childArrayText.substring(1, childArrayText.length() - 1), ',');
                 for (String branch : childBranches) {
-                    List<List<String>> branchCombinations = parsePrereq(branch.trim());
-                    parsedCombinations.addAll(branchCombinations);
+                    parsedCombinations.addAll(parsePrereq(branch.trim()));
                 }
             } else if (logicOperator.equals("and")) {
                 // AND: compute cartesian product of all child combinations
@@ -122,9 +124,8 @@ public class ModuleParser {
                 parsedCombinations = cartesianProduct(childCombinationsGroups);
             }
             return parsedCombinations;
-        }
-        // Parse leaf node (module code string like "CS2113:D")
-        else {
+        } else {
+            // Parse leaf node (module code string like "CS2113:D")
             String moduleCode = json.replaceAll("[\"']", "").split(":")[0];
             List<String> singleCombo = new ArrayList<>();
             singleCombo.add(moduleCode);

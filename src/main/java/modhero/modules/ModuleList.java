@@ -1,4 +1,4 @@
-package modhero.data.modules;
+package modhero.modules;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A wrapper class around a {@link List} of {@link Module} objects.
+ * A wrapper class around a {@link List} of {@link modhero.modules.Module} objects.
  * <p>
  * Provides basic operations to add, remove, and search for modules.
  * A Storage reference may optionally be provided to lookup the
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class ModuleList {
     public static final Logger logger = Logger.getLogger(ModuleList.class.getName());
 
-    private List<Module> moduleList;
+    private List<modhero.modules.Module> moduleList;
 
     /**
      * Creates a {@code ModuleList} backed by a new empty list,
@@ -32,7 +32,7 @@ public class ModuleList {
      *
      * @param module the module to add
      */
-    public void add(Module module) {
+    public void add(modhero.modules.Module module) {
         assert module != null : "add module cannot be null";
 
         moduleList.add(module);
@@ -49,7 +49,7 @@ public class ModuleList {
     public void remove(int taskIndex) {
         assert taskIndex >= 0 && taskIndex < moduleList.size() : "remove taskIndex out of bounds";
 
-        Module removedModule = moduleList.remove(taskIndex);
+        modhero.modules.Module removedModule = moduleList.remove(taskIndex);
 
         logger.log(Level.FINEST, "Removed module: " + removedModule);
     }
@@ -59,13 +59,13 @@ public class ModuleList {
      *
      * @return moduleList
      */
-    public List<Module> getList() {
+    public List<modhero.modules.Module> getList() {
         return moduleList;
     }
 
-    public Module getModuleByCode(String code){
+    public modhero.modules.Module getModuleByCode(String code){
         assert code != null : "getModuleByCode code cannot be null";
-        for (Module module : moduleList){
+        for (modhero.modules.Module module : moduleList){
             if (module.getCode().equals(code)){
                 return module;
             }

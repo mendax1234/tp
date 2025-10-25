@@ -1,16 +1,15 @@
-package modhero.data;
+package modhero.timetable;
 
 import static modhero.common.Constants.NUM_TERMS;
 import static modhero.common.Constants.NUM_YEARS;
 
-import modhero.data.modules.Module;
-import modhero.data.modules.ModuleList;
+import modhero.modules.Module;
+import modhero.modules.ModuleList;
 import modhero.parser.Parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**

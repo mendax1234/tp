@@ -9,12 +9,12 @@ import modhero.commands.ExitCommand;
 import modhero.commands.HelpCommand;
 import modhero.commands.MajorCommand;
 import modhero.commands.ScheduleCommand;
-import modhero.data.Planner;
-import modhero.data.Timetable;
-import modhero.data.major.Major;
-import modhero.data.modules.Module;
-import modhero.data.modules.ModuleList;
-import modhero.exception.CorruptedDataFileException;
+import modhero.timetable.Planner;
+import modhero.timetable.Timetable;
+import modhero.major.Major;
+import modhero.modules.Module;
+import modhero.modules.ModuleList;
+import modhero.common.exceptions.CorruptedDataFileException;
 import modhero.parser.Parser;
 import modhero.storage.Storage;
 import modhero.ui.Ui;
@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 public class ModHero {
     private static final Logger logger = Logger.getLogger(ModHero.class.getName());
 
+    //TODO: Handle all these members
     private Ui ui;
     private Timetable timetable;
     private ModuleList electiveList;
@@ -69,13 +70,16 @@ public class ModHero {
         logger.log(Level.INFO, "Start setting up data required");
         this.ui = new Ui();
         this.timetable = new Timetable();
+        // TODO: data.txt stores the modules that are in the timetable
+        // It stores the allModulesData now
         this.storage = new Storage("data/data.txt");
+        // majorData.txt contains the graduation requirements for CS, CEG
         this.majorStorage = new Storage("data/majorData.txt");
         this.allModulesData = new HashMap<>();
         this.allMajorsData = new HashMap<>();
         this.electiveList = new ModuleList();
         this.coreList = new ModuleList();
-        initateStorageHashMap();
+        initiateStorageHashMap();
         logger.log(Level.INFO, "Completed setting up data required");
         ui.showWelcome();
     }
@@ -121,7 +125,7 @@ public class ModHero {
         }
     }
 
-    private void initateStorageHashMap() {
+    private void initiateStorageHashMap() {
         try {
             storage.loadAllModulesData(allModulesData);
             majorStorage.loadAllMajorsData(allModulesData, allMajorsData);

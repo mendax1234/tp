@@ -1,6 +1,6 @@
 package modhero.storage;
 
-import modhero.exception.CorruptedDataFileException; // Must import the exception
+import modhero.common.exceptions.CorruptedDataFileException; // Must import the exception
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

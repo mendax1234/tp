@@ -1,6 +1,6 @@
-package modhero.data.major;
+package modhero.major;
 
-import modhero.data.modules.ModuleList;
+import modhero.modules.ModuleList;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
