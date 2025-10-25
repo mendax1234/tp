@@ -37,14 +37,15 @@ public class Ui {
                 │ • Because good decisions come from seeing the whole picture clearly.          │
                 │                                                                               │
                 │ Let's get you started:                                                        │
-                │  1. Specify your major so ModHero can load core modules.                      │
+                │  1. Specify your major so ModHero can load core modules                       │
+                │     (psst! Please only enter Computer Science or Computer Engineering)        │
                 │     Example: major Computer Engineering                                       │
                 │                                                                               │
-                │  2. Add electives you wish to include.                                        │
-                │     Example: elective CS2109S CS3230                                          │
-                │                                                                               │
-                │  3. Generate a recommended schedule.                                          │
+                │  2. See your recommended schedule!                                            │
                 │     Example: schedule                                                         │
+                │                                                                               │
+                │  3. Add electives you wish to include to the specific Year & Semester         │
+                │     Example: add CS3240 to Y3S2                                               │
                 │                                                                               │
                 │ Tip: Type 'help' anytime to see all available commands.                       │
                 │                                                                               │
