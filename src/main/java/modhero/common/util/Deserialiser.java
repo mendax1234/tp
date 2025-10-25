@@ -1,4 +1,4 @@
-package modhero.storage;
+package modhero.common.util;
 
 import modhero.common.exceptions.CorruptedDataFileException;
 
@@ -7,49 +7,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Serialises a string message into a format suitable for storage.
- */
-public class Serialiser {
-    private static final Logger logger = Logger.getLogger(Serialiser.class.getName());
+import static modhero.common.Constants.FORMATED_STRING_END_DELIMITER;
+import static modhero.common.Constants.FORMATED_STRING_START_DELIMITER;
 
-    private static final String DELIMITER = "#";
-    private static final String EXTRA_DELIMITER = "|";
-
-    /**
-     * Serialise list of string to be suitable format for storing into text file.
-     *
-     * @param messageList string of data to be stored
-     * @return the serialised string
-     */
-    public String serialiseList(List<String> messageList) {
-        assert messageList != null : "serialiseList message list must not be null";
-        logger.log(Level.FINEST, "Serialising list");
-
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String message : messageList) {
-            stringBuilder.append(serialiseMessage(message));
-        }
-        String serialisedList = serialiseMessage(stringBuilder.toString());
-
-        logger.log(Level.FINEST, "Successful serialising list");
-        return serialisedList;
-    }
-
-    /**
-     * Serialise string to be suitable format for storing into text file.
-     *
-     * @param message string of data to be stored
-     * @return the serialised string
-     */
-    public String serialiseMessage(String message) {
-        assert message != null : "serialiseMessage message must not be null";
-
-        String serialisedMessage = message.length() + DELIMITER + message + EXTRA_DELIMITER;
-
-        logger.log(Level.FINEST, "Successful serialising message: " + serialisedMessage);
-        return serialisedMessage;
-    }
+public class Deserialiser {
+    private static final Logger logger = Logger.getLogger(Deserialiser.class.getName());
 
     /**
      * Deserialises stored serialised array of string into nested lists.
@@ -57,7 +19,7 @@ public class Serialiser {
      * @param serialisedList list of serialised strings
      * @return the deserialised nested list
      */
-    public List<List<String>> deserialiseList(List<String> serialisedList) throws CorruptedDataFileException {
+    public static List<List<String>> deserialiseList(List<String> serialisedList) throws CorruptedDataFileException {
         assert serialisedList != null && !serialisedList.isEmpty() : "deserialiseList list must not be null or empty";
         logger.log(Level.FINEST, "Deserialising List");
 
@@ -81,7 +43,7 @@ public class Serialiser {
      * @param serialisedMessage array of string from store data
      * @return the deserialised array
      */
-    public List<String> deserialiseMessage(String serialisedMessage) {
+    public static List<String> deserialiseMessage(String serialisedMessage) {
         assert serialisedMessage != null && !serialisedMessage.isEmpty() : "deserialiseMessage serialisedMessage must not be null or empty";
 
         List<String> message = new ArrayList<>();
@@ -89,7 +51,7 @@ public class Serialiser {
         int serialisedTaskLength = serialisedMessage.length();
 
         while (currentIndex < serialisedTaskLength) {
-            int delimiterIndex = serialisedMessage.indexOf(DELIMITER, currentIndex);
+            int delimiterIndex = serialisedMessage.indexOf(FORMATED_STRING_START_DELIMITER, currentIndex);
             boolean isDelimiterMissing = delimiterIndex == -1;
             if (isDelimiterMissing) {
                 logger.log(Level.WARNING, "Delimiter missing during deserialisation, " + serialisedMessage);
@@ -103,7 +65,7 @@ public class Serialiser {
                 return null;
             }
 
-            currentIndex = delimiterIndex + DELIMITER.length();
+            currentIndex = delimiterIndex + FORMATED_STRING_START_DELIMITER.length();
             int nextIndex = currentIndex + argumentLength;
             if (nextIndex > serialisedTaskLength) {
                 logger.log(Level.WARNING, "Argument length exceeds message size, " + serialisedMessage);
@@ -112,7 +74,7 @@ public class Serialiser {
 
             String argument = serialisedMessage.substring(currentIndex, nextIndex);
             message.add(argument);
-            currentIndex = nextIndex + EXTRA_DELIMITER.length();
+            currentIndex = nextIndex + FORMATED_STRING_END_DELIMITER.length();
         }
 
         logger.log(Level.FINEST, "Successful deserialising:" + serialisedMessage);
@@ -128,7 +90,7 @@ public class Serialiser {
      * @param end the ending index (exclusive) of the substring
      * @return the parsed integer length, or -1 if parsing fails
      */
-    private int parseArgumentLength(String serialisedTask, int start, int end) {
+    private static int parseArgumentLength(String serialisedTask, int start, int end) {
         assert serialisedTask != null && !serialisedTask.isEmpty() : "String serialisedTask must not be null or empty";
         assert start >= 0 && start < serialisedTask.length() : "Integer start must be within the string length";
         assert end >= 0 && end < serialisedTask.length() : "Integer end must be within the string length";

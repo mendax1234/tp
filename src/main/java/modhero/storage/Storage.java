@@ -1,5 +1,6 @@
 package modhero.storage;
 
+import modhero.common.util.Deserialiser;
 import modhero.data.modules.Prerequisites;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
@@ -138,17 +139,16 @@ public class Storage {
         assert allModulesData != null : "loadAllModulesData allModulesData must not be null";
         logger.log(Level.FINEST, "Loading all modules data");
 
-        Serialiser serialiser = new Serialiser();
         List<String> rawModulesList = load();
-        List<List<String>> allModulesList = serialiser.deserialiseList(rawModulesList);
+        List<List<String>> allModulesList = Deserialiser.deserialiseList(rawModulesList);
         for (List<String> moduleArgs : allModulesList) {
             if (moduleArgs.size() != 5) {
                 logger.log(Level.WARNING, "Incorrect number of arguments for module: " + moduleArgs.size());
                 break;
             }
             try {
-                List<String> deserialsedPrerequisites = serialiser.deserialiseMessage(moduleArgs.get(4));
-                List<List<String>> deserialsedPrerequisitesList = serialiser.deserialiseList(deserialsedPrerequisites);
+                List<String> deserialsedPrerequisites = Deserialiser.deserialiseMessage(moduleArgs.get(4));
+                List<List<String>> deserialsedPrerequisitesList = Deserialiser.deserialiseList(deserialsedPrerequisites);
                 if (!deserialsedPrerequisitesList.isEmpty()) {
                     logger.log(Level.WARNING, "Unable to parse prerequisites: " + moduleArgs.get(4));
                     break;
@@ -175,16 +175,15 @@ public class Storage {
         logger.log(Level.FINEST, "Loading all major data");
 
 
-        Serialiser serialiser = new Serialiser();
         List<String> rawMajorsList = load();
-        List<List<String>> allMajorsList = serialiser.deserialiseList(rawMajorsList);
+        List<List<String>> allMajorsList = Deserialiser.deserialiseList(rawMajorsList);
         for (List<String> majorArgs : allMajorsList) {
             if (majorArgs.size() != 3) {
                 logger.log(Level.WARNING, "Incorrect number of arguments for major: " + majorArgs.size());
                 break;
             }
             Major major = new Major(majorArgs.get(0), majorArgs.get(1),
-                    createModuleList(allModulesData, serialiser.deserialiseMessage(majorArgs.get(2))));
+                    createModuleList(allModulesData, Deserialiser.deserialiseMessage(majorArgs.get(2))));
             allMajorsData.put(major.getAbbrName(), major);
             allMajorsData.put(major.getName(), major);
             logger.log(Level.FINEST, "Added major into database: " + major.getAbbrName());
