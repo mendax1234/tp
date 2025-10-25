@@ -4,6 +4,7 @@ import modhero.data.modules.Module;
 import modhero.data.timetable.Planner;
 import modhero.data.timetable.Timetable;
 import modhero.data.timetable.PrereqGraph;
+import modhero.common.Constants;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,7 +49,7 @@ public class AddCommand extends Command {
         }
 
         // 4. Check overload
-        if (data.getModules(year - 1, semester - 1).size() >= 5) {
+        if (data.getModules(year - 1, semester - 1).size() >= Constants.MAX_MODULES_PER_SEM) {
             data.addModule(year - 1, semester - 1, module);
             return new CommandResult("You are overloading this semester! Please seek help if you need to. (" + moduleCode + " added)");
         }
