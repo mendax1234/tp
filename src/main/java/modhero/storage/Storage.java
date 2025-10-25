@@ -1,5 +1,6 @@
 package modhero.storage;
 
+import modhero.common.util.Deserialiser;
 import modhero.data.modules.Prerequisites;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
@@ -38,6 +39,41 @@ public class Storage {
     }
 
     /**
+     * Loads the file contents into a list of strings, each line a list element.
+     *
+     * @return list of lines from file, or empty list if file not found
+     */
+    public List<String> load() {
+        logger.log(Level.FINEST, "Loading file: " + filePath);
+
+        try {
+            ensureFileDirectoryExist();
+            ensureFileExist();
+            return readFromFile();
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Failed to load file, " + e);
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Saves the given text string to the file, overwriting any existing content.
+     *
+     * @param textToAdd the text content to save
+     */
+    public void save(String textToAdd) {
+        assert textToAdd != null : "save textToAdd must not be null";
+        logger.log(Level.FINEST, "Saving file: " + filePath);
+
+        try {
+            ensureFileDirectoryExist();
+            writeToFile(textToAdd);
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Failed to save file" + e);
+        }
+    }
+
+    /**
      * Ensures that the directory for the file path exists.
      * Creates directories if not present.
      */
@@ -62,24 +98,6 @@ public class Storage {
     }
 
     /**
-     * Loads the file contents into a list of strings, each line a list element.
-     *
-     * @return list of lines from file, or empty list if file not found
-     */
-    public List<String> load() {
-        logger.log(Level.FINEST, "Loading file: " + filePath);
-
-        try {
-            ensureFileDirectoryExist();
-            ensureFileExist();
-            return readFromFile();
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Failed to load file, " + e);
-            return new ArrayList<>();
-        }
-    }
-
-    /**
      * Reads all lines from the file at filePath.
      *
      * @return list of strings read line-by-line from the file
@@ -98,23 +116,6 @@ public class Storage {
     }
 
     /**
-     * Saves the given text string to the file, overwriting any existing content.
-     *
-     * @param textToAdd the text content to save
-     */
-    public void save(String textToAdd) {
-        assert textToAdd != null : "save textToAdd must not be null";
-        logger.log(Level.FINEST, "Saving file: " + filePath);
-
-        try {
-            ensureFileDirectoryExist();
-            writeToFile(textToAdd);
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Failed to save file" + e);
-        }
-    }
-
-    /**
      * Writes the provided text content to the file at filePath.
      *
      * @param textToAdd text to write to the file
@@ -128,86 +129,5 @@ public class Storage {
         fileWriter.close();
 
         logger.log(Level.FINEST, "Save file characters: " + textToAdd.length());
-    }
-
-    /**
-     * Loads all modules from a data file, assuming that the file at filePath contains list of all NUS modules.
-     *
-     */
-    public void loadAllModulesData(Map<String, Module> allModulesData) throws CorruptedDataFileException {
-        assert allModulesData != null : "loadAllModulesData allModulesData must not be null";
-        logger.log(Level.FINEST, "Loading all modules data");
-
-        Serialiser serialiser = new Serialiser();
-        List<String> rawModulesList = load();
-        List<List<String>> allModulesList = serialiser.deserialiseList(rawModulesList);
-        for (List<String> moduleArgs : allModulesList) {
-            if (moduleArgs.size() != 5) {
-                logger.log(Level.WARNING, "Incorrect number of arguments for module: " + moduleArgs.size());
-                break;
-            }
-            try {
-                List<String> deserialsedPrerequisites = serialiser.deserialiseMessage(moduleArgs.get(4));
-                List<List<String>> deserialsedPrerequisitesList = serialiser.deserialiseList(deserialsedPrerequisites);
-                if (!deserialsedPrerequisitesList.isEmpty()) {
-                    logger.log(Level.WARNING, "Unable to parse prerequisites: " + moduleArgs.get(4));
-                    break;
-                }
-                Module module = new Module(moduleArgs.get(0), moduleArgs.get(1), Integer.parseInt(moduleArgs.get(2)),
-                        moduleArgs.get(3), new Prerequisites(deserialsedPrerequisitesList));
-                allModulesData.put(module.getCode(), module);
-                allModulesData.put(module.getName(), module);
-                logger.log(Level.FINEST, "Added module into database: " + module.getCode());
-            } catch (NumberFormatException e) {
-                logger.log(Level.WARNING, "Unable to parse module credit: " + moduleArgs.get(2));
-            }
-        }
-    }
-
-    /**
-     * Loads all modules from a data file, assuming that the file at filePath contains list of all NUS modules.
-     *
-     */
-    public void loadAllMajorsData(Map<String, Module> allModulesData, Map<String, Major> allMajorsData)
-            throws CorruptedDataFileException {
-        assert allModulesData != null : "loadAllMajorsData allModulesData must not be null";
-        assert allMajorsData != null : "loadAllMajorsData allMajorsData must not be null";
-        logger.log(Level.FINEST, "Loading all major data");
-
-
-        Serialiser serialiser = new Serialiser();
-        List<String> rawMajorsList = load();
-        List<List<String>> allMajorsList = serialiser.deserialiseList(rawMajorsList);
-        for (List<String> majorArgs : allMajorsList) {
-            if (majorArgs.size() != 3) {
-                logger.log(Level.WARNING, "Incorrect number of arguments for major: " + majorArgs.size());
-                break;
-            }
-            Major major = new Major(majorArgs.get(0), majorArgs.get(1),
-                    createModuleList(allModulesData, serialiser.deserialiseMessage(majorArgs.get(2))));
-            allMajorsData.put(major.getAbbrName(), major);
-            allMajorsData.put(major.getName(), major);
-            logger.log(Level.FINEST, "Added major into database: " + major.getAbbrName());
-        }
-    }
-
-    /**
-     * Return ModuleList for major object.
-     *
-     * @param allModulesData hashmap to get modules object from
-     * @param moduleCodes modules code in a list of string
-     * @return ModuleList
-     */
-    private ModuleList createModuleList(Map<String, Module> allModulesData, List<String> moduleCodes) {
-        ModuleList moduleList = new ModuleList();
-        for (String code : moduleCodes) {
-            Module module = allModulesData.get(code);
-            if (module != null) {
-                moduleList.add(module);
-            } else {
-                logger.log(Level.WARNING, "Missing module for major: " + code);
-            }
-        }
-        return moduleList;
     }
 }
