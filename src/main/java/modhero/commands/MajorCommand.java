@@ -58,7 +58,7 @@ public class MajorCommand extends Command {
         //if the major is not found, return an error message
         if (majorObject == null) {
             return new CommandResult("Sorry, " + major
-                    + " is not supported. Try 'CS' or 'CEG'.");
+                    + " is not supported. Try 'Computer Science' or 'Computer Engineering'.");
         }
 
         //add all modules from the selected major into the timetable
