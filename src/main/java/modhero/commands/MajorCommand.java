@@ -1,9 +1,11 @@
 package modhero.commands;
 
-import modhero.data.major.MajorData;
+import modhero.data.DataManager;
+import modhero.data.major.Major;
+import modhero.data.major.MajorModule;
 import modhero.data.modules.Module;
-import modhero.data.modules.ModuleList;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +38,7 @@ public class MajorCommand extends Command {
      */
     public MajorCommand(String major, String specialisation, String minor) {
         assert major != null && !major.isEmpty() : "Major name must not be empty";
-        this.major = major.trim();
+        this.major = major.trim().toLowerCase();
         this.specialisation = specialisation;
         this.minor = minor;
 
@@ -47,33 +49,29 @@ public class MajorCommand extends Command {
 
     @Override
     public CommandResult execute() {
+
         logger.log(Level.INFO, "Executing Major Command");
 
-        MajorData majorData = new MajorData();
-        ModuleList coreModules = majorData.getCoreModules(major);
+        //retrieve all available majors from the data manager
+        Map<String, Major> allMajorsData = DataManager.getAllMajorsData();
+        //get the Major object corresponding to the selected major
+        Major majorObject = allMajorsData.get(major);
 
-        if (coreModules == null) {
+        //if the major is not found, return an error message
+        if (majorObject == null) {
             return new CommandResult("Sorry, " + major
-                    + " is not supported. Try 'Computer Science' or 'Computer Engineering'.");
+                    + " is not supported. Try 'CS' or 'CEG'.");
         }
 
-        // Reset current timetable and core list
-        coreList.setList(coreModules.getList());
-        data.clearTimetable();
-
-        // Register all core modules in the global module map
-        for (Module m : coreModules.getList()) {
-            allModulesData.putIfAbsent(m.getCode(), m);
-        }
-
-        // Populate timetable based on schedule map
-        Map<String, int[]> scheduleMap = majorData.getSchedule(major);
-        for (Module m : coreModules.getList()) {
-            int[] yAndS = scheduleMap.getOrDefault(m.getCode(), new int[]{1, 1});
-            data.addModule(yAndS[0] - 1, yAndS[1] - 1, m);
+        //add all modules from the selected major into the timetable
+        for (MajorModule mm : majorObject.getMajorModules()) {
+            //create a new module (placeholder until allModulesData is implemented)
+            Module m = new Module(mm.getCode(), "", 0, "", new ArrayList<>());
+            DataManager.getTimetable().addModule(mm.getYear() - 1, mm.getTerm() - 1, m);
         }
 
         logger.log(Level.INFO, () -> "Major successfully set to " + major);
+
         return new CommandResult("Major set to " + major + ". Type 'schedule' to view your 4-year plan!");
     }
 }

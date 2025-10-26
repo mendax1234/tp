@@ -3,6 +3,7 @@ package modhero.data.timetable;
 import static modhero.common.Constants.NUM_TERMS;
 import static modhero.common.Constants.NUM_YEARS;
 
+import modhero.data.major.MajorModule;
 import modhero.data.modules.Module;
 
 import java.util.ArrayList;
