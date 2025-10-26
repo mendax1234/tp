@@ -2,10 +2,13 @@ package modhero.storage;
 
 import modhero.common.exceptions.CorruptedDataFileException;
 import modhero.common.util.Deserialiser;
+import modhero.data.DataManager;
 import modhero.data.major.Major;
+import modhero.data.major.MajorModule;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -45,17 +48,29 @@ public class MajorLoader {
 
 
         List<String> rawMajorsList = storage.load();
-        List<List<String>> allMajorsList = Deserialiser.deserialiseList(rawMajorsList);
-        for (List<String> majorArgs : allMajorsList) {
-            if (majorArgs.size() != 3) {
-                logger.log(Level.WARNING, "Incorrect number of arguments for major: " + majorArgs.size());
-                break;
+
+        for (String aa : rawMajorsList) {
+            List<String> majorTop = Deserialiser.deserialiseMessage(aa);
+            String name       = majorTop.get(0);
+            String abbrName  = majorTop.get(1);
+            String modulesBlob = majorTop.get(2);
+
+            List<String> moduleYTList = Deserialiser.deserialiseMessage(modulesBlob);
+
+            List<MajorModule> majorModules = new ArrayList<>();
+            for (String moduleYT : moduleYTList) {
+                List<String> triplet = Deserialiser.deserialiseMessage(moduleYT);
+                String code = triplet.get(0);
+                int year    = Integer.parseInt(triplet.get(1));
+                int sem     = Integer.parseInt(triplet.get(2));
+                MajorModule mod = new MajorModule(code.toUpperCase(), year, sem);
+                //TODO: add code here when allModulesData is implemented
+                majorModules.add(mod);
             }
-            Major major = new Major(majorArgs.get(0), majorArgs.get(1),
-                    createModuleList(allModulesData, Deserialiser.deserialiseMessage(majorArgs.get(2))));
-            allMajorsData.put(major.getAbbrName(), major);
-            allMajorsData.put(major.getName(), major);
-            logger.log(Level.FINEST, "Added major into database: " + major.getAbbrName());
+
+            Major major = new Major(name, abbrName.toUpperCase(), majorModules);
+            DataManager.getAllMajorsData().put(abbrName.toLowerCase(), major);
+
         }
     }
 
