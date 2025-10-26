@@ -12,8 +12,8 @@ import java.util.logging.Logger;
  * length-prefixed format suitable for persistent storage.
  * Serialisation Format: [length of content][START_DELIMITER][content][END_DELIMITER]
  */
-public class Serialiser {
-    private static final Logger logger = Logger.getLogger(Serialiser.class.getName());
+public class SerialisationUtil {
+    private static final Logger logger = Logger.getLogger(SerialisationUtil.class.getName());
 
     /**
      * Serialises a list of strings into a format suitable for file storage.

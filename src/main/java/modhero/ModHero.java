@@ -6,7 +6,7 @@ import static modhero.common.Constants.FilePathConstants.MODULES_FILE_PATH;
 import modhero.commands.Command;
 import modhero.commands.CommandResult;
 import modhero.commands.ExitCommand;
-import modhero.common.util.LoggerConfig;
+import modhero.common.config.LoggerConfig;
 import modhero.data.DataManager;
 import modhero.parser.Parser;
 import modhero.ui.Ui;

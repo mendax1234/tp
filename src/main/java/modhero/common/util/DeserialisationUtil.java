@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 /**
  * Provides utility methods for deserialising strings back into their original string lists.
  */
-public class Deserialiser {
-    private static final Logger logger = Logger.getLogger(Deserialiser.class.getName());
+public class DeserialisationUtil {
+    private static final Logger logger = Logger.getLogger(DeserialisationUtil.class.getName());
 
     /**
      * Deserialises a list of serialised strings into a nested list structure.
