@@ -5,6 +5,7 @@ import static modhero.common.Constants.NUM_TERMS;
 import static modhero.common.Constants.NUM_YEARS;
 
 import modhero.data.major.MajorModule;
+import modhero.common.exceptions.ModuleNotFoundException;
 import modhero.data.modules.Module;
 
 import java.util.ArrayList;
@@ -100,10 +101,10 @@ public class Timetable {
      * @param moduleCode the code of the module to remove
      * @return {@code true} if a module was removed, {@code false} otherwise
      */
-    public boolean removeModule(int year, int term, String moduleCode) {
-        assert year >= 0 && year < NUM_YEARS : "removeModule year out of bounds";
-        assert term >= 0 && term < NUM_TERMS : "removeModule term out of bounds";
-        assert moduleCode != null : "removeModule moduleCode must not be null";
+    public boolean removeModule(int year, int term, String moduleCode) throws ArrayIndexOutOfBoundsException{
+        if ( year < 0 || year > NUM_YEARS || term < 0 || term > NUM_TERMS){
+            throw new ArrayIndexOutOfBoundsException();
+        }
 
         boolean hasRemoved = timetable.get(year).get(term)
                 .removeIf(m -> m.getCode().equals(moduleCode));
@@ -112,6 +113,41 @@ public class Timetable {
             logger.log(Level.FINEST, () -> String.format("Module %s removed from year %d term %d", moduleCode, year, term));
         }
         return hasRemoved;
+    }
+    /**
+     * Finds the year and term indices where a module is scheduled.
+     *
+     * @param moduleCode the code of the module to find
+     * @return an int array [year, term] where the module is found, or null if not found
+     */
+    public int[] findModuleLocation(String moduleCode) throws ModuleNotFoundException {
+        for (int year = 0; year < timetable.size(); year++) {
+            List<List<Module>> yearSemesters = timetable.get(year);
+            for (int term = 0; term < yearSemesters.size(); term++) {
+                List<Module> modules = yearSemesters.get(term);
+                for (Module module : modules) {
+                    if (module.getCode().equals(moduleCode)) {
+                        return new int[]{year, term};
+                    }
+                }
+            }
+        }
+
+        throw new ModuleNotFoundException(moduleCode);
+    }
+
+    public void deleteModule(String code) throws ModuleNotFoundException {
+        int[] moduleLocation = new int[2]; // {year, term}
+        try {
+            moduleLocation = findModuleLocation(code);
+        }catch (ModuleNotFoundException e){
+            throw e;
+        }
+        try{
+            removeModule(moduleLocation[0], moduleLocation[1], code);
+        }catch (ArrayIndexOutOfBoundsException e){
+            throw new ModuleNotFoundException(code);
+        }
     }
 
     /**
