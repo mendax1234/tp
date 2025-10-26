@@ -1,7 +1,7 @@
 package modhero.commands;
 
 import modhero.data.modules.Module;
-import modhero.data.timetable.PrereqGraph;
+import modhero.data.nusmods.ModuleRetriever; // Import the retriever
 import modhero.common.Constants;
 
 import java.util.logging.Level;
@@ -19,41 +19,44 @@ public class AddCommand extends Command {
     private final int year;
     private final int semester;
 
+    // We can instantiate this here, or have it passed in.
+    // Instantiating is simpler for this example.
+    private final ModuleRetriever moduleRetriever;
+
     public AddCommand(String moduleCode, int year, int semester) {
         this.moduleCode = moduleCode.toUpperCase();
         this.year = year;
         this.semester = semester;
+        this.moduleRetriever = new ModuleRetriever();
     }
 
     @Override
     public CommandResult execute() {
         logger.log(Level.INFO, () -> String.format("Adding module %s to Y%dS%d", moduleCode, year, semester));
 
-        // 1. Check if module exists
+        // 1. Check if module exists in our database
         Module module = allModulesData.get(moduleCode);
+
+        // 2. If not, try fetching it from the API
         if (module == null) {
-            return new CommandResult("Module " + moduleCode + " not found in database.");
+            logger.log(Level.INFO, "Module " + moduleCode + " not in local data, trying API fetch...");
+            // You need to define ACAD_YEAR in Constants.java, e.g., "2025-2026"
+            module = moduleRetriever.getModule(Constants.ACAD_YEAR, moduleCode);
+
+            if (module == null) {
+                // API fetch also failed
+                return new CommandResult("Module " + moduleCode + " not found in local database or NUSMods API.");
+            } else {
+                // API fetch succeeded, add it to our main list
+                allModulesData.put(module.getCode(), module);
+                logger.log(Level.INFO, "Module " + moduleCode + " found via API and added to database.");
+            }
         }
 
-        // 2. Check if already exists in timetable
-        if (timetable.getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(moduleCode))) {
-            return new CommandResult(moduleCode + " is already in your timetable!");
-        }
+        // 3. Now, tell the (smarter) timetable to add the module
+        // The timetable will handle all the checks (prereqs, overload, etc.)
+        String resultMessage = timetable.addModule(year, semester, module);
 
-        // 3. Check prerequisites
-        PrereqGraph prereqGraph = new PrereqGraph(timetable.getAllModules());
-        if (!prereqGraph.hasMetPrerequisites(module)) {
-            return new CommandResult("Prerequisites not met for " + moduleCode);
-        }
-
-        // 4. Check overload
-        if (timetable.getModules(year - 1, semester - 1).size() >= Constants.MAX_MODULES_PER_SEM) {
-            timetable.addModule(year - 1, semester - 1, module);
-            return new CommandResult("You are overloading this semester! Please seek help if you need to. (" + moduleCode + " added)");
-        }
-
-        // 5. Add to timetable
-        timetable.addModule(year - 1, semester - 1, module);
-        return new CommandResult(moduleCode + " added successfully to Y" + year + "S" + semester + "!");
+        return new CommandResult(resultMessage);
     }
 }

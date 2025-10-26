@@ -1,5 +1,6 @@
 package modhero.data.timetable;
 
+import static modhero.common.Constants.MAX_MODULES_PER_SEM;
 import static modhero.common.Constants.NUM_TERMS;
 import static modhero.common.Constants.NUM_YEARS;
 
@@ -42,13 +43,47 @@ public class Timetable {
     }
 
     /**
-     * Adds a module to a specific year and term.
+     * Adds a module to the timetable, performing all business logic checks.
+     *
+     * @param module The Module object to add.
+     * @param year The academic year (1-based).
+     * @param semester The semester (1-based).
+     * @return A CommandResult string indicating success, overload, or failure.
+     */
+    public String addModule(int year, int semester, Module module) {
+        // 1. Check if already exists in timetable
+        if (this.getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(module.getCode()))) {
+            return module.getCode() + " is already in your timetable!";
+        }
+
+        // 2. Check prerequisites
+        PrereqGraph prereqGraph = new PrereqGraph(this.getAllModules());
+        if (!prereqGraph.hasMetPrerequisites(module)) {
+            return "Prerequisites not met for " + module.getCode();
+        }
+
+        // 3. Add to timetable (using the 0-based private method)
+        this.addModuleInternal(year - 1, semester - 1, module);
+
+        // 4. Check for overload *after* adding
+        if (this.getModules(year - 1, semester - 1).size() > MAX_MODULES_PER_SEM) {
+            return "You are overloading this semester! Please seek help if you need to. ("
+                    + module.getCode() + " added)";
+        }
+
+        // 5. Success
+        return module.getCode() + " added successfully to Y" + year + "S" + semester + "!";
+    }
+
+    /**
+     * Internal method to add a module to a specific year and term.
+     * No checks are performed here.
      *
      * @param year the year index (0-based)
      * @param term the term index (0-based)
      * @param module the module to add
      */
-    public void addModule(int year, int term, Module module) {
+    public void addModuleInternal(int year, int term, Module module) {
         assert year >= 0 && year < NUM_YEARS : "addModule year out of bounds";
         assert term >= 0 && term < NUM_TERMS : "addModule term out of bounds";
         assert module != null : "addModule module must not be null";

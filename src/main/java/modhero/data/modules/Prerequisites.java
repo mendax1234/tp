@@ -70,4 +70,22 @@ public class Prerequisites {
         logger.log(Level.FINEST, "Successfully serialized prerequisites (doubly-serialized)");
         return serialisedPrereqs;
     }
+
+    @Override
+    public String toString() {
+        if (prereq == null || prereq.isEmpty()) {
+            return "No prerequisites";
+        }
+
+        StringBuilder sb = new StringBuilder("Prerequisites: [");
+        for (int i = 0; i < prereq.size(); i++) {
+            List<String> group = prereq.get(i);
+            sb.append(group); // List<String> will automatically print as [A, B, C]
+            if (i < prereq.size() - 1) {
+                sb.append(" OR ");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 }
