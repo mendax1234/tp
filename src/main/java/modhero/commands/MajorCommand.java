@@ -1,6 +1,6 @@
 package modhero.commands;
 
-import modhero.data.major.MajorData;
+import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
 
@@ -10,7 +10,8 @@ import java.util.logging.Logger;
 
 /**
  * Defines the user's primary degree major.
- * Loads the relevant core modules and recommended study plan into the timetable.
+ * Loads the relevant core modules and recommended study plan from the
+ * pre-loaded Major object into the timetable.
  */
 public class MajorCommand extends Command {
     private static final Logger logger = Logger.getLogger(MajorCommand.class.getName());
@@ -30,7 +31,7 @@ public class MajorCommand extends Command {
     /**
      * Creates a MajorCommand to set the user's major.
      *
-     * @param major          The user's major (e.g., "Computer Science" or "Computer Engineering")
+     * @param major          The user's major (e.g., "Computer Science" or "CS")
      * @param specialisation The chosen specialisation (optional)
      * @param minor          The chosen minor (optional)
      */
@@ -49,31 +50,35 @@ public class MajorCommand extends Command {
     public CommandResult execute() {
         logger.log(Level.INFO, "Executing Major Command");
 
-        MajorData majorData = new MajorData();
-        ModuleList coreModules = majorData.getCoreModules(major);
+        // 1. Get the Major object loaded by DataManager
+        // This allows searching by full name ("Computer Science") or abbreviation ("CS")
+        Major selectedMajor = allMajorsData.get(this.major);
 
-        if (coreModules == null) {
-            return new CommandResult("Sorry, " + major
-                    + " is not supported. Try 'Computer Science' or 'Computer Engineering'.");
+        if (selectedMajor == null) {
+            return new CommandResult("Sorry, '" + this.major
+                    + "' is not supported. Try 'Computer Science' or 'Computer Engineering'.");
         }
 
-        // Reset current timetable and core list
+        // 2. Get the core modules and schedule FROM the Major object
+        ModuleList coreModules = selectedMajor.getCoreModules();
+        Map<String, int[]> scheduleMap = selectedMajor.getModuleSchedule();
+
+        // 3. Reset current timetable and core list
         coreList.setList(coreModules.getList());
+        // Access the timetable via the DataManager (data)
         data.clearTimetable();
 
-        // Register all core modules in the global module map
+        // 4. Populate timetable based on the schedule map
         for (Module m : coreModules.getList()) {
-            allModulesData.putIfAbsent(m.getCode(), m);
-        }
+            // Get the year and semester for this module
+            int[] yAndS = scheduleMap.getOrDefault(m.getCode(), new int[]{1, 1}); // Default to Y1S1 if missing
 
-        // Populate timetable based on schedule map
-        Map<String, int[]> scheduleMap = majorData.getSchedule(major);
-        for (Module m : coreModules.getList()) {
-            int[] yAndS = scheduleMap.getOrDefault(m.getCode(), new int[]{1, 1});
+            // Add module to the timetable
+            // Note: scheduleMap is 1-based, but addModule is 0-based
             data.addModule(yAndS[0] - 1, yAndS[1] - 1, m);
         }
 
-        logger.log(Level.INFO, () -> "Major successfully set to " + major);
-        return new CommandResult("Major set to " + major + ". Type 'schedule' to view your 4-year plan!");
+        logger.log(Level.INFO, () -> "Major successfully set to " + selectedMajor.getName());
+        return new CommandResult("Major set to " + selectedMajor.getName() + ". Type 'schedule' to view your 4-year plan!");
     }
 }

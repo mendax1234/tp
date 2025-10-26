@@ -6,6 +6,7 @@ import modhero.data.modules.Module;
 import modhero.data.modules.Prerequisites;
 import modhero.storage.exceptions.ParsePrerequisitesException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -44,9 +45,9 @@ public class ModuleLoader {
         List<List<String>> allModulesList = Deserialiser.deserialiseList(rawModulesList);
 
         for (List<String> moduleArgs : allModulesList) {
-            if (moduleArgs.size() != 5) {
+            if (moduleArgs.size() != EXPECTED_MODULE_ARGS) { // Corrected check
                 logger.log(Level.WARNING, "Incorrect number of arguments for module: " + moduleArgs.size());
-                break;
+                continue;
             }
             try {
                 Module module = parseModule(moduleArgs);
@@ -54,8 +55,8 @@ public class ModuleLoader {
                 logger.log(Level.FINEST, "Added module into database: " + module.getCode());
             } catch (NumberFormatException e) {
                 logger.log(Level.WARNING, "Unable to parse module credit: " + moduleArgs.get(2));
-            } catch (ParsePrerequisitesException e) {
-                logger.log(Level.WARNING, "Unable to parse prerequisites: " + moduleArgs.get(2));
+            } catch (ParsePrerequisitesException | CorruptedDataFileException e) { // Handle both
+                logger.log(Level.WARNING, "Unable to parse prerequisites for " + moduleArgs.get(0) + ": " + e.getMessage());
             }
         }
     }
@@ -88,25 +89,45 @@ public class ModuleLoader {
      */
     private Prerequisites parsePrerequisites(String serialisedPrereqs) throws CorruptedDataFileException, ParsePrerequisitesException {
         assert serialisedPrereqs != null : "parsePrerequisites serialisedPrereqs must not be null";
-        List<String> deserialisedPrereqs = Deserialiser.deserialiseMessage(serialisedPrereqs);
-        if (deserialisedPrereqs == null || !deserialisedPrereqs.isEmpty()) {
-            logger.log(Level.WARNING, "Unable to parse prerequisites: " + serialisedPrereqs);
-            throw new ParsePrerequisitesException();
+
+        // 1. Unwrap the outer layer (which was serialised by serialiseMessage)
+        // e.g., "3#0#||" -> ["0#|"]
+        // e.g., "245#...|" -> ["21#...||..."]
+        List<String> outerList = Deserialiser.deserialiseMessage(serialisedPrereqs);
+        if (outerList == null) {
+            throw new CorruptedDataFileException();
         }
-        List<List<String>> prereqList = Deserialiser.deserialiseList(deserialisedPrereqs);
-        if (!prereqList.isEmpty()) {
-            logger.log(Level.WARNING, "Unable to parse prerequisites: " + serialisedPrereqs);
-            throw new ParsePrerequisitesException();
+
+        // Handle the case of an empty prerequisite list
+        if (outerList.isEmpty() || (outerList.size() == 1 && outerList.get(0).isEmpty())) {
+            return new Prerequisites(new ArrayList<>());
         }
+
+        // This is the concatenated list of actual prerequisite combinations
+        // e.g., "21#17#...||||21#17#...||||"
+        String concatenatedPrereqs = outerList.get(0);
+
+        // 2. Unwrap the inner layer (which was serialised by serialiseList)
+        // This gives us the list of individual prerequisite combinations
+        // e.g., ["17#...||", "17#...||"]
+        List<String> prereqCombinations = Deserialiser.deserialiseMessage(concatenatedPrereqs);
+        if (prereqCombinations == null) {
+            throw new CorruptedDataFileException();
+        }
+
+        // 3. Now, deserialise each combination string into a List<String>
+        List<List<String>> prereqList = new ArrayList<>();
+        for (String combo : prereqCombinations) {
+            List<String> deserialisedCombo = Deserialiser.deserialiseMessage(combo);
+            if (deserialisedCombo == null) {
+                throw new CorruptedDataFileException();
+            }
+            prereqList.add(deserialisedCombo);
+        }
+
         return new Prerequisites(prereqList);
     }
 
-    /**
-     * Adds a single Module to the provided map, using both code and name as keys.
-     *
-     * @param map the module map to populate
-     * @param module the Module instance to insert
-     */
     private void addModuleToMap(Map<String, Module> map, Module module) {
         map.put(module.getCode(), module);
         map.put(module.getName(), module);
