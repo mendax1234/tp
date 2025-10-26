@@ -1,12 +1,10 @@
 package modhero.commands;
 
-import modhero.data.DataManager;
 import modhero.data.major.Major;
 import modhero.data.major.MajorModule;
 import modhero.data.modules.Module;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,7 +56,7 @@ public class MajorCommand extends Command {
         //if the major is not found, return an error message
         if (majorObject == null) {
             return new CommandResult("Sorry, " + major
-                    + " is not supported. Try 'Computer Science' or 'Computer Engineering'.");
+                    + " is not supported. Try 'CS' or 'CEG'.");
         }
 
         //add all modules from the selected major into the timetable

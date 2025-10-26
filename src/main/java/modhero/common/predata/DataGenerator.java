@@ -17,8 +17,9 @@ import java.util.Map;
 /**
  * Generates the text file content for modules.txt and majors.txt.
  *
- * This version generates empty prerequisites to match ModuleLoader's
- * validation logic which only accepts empty prerequisite lists.
+ * This version contains the correct TRIPLE-SERIALIZATION logic
+ * in the 'serializePrereqList' helper method, which matches
+ * the triple-deserialization logic in the fixed ModuleLoader.
  *
  * REQUIRES: An active internet connection.
  */
@@ -67,11 +68,13 @@ public class DataGenerator {
                 String moduleCode = code;
                 String moduleName;
                 String moduleMc;
+                String serialisedPrereqsBlob;
 
                 if (json == null) {
                     System.err.println("Failed to fetch data for " + code + ": null response. Using dummy data.");
                     moduleName = code;
                     moduleMc = "4";
+                    serialisedPrereqsBlob = serializePrereqList(new ArrayList<>()); // Empty prerequisites
                 } else {
                     Module module = parser.parseModule(json);
 
@@ -79,24 +82,26 @@ public class DataGenerator {
                         System.err.println("ModuleParser failed to parse " + code + ". Using dummy data.");
                         moduleName = code;
                         moduleMc = "4";
+                        serialisedPrereqsBlob = serializePrereqList(new ArrayList<>());
                     } else {
                         moduleName = module.getName();
                         moduleMc = String.valueOf(module.getMc());
+                        Prerequisites prereqs = module.getPrerequisites();
+
+                        // Get the prerequisite combinations from the Prerequisites object
+                        // List<List<String>> prereqCombos = prereqs.getPrerequisiteCombinations();
+                        serialisedPrereqsBlob = prereqs.toFormatedString();
                     }
                 }
 
                 String desc = "core";
 
-                // Generate empty prerequisites that will pass ModuleLoader validation
-                // The loader expects: after deserialiseMessage -> empty list
-                // then after deserialiseList -> empty list
-                String emptyPrereqsBlob = generateEmptyPrerequisites();
-
+                // Build the module line with triple-serialized prerequisites
                 String line = Serialiser.serialiseMessage(moduleCode)
                         + Serialiser.serialiseMessage(moduleName)
                         + Serialiser.serialiseMessage(moduleMc)
                         + Serialiser.serialiseMessage(desc)
-                        + Serialiser.serialiseMessage(emptyPrereqsBlob);
+                        + Serialiser.serialiseMessage(serialisedPrereqsBlob);
 
                 fileContent.append(line).append(System.lineSeparator());
 
@@ -110,17 +115,46 @@ public class DataGenerator {
     }
 
     /**
-     * Generates an empty prerequisites blob that matches ModuleLoader's expectations.
+     * Serializes the complex List<List<String>> prerequisite structure.
      *
-     * ModuleLoader validation logic:
-     * 1. deserialiseMessage(serialisedPrereqs) must return empty list
-     * 2. deserialiseList(empty list) must return empty list
+     * Serialization structure (to match ModuleLoader's triple deserialization):
+     * 1. Each module code is serialized (WRAP 1)
+     * 2. Each combination (list of codes) is serialized (WRAP 2)
+     * 3. The entire blob is serialized one more time in generateModulesTxt (WRAP 3)
      *
-     * To satisfy this, we serialize an empty string which will deserialize to an empty list.
+     * Example: [[CS1010, CS1101S], [CS1010E]]
+     * - CS1010 -> serialized
+     * - CS1101S -> serialized
+     * - Combination [CS1010, CS1101S] -> serialized (contains the two above)
+     * - CS1010E -> serialized
+     * - Combination [CS1010E] -> serialized
+     * - All combinations together -> final blob (then wrapped once more outside)
+     *
+     * @param prereqCombinations the prerequisite combinations structure
+     * @return doubly-serialized prerequisites blob (to be wrapped once more)
      */
-    private static String generateEmptyPrerequisites() {
-        // An empty string will deserialize to an empty list in deserialiseMessage
-        return "";
+    private static String serializePrereqList(List<List<String>> prereqCombinations) {
+        if (prereqCombinations == null || prereqCombinations.isEmpty()) {
+            return ""; // Empty string for no prerequisites
+        }
+
+        StringBuilder prereqBlobBuilder = new StringBuilder();
+
+        // For each combination (OR group)
+        for (List<String> combo : prereqCombinations) {
+            // WRAP 1: Serialize each module code
+            StringBuilder comboBuilder = new StringBuilder();
+            for (String moduleCode : combo) {
+                comboBuilder.append(Serialiser.serialiseMessage(moduleCode));
+            }
+
+            // WRAP 2: Serialize the entire combination
+            prereqBlobBuilder.append(Serialiser.serialiseMessage(comboBuilder.toString()));
+        }
+
+        // Return the doubly-serialized blob
+        // (will be wrapped one more time in generateModulesTxt with Serialiser.serialiseMessage)
+        return prereqBlobBuilder.toString();
     }
 
     private static String generateMajorsTxt() {

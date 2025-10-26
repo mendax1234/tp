@@ -44,9 +44,9 @@ public class ModuleLoader {
         List<List<String>> allModulesList = Deserialiser.deserialiseList(rawModulesList);
 
         for (List<String> moduleArgs : allModulesList) {
-            if (moduleArgs.size() != 5) {
+            if (moduleArgs.size() != EXPECTED_MODULE_ARGS) {
                 logger.log(Level.WARNING, "Incorrect number of arguments for module: " + moduleArgs.size());
-                break;
+                continue; // Changed from break to continue - skip this module and process others
             }
             try {
                 Module module = parseModule(moduleArgs);
@@ -55,7 +55,7 @@ public class ModuleLoader {
             } catch (NumberFormatException e) {
                 logger.log(Level.WARNING, "Unable to parse module credit: " + moduleArgs.get(2));
             } catch (ParsePrerequisitesException e) {
-                logger.log(Level.WARNING, "Unable to parse prerequisites: " + moduleArgs.get(2));
+                logger.log(Level.WARNING, "Unable to parse prerequisites for module: " + moduleArgs.get(0));
             }
         }
     }
@@ -88,16 +88,26 @@ public class ModuleLoader {
      */
     private Prerequisites parsePrerequisites(String serialisedPrereqs) throws CorruptedDataFileException, ParsePrerequisitesException {
         assert serialisedPrereqs != null : "parsePrerequisites serialisedPrereqs must not be null";
+
+        // Handle empty prerequisites (no prerequisites required)
+        if (serialisedPrereqs.isEmpty()) {
+            return new Prerequisites(List.of()); // Empty list for no prerequisites
+        }
+
+        // First deserialization: unwrap the outer layer
         List<String> deserialisedPrereqs = Deserialiser.deserialiseMessage(serialisedPrereqs);
-        if (deserialisedPrereqs == null || !deserialisedPrereqs.isEmpty()) {
-            logger.log(Level.WARNING, "Unable to parse prerequisites: " + serialisedPrereqs);
+        if (deserialisedPrereqs == null) {
+            logger.log(Level.WARNING, "Unable to deserialize prerequisites (null result): " + serialisedPrereqs);
             throw new ParsePrerequisitesException();
         }
+
+        // Second deserialization: convert to list of lists
         List<List<String>> prereqList = Deserialiser.deserialiseList(deserialisedPrereqs);
-        if (!prereqList.isEmpty()) {
-            logger.log(Level.WARNING, "Unable to parse prerequisites: " + serialisedPrereqs);
+        if (prereqList == null) {
+            logger.log(Level.WARNING, "Unable to deserialize prerequisite list (null result): " + serialisedPrereqs);
             throw new ParsePrerequisitesException();
         }
+
         return new Prerequisites(prereqList);
     }
 
