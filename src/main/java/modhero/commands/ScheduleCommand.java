@@ -16,7 +16,7 @@ public class ScheduleCommand extends Command {
         logger.log(Level.INFO, "Executing Schedule Command");
 
         // Just display the timetable; don’t rebuild or print module codes
-        data.printTimetable();
+        timetable.printTimetable();
 
         return new CommandResult("Here's your recommended 4-year schedule above!");
     }

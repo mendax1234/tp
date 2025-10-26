@@ -1,8 +1,6 @@
 package modhero.commands;
 
 import modhero.data.modules.Module;
-import modhero.data.timetable.Planner;
-import modhero.data.timetable.Timetable;
 import modhero.data.timetable.PrereqGraph;
 import modhero.common.Constants;
 
@@ -38,24 +36,24 @@ public class AddCommand extends Command {
         }
 
         // 2. Check if already exists in timetable
-        if (data.getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(moduleCode))) {
+        if (timetable.getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(moduleCode))) {
             return new CommandResult(moduleCode + " is already in your timetable!");
         }
 
         // 3. Check prerequisites
-        PrereqGraph prereqGraph = new PrereqGraph(data.getAllModules());
+        PrereqGraph prereqGraph = new PrereqGraph(timetable.getAllModules());
         if (!prereqGraph.hasMetPrerequisites(module)) {
             return new CommandResult("Prerequisites not met for " + moduleCode);
         }
 
         // 4. Check overload
-        if (data.getModules(year - 1, semester - 1).size() >= Constants.MAX_MODULES_PER_SEM) {
-            data.addModule(year - 1, semester - 1, module);
+        if (timetable.getModules(year - 1, semester - 1).size() >= Constants.MAX_MODULES_PER_SEM) {
+            timetable.addModule(year - 1, semester - 1, module);
             return new CommandResult("You are overloading this semester! Please seek help if you need to. (" + moduleCode + " added)");
         }
 
         // 5. Add to timetable
-        data.addModule(year - 1, semester - 1, module);
+        timetable.addModule(year - 1, semester - 1, module);
         return new CommandResult(moduleCode + " added successfully to Y" + year + "S" + semester + "!");
     }
 }

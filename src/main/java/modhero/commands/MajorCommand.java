@@ -63,7 +63,7 @@ public class MajorCommand extends Command {
         for (MajorModule mm : majorObject.getMajorModules()) {
             //create a new module (placeholder until allModulesData is implemented)
             Module m = new Module(mm.getCode(), "", 0, "", new ArrayList<>());
-            data.addModule(mm.getYear() - 1, mm.getTerm() - 1, m);
+            timetable.addModule(mm.getYear() - 1, mm.getTerm() - 1, m);
         }
 
         logger.log(Level.INFO, () -> "Major successfully set to " + major);
