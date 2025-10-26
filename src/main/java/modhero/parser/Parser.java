@@ -38,6 +38,8 @@ public class Parser {
         switch (commandWord) {
         case MajorCommand.COMMAND_WORD:
             return prepareMajorCommand(arguments);
+        case AddCommand.COMMAND_WORD:
+            return prepareAddCommand(arguments);
         case ElectiveCommand.COMMAND_WORD:
             return prepareElectiveCommand(arguments);
         case DeleteCommand.COMMAND_WORD:
@@ -50,8 +52,6 @@ public class Parser {
             return new ExitCommand();
         case HelpCommand.COMMAND_WORD:
             return new HelpCommand();
-        case "add":
-            return prepareAddCommand(arguments);
         default:
             return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
         }
