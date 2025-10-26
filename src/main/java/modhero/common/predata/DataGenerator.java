@@ -2,6 +2,7 @@ package modhero.common.predata;
 
 import modhero.common.Constants;
 import modhero.common.util.Serialiser;
+import modhero.data.nusmods.ModuleRetriever;
 import modhero.data.nusmods.NusmodsAPIClient;
 import modhero.parser.ModuleParser;
 import modhero.storage.Storage;
@@ -48,8 +49,7 @@ public class DataGenerator {
     }
 
     private static String generateModulesTxt() {
-        NusmodsAPIClient client = new NusmodsAPIClient();
-        ModuleParser parser = new ModuleParser();
+        ModuleRetriever retriever = new ModuleRetriever();
         StringBuilder fileContent = new StringBuilder();
 
         List<String> allModules = Arrays.asList(
@@ -64,39 +64,30 @@ public class DataGenerator {
 
         for (String code : allModules) {
             try {
-                String json = client.fetchModuleDataSafely(ACAD_YEAR, code);
+                Module module = retriever.getModule(ACAD_YEAR, code);
+
                 String moduleCode = code;
                 String moduleName;
                 String moduleMc;
                 String serialisedPrereqsBlob;
 
-                if (json == null) {
-                    System.err.println("Failed to fetch data for " + code + ": null response. Using dummy data.");
+                if (module == null) {
+                    System.err.println("Failed to fetch or parse data for " + code + ". Using dummy data.");
                     moduleName = code;
                     moduleMc = "4";
-                    serialisedPrereqsBlob = serializePrereqList(new ArrayList<>()); // Empty prerequisites
+                    serialisedPrereqsBlob = serializePrereqList(new ArrayList<>());
                 } else {
-                    Module module = parser.parseModule(json);
-
-                    if (module == null) {
-                        System.err.println("ModuleParser failed to parse " + code + ". Using dummy data.");
-                        moduleName = code;
-                        moduleMc = "4";
-                        serialisedPrereqsBlob = serializePrereqList(new ArrayList<>());
-                    } else {
-                        moduleName = module.getName();
-                        moduleMc = String.valueOf(module.getMc());
-                        Prerequisites prereqs = module.getPrerequisites();
-
-                        // Get the prerequisite combinations from the Prerequisites object
-                        // List<List<String>> prereqCombos = prereqs.getPrerequisiteCombinations();
-                        serialisedPrereqsBlob = prereqs.toFormatedString();
-                    }
+                    moduleName = module.getName();
+                    moduleMc = String.valueOf(module.getMc());
+                    Prerequisites prereqs = module.getPrerequisites();
+                    serialisedPrereqsBlob = (prereqs != null)
+                            ? prereqs.toFormatedString()
+                            : serializePrereqList(new ArrayList<>());
                 }
 
                 String desc = "core";
 
-                // Build the module line with triple-serialized prerequisites
+                // Triple-serialized: each field wrapped once
                 String line = Serialiser.serialiseMessage(moduleCode)
                         + Serialiser.serialiseMessage(moduleName)
                         + Serialiser.serialiseMessage(moduleMc)
@@ -106,14 +97,14 @@ public class DataGenerator {
                 fileContent.append(line).append(System.lineSeparator());
 
             } catch (Exception e) {
-                System.err.println("Failed to generate data for " + code + ": " + e.getMessage());
+                System.err.println("Error processing module " + code + ": " + e.getMessage());
                 e.printStackTrace();
                 return null;
             }
         }
+
         return fileContent.toString();
     }
-
     /**
      * Serializes the complex List<List<String>> prerequisite structure.
      *
