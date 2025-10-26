@@ -47,3 +47,6 @@
 - Converting stored text data into in-memory objects (`Module`, `Major`, `Prerequisites`, `ModuleList`) through collaboration with the `Serialiser` class.
 
 Interactions mainly involve the `Serialiser` and the `modhero.data` model classes.
+
+## Serialiser
+###

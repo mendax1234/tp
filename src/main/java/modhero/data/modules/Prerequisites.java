@@ -23,18 +23,51 @@ public class Prerequisites {
     public List<List<String>> getPrereq() {
         return prereq;
     }
-
+    /**
+     * Serializes prerequisites into a doubly-serialized string format.
+     *
+     * Structure:
+     * 1. Each module code in a combination is serialized
+     * 2. Each combination is serialized together
+     *
+     * This produces a doubly-serialized blob that will be wrapped one more time
+     * by the caller (DataGenerator), resulting in triple serialization total.
+     *
+     * Example for [[CS1010, CS1101S], [CS1010E]]:
+     * - Serialize CS1010 → wrap1
+     * - Serialize CS1101S → wrap2
+     * - Serialize (wrap1 + wrap2) → combination1
+     * - Serialize CS1010E → wrap3
+     * - Serialize (wrap3) → combination2
+     * - Return combination1 + combination2 (doubly-serialized blob)
+     *
+     * @return doubly-serialized prerequisites string
+     */
     public String toFormatedString() {
         logger.log(Level.FINEST, "Serialising prerequisites");
 
-        Serialiser serialiser = new Serialiser();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (List<String> messageList : prereq) {
-            stringBuilder.append(serialiser.serialiseList(messageList));
+        if (prereq == null || prereq.isEmpty()) {
+            logger.log(Level.FINEST, "No prerequisites to serialize");
+            return ""; // Empty string for no prerequisites
         }
-        String serialisedList = serialiser.serialiseMessage(stringBuilder.toString());
 
-        logger.log(Level.FINEST, "Successful serialising list");
-        return serialisedList;
+        Serialiser serialiser = new Serialiser();
+        StringBuilder outerBuilder = new StringBuilder();
+
+        // For each combination (OR group of prerequisites)
+        for (List<String> combination : prereq) {
+            // LAYER 1: Serialize each module code in the combination
+            StringBuilder innerBuilder = new StringBuilder();
+            for (String moduleCode : combination) {
+                innerBuilder.append(serialiser.serialiseMessage(moduleCode));
+            }
+
+            // LAYER 2: Serialize the entire combination
+            outerBuilder.append(serialiser.serialiseMessage(innerBuilder.toString()));
+        }
+
+        String serialisedPrereqs = outerBuilder.toString();
+        logger.log(Level.FINEST, "Successfully serialized prerequisites (doubly-serialized)");
+        return serialisedPrereqs;
     }
 }

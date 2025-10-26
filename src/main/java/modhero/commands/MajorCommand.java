@@ -1,18 +1,17 @@
 package modhero.commands;
 
-import modhero.data.DataManager;
 import modhero.data.major.Major;
 import modhero.data.major.MajorModule;
 import modhero.data.modules.Module;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Defines the user's primary degree major.
- * Loads the relevant core modules and recommended study plan into the timetable.
+ * Loads the relevant core modules and recommended study plan from the
+ * pre-loaded Major object into the timetable.
  */
 public class MajorCommand extends Command {
     private static final Logger logger = Logger.getLogger(MajorCommand.class.getName());
@@ -49,11 +48,8 @@ public class MajorCommand extends Command {
 
     @Override
     public CommandResult execute() {
-
         logger.log(Level.INFO, "Executing Major Command");
 
-        //retrieve all available majors from the data manager
-        Map<String, Major> allMajorsData = DataManager.getAllMajorsData();
         //get the Major object corresponding to the selected major
         Major majorObject = allMajorsData.get(major);
 
@@ -67,7 +63,7 @@ public class MajorCommand extends Command {
         for (MajorModule mm : majorObject.getMajorModules()) {
             //create a new module (placeholder until allModulesData is implemented)
             Module m = new Module(mm.getCode(), "", 0, "", new ArrayList<>());
-            DataManager.getTimetable().addModule(mm.getYear() - 1, mm.getTerm() - 1, m);
+            timetable.addModule(mm.getYear() - 1, mm.getTerm() - 1, m);
         }
 
         logger.log(Level.INFO, () -> "Major successfully set to " + major);

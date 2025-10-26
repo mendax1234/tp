@@ -2,7 +2,6 @@ package modhero.storage;
 
 import modhero.common.exceptions.CorruptedDataFileException;
 import modhero.common.util.Deserialiser;
-import modhero.data.DataManager;
 import modhero.data.major.Major;
 import modhero.data.major.MajorModule;
 import modhero.data.modules.Module;
@@ -69,7 +68,7 @@ public class MajorLoader {
             }
 
             Major major = new Major(name, abbrName.toUpperCase(), majorModules);
-            DataManager.getAllMajorsData().put(abbrName.toLowerCase(), major);
+            allMajorsData.put(abbrName.toLowerCase(), major);
 
         }
     }

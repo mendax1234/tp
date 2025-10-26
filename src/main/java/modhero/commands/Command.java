@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public abstract class Command {
     public static final Logger logger = Logger.getLogger(Command.class.getName());
 
-    protected Timetable data;
+    protected Timetable timetable;
     protected ModuleList electiveList;
     protected ModuleList coreList;
     protected Map<String, Module> allModulesData;
@@ -27,21 +27,21 @@ public abstract class Command {
      * Sets the data context for the command, including the timetable
      * and lists of elective and core modules.
      *
-     * @param data the timetable to operate on
+     * @param timetable the timetable to operate on
      * @param electiveList the list of elective modules
      * @param coreList the list of core modules
      * @param allModulesData the hashmap for loading and saving data
      * @param allMajorsData the hashmap for major information
      */
-    public void setData(Timetable data, ModuleList electiveList, ModuleList coreList,
+    public void setData(Timetable timetable, ModuleList electiveList, ModuleList coreList,
                         Map<String, Module> allModulesData, Map<String, Major> allMajorsData) {
-        assert data != null : "Timetable must not be null";
+        assert timetable != null : "Timetable must not be null";
         assert electiveList != null : "Elective list must not be null";
         assert coreList != null : "Core list must not be null";
         assert allModulesData != null : "All modules map must not be null";
         assert allMajorsData != null : "All majors map must not be null";
 
-        this.data = data;
+        this.timetable = timetable;
         this.electiveList = electiveList;
         this.coreList = coreList;
         this.allModulesData = allModulesData;

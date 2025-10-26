@@ -20,11 +20,11 @@ import java.util.logging.Logger;
 public class DataManager {
     private static final Logger logger = Logger.getLogger(DataManager.class.getName());
 
-    private static Timetable timetable = null;
+    private final Timetable timetable;
     private final ModuleList electiveList;
     private final ModuleList coreList;
     private final Map<String, Module> allModulesData;
-    private static Map<String, Major> allMajorsData = Map.of();
+    private final Map<String, Major> allMajorsData;
     private final Storage preLoadModuleStorage;
     private final Storage preLoadMajorStorage;
 
@@ -64,7 +64,7 @@ public class DataManager {
     }
 
     // Getters
-    public static Timetable getTimetable() {
+    public Timetable getTimetable() {
         return timetable;
     }
 
@@ -80,7 +80,7 @@ public class DataManager {
         return allModulesData;
     }
 
-    public static Map<String, Major> getAllMajorsData() {
+    public Map<String, Major> getAllMajorsData() {
         return allMajorsData;
     }
 }

@@ -99,6 +99,9 @@ public class ModuleParser {
      * @return A list of lists, where each inner list represents one valid combination of module codes that satisfies the prerequisite requirement.
      */
     public static List<List<String>> parsePrereq(String json) {
+        if (json == null || json.equals("null") || json.isEmpty()) {
+            return new ArrayList<>();
+        }
         json = json.trim();
         // Parse JSON object (either "or" or "and")
         if (json.startsWith("{")) {
