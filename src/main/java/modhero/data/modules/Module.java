@@ -99,7 +99,7 @@ public class Module {
                 + serialiser.serialiseMessage(name)
                 + serialiser.serialiseMessage(Integer.toString(mc))
                 + serialiser.serialiseMessage(type)
-                + prerequisites.toFormatedString();
+                + serialiser.serialiseMessage(prerequisites.toFormatedString());
 
         logger.log(Level.FINEST, "Successful serialising module: " + code);
         return formattedString;
