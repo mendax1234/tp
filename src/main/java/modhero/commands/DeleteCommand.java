@@ -23,7 +23,12 @@ public class DeleteCommand extends Command {
     private final List<String> toDelete;
 
     public DeleteCommand(List<String> toDelete) {
-        this.toDelete = toDelete;
+        ArrayList<String> toDeleteUpperCase = new ArrayList<String>();
+        for (String module: toDelete){
+            module = module.toUpperCase();
+            toDeleteUpperCase.add(module);
+        }
+        this.toDelete = toDeleteUpperCase;
         logger.log(Level.FINEST, "Create delete electives: " + toDelete.toString());
     }
 
@@ -58,7 +63,7 @@ public class DeleteCommand extends Command {
 
         if (! modulesNotInTimetable.isEmpty()){
                message = message + "The following modules were not found in timetable: ";
-            for ( String module: modulesSucessfullyDeleted){
+            for ( String module: modulesNotInTimetable){
                 message = message + module + " ,";
             }
             message = message.substring(0, message.length() - 1) + "\n";
