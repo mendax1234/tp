@@ -1,7 +1,7 @@
 package modhero.commands;
 
-import modhero.data.modules.Module;
-
+import modhero.common.exceptions.ModuleNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,41 +20,50 @@ public class DeleteCommand extends Command {
             + "  Example: " + COMMAND_WORD + " CS2109S"
             + "  Example: " + COMMAND_WORD + " CS2109S CS3230 CS3219";
 
-    private final List<String> electives;
+    private final List<String> toDelete;
 
-    public DeleteCommand(List<String> electives) {
-        assert electives != null : "Elective list argument must not be null";
-        this.electives = electives;
-        logger.log(Level.FINEST, "Create delete electives: " + electives.toString());
+    public DeleteCommand(List<String> toDelete) {
+        this.toDelete = toDelete;
+        logger.log(Level.FINEST, "Create delete electives: " + toDelete.toString());
     }
 
 
     /** Searches for the corresponding module in electiveList and deletes it if found.*/
     @Override
     public CommandResult execute() {
-        logger.log(Level.INFO, "Executing Delete Command");
-        logger.log(Level.FINE, () -> String.format("Removing %d electives", electives.size()));
-
-        StringBuilder feedback = new StringBuilder("Electives removed: ");
-        for (String elective : electives) {
-            boolean isFound = false;
-            for (int i = 0; i < electives.size(); i++) {
-                Module module = electiveList.getList().get(i);
-                if (module.getCode().equals(elective)) {
-                    electiveList.remove(i);
-                    feedback.append(elective).append(" ");
-                    isFound = true;
-                    break;
-                }
+        if (toDelete == null || toDelete.isEmpty()){
+            //handle exception
+            return new CommandResult("No module specified to delete");
+        }
+        ArrayList<String> modulesSucessfullyDeleted = new ArrayList<>();
+        ArrayList<String> modulesNotInTimetable = new ArrayList<>();
+        for (String module: toDelete ){
+            try{
+                data.deleteModule(module);
+                modulesSucessfullyDeleted.add(module);
+            } catch (ModuleNotFoundException e) {
+                String moduleCodeNotFound = e.getModuleCode();
+                modulesNotInTimetable.add(moduleCodeNotFound);
             }
-
-            if (!isFound) {
-                feedback.append("Elective Not Found").append("\n");
-                return new CommandResult(feedback.toString());
-            }
-            feedback.append("\n");
         }
 
-        return new CommandResult(feedback.toString());
+        String message = "";
+        if ( ! modulesSucessfullyDeleted.isEmpty()){
+            message = " Successfully deleted : ";
+            for ( String module: modulesSucessfullyDeleted){
+                message = message + module + " ,";
+            }
+            message = message.substring(0, message.length() - 1) + "\n";
+        }
+
+        if (! modulesNotInTimetable.isEmpty()){
+               message = message + "The following modules were not found in timetable: ";
+            for ( String module: modulesSucessfullyDeleted){
+                message = message + module + " ,";
+            }
+            message = message.substring(0, message.length() - 1) + "\n";
+        }
+
+        return new CommandResult(message);
     }
 }
