@@ -1,5 +1,7 @@
 package modhero.commands;
 
+import static modhero.common.Constants.AcademicConstants.ACAD_YEAR;
+
 import modhero.data.modules.Module;
 import modhero.data.nusmods.ModuleRetriever; // Import the retriever
 import modhero.common.Constants;
@@ -41,7 +43,7 @@ public class AddCommand extends Command {
         if (module == null) {
             logger.log(Level.INFO, "Module " + moduleCode + " not in local data, trying API fetch...");
             // You need to define ACAD_YEAR in Constants.java, e.g., "2025-2026"
-            module = moduleRetriever.getModule(Constants.ACAD_YEAR, moduleCode);
+            module = moduleRetriever.getModule(ACAD_YEAR, moduleCode);
 
             if (module == null) {
                 // API fetch also failed

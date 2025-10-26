@@ -4,7 +4,6 @@ import static modhero.common.Constants.AcademicConstants.MAX_MODULES_PER_SEM;
 import static modhero.common.Constants.AcademicConstants.NUM_TERMS;
 import static modhero.common.Constants.AcademicConstants.NUM_YEARS;
 
-import modhero.data.major.MajorModule;
 import modhero.exceptions.ModuleNotFoundException;
 import modhero.data.modules.Module;
 

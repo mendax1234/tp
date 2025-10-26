@@ -1,6 +1,6 @@
 package modhero.commands;
 
-import modhero.common.exceptions.ModuleNotFoundException;
+import modhero.exceptions.ModuleNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
