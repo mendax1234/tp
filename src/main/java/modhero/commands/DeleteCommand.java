@@ -44,7 +44,7 @@ public class DeleteCommand extends Command {
         ArrayList<String> modulesNotInTimetable = new ArrayList<>();
         for (String module: toDelete ){
             try{
-                data.deleteModule(module);
+                timetable.deleteModule(module);
                 modulesSucessfullyDeleted.add(module);
             } catch (ModuleNotFoundException e) {
                 String moduleCodeNotFound = e.getModuleCode();
