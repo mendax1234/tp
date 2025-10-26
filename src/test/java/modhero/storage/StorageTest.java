@@ -3,7 +3,7 @@ package modhero.storage;
 import modhero.common.util.Serialiser;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
-import modhero.common.exceptions.CorruptedDataFileException;
+import modhero.exceptions.CorruptedDataFileException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package modhero.data.modules;
 
-import modhero.common.exceptions.CorruptedDataFileException; // Must import the exception
+import modhero.exceptions.CorruptedDataFileException; // Must import the exception
 import modhero.common.util.Serialiser;
 import modhero.common.util.Deserialiser;
 import org.junit.jupiter.api.Test;

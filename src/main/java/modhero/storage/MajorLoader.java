@@ -1,6 +1,6 @@
 package modhero.storage;
 
-import modhero.common.exceptions.CorruptedDataFileException;
+import modhero.exceptions.CorruptedDataFileException;
 import modhero.common.util.Deserialiser;
 import modhero.data.major.Major;
 import modhero.data.major.MajorModule;

@@ -1,10 +1,10 @@
 package modhero.storage;
 
-import modhero.common.exceptions.CorruptedDataFileException;
+import modhero.exceptions.CorruptedDataFileException;
 import modhero.common.util.Deserialiser;
 import modhero.data.modules.Module;
 import modhero.data.modules.Prerequisites;
-import modhero.storage.exceptions.ParsePrerequisitesException;
+import modhero.exceptions.ParsePrerequisitesException;
 
 import java.util.List;
 import java.util.Map;

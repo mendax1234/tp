@@ -1,7 +1,7 @@
 package modhero;
 
-import static modhero.common.Constants.MAJOR_FILE_PATH;
-import static modhero.common.Constants.MODULES_FILE_PATH;
+import static modhero.common.Constants.FilePathConstants.MAJOR_FILE_PATH;
+import static modhero.common.Constants.FilePathConstants.MODULES_FILE_PATH;
 
 import modhero.commands.Command;
 import modhero.commands.CommandResult;

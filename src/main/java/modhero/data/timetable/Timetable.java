@@ -1,8 +1,8 @@
 package modhero.data.timetable;
 
-import static modhero.common.Constants.MAX_MODULES_PER_SEM;
-import static modhero.common.Constants.NUM_TERMS;
-import static modhero.common.Constants.NUM_YEARS;
+import static modhero.common.Constants.AcademicConstants.MAX_MODULES_PER_SEM;
+import static modhero.common.Constants.AcademicConstants.NUM_TERMS;
+import static modhero.common.Constants.AcademicConstants.NUM_YEARS;
 
 import modhero.data.major.MajorModule;
 import modhero.data.modules.Module;
