@@ -32,7 +32,7 @@ public class DeserialisationUtil {
             List<String> message = deserialiseMessage(serialisedMessage);
             if (message == null) {
                 logger.log(Level.WARNING, "Corrupted data encountered during list deserialisation");
-                throw new CorruptedDataFileException();
+                throw new CorruptedDataFileException("Corrupted data encountered during list deserialisation");
             }
             deserialisedList.add(message);
         }

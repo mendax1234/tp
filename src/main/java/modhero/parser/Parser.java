@@ -5,7 +5,6 @@ import static modhero.common.Constants.MessageConstants.INVALID_COMMAND_FORMAT;
 import modhero.commands.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,8 +39,6 @@ public class Parser {
             return prepareMajorCommand(arguments);
         case AddCommand.COMMAND_WORD:
             return prepareAddCommand(arguments);
-        case ElectiveCommand.COMMAND_WORD:
-            return prepareElectiveCommand(arguments);
         case DeleteCommand.COMMAND_WORD:
             return prepareDeleteCommand(arguments);
         case ScheduleCommand.COMMAND_WORD:
@@ -77,36 +74,23 @@ public class Parser {
         return new MajorCommand(major, specialisation, minor);
     }
 
-    private Command prepareElectiveCommand(String args) {
-        if (args.isEmpty()) {
-            return new IncorrectCommand(String.format(INVALID_COMMAND_FORMAT, ElectiveCommand.MESSAGE_USAGE));
-        }
-        List<String> electiveList = new ArrayList<>();
-        String[] argsList =  args.split(" ");
-        for (String arg : argsList) {
-            electiveList.add(arg);
-        }
-        return new ElectiveCommand(electiveList);
-    }
-
     private Command prepareDeleteCommand(String args) {
         if (args.isEmpty()) {
             return new IncorrectCommand(String.format(INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
         }
-        List<String> electiveList = new ArrayList<>();
+        List<String> deleteList = new ArrayList<>();
         String[] argsList =  args.split(" ");
         for (String arg : argsList) {
-            electiveList.add(arg);
+            deleteList.add(arg);
         }
-        return new DeleteCommand(electiveList);
+        return new DeleteCommand(deleteList);
     }
 
     private Command prepareAddCommand(String args) {
         if (args.isEmpty()) {
             return new IncorrectCommand(String.format(INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
         }
-
-        // Expect format: add CS3240 to Y3S2
+        
         String[] parts = args.split("\\s+to\\s+");
         if (parts.length != 2) {
             return new IncorrectCommand("Invalid format. Use: add MODULE_CODE to YxSy");

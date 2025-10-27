@@ -58,9 +58,6 @@ public class Module {
         logger.log(Level.FINEST, "Module created: " + name + " (" + code + ")");
     }
 
-
-    /** Getters */
-
     /** @return the module code */
     public String getCode() {
         return code;
@@ -103,5 +100,17 @@ public class Module {
 
         logger.log(Level.FINEST, "Successful serialising module: " + code);
         return formattedString;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Module)) {
+            return false;
+        }
+        Module module = (Module) obj;
+        return code.equals(module.code);
     }
 }

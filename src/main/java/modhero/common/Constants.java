@@ -4,6 +4,7 @@ public final class Constants {
 
     public static final class MessageConstants {
         public static final String INVALID_COMMAND_FORMAT = "Invalid command format! \n%1$s";
+        public static final String ARRAY_INDEX_OUT_BOUND = "(Your index is out of bound)";
     }
 
     public static final class AcademicConstants {
