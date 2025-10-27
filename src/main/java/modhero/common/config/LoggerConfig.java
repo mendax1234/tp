@@ -6,7 +6,6 @@ import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
 import modhero.parser.Parser;
-import modhero.data.timetable.Planner;
 import modhero.data.timetable.Timetable;
 
 import java.util.logging.Level;
@@ -27,7 +26,6 @@ public class LoggerConfig {
         setLoggerLevel(Parser.class, level);
         setLoggerLevel(Command.class, level);
         setLoggerLevel(MajorCommand.class, level);
-        setLoggerLevel(ElectiveCommand.class, level);
         setLoggerLevel(DeleteCommand.class, level);
         setLoggerLevel(ScheduleCommand.class, level);
         setLoggerLevel(ClearCommand.class, level);
@@ -36,7 +34,6 @@ public class LoggerConfig {
         setLoggerLevel(Major.class, level);
         setLoggerLevel(Module.class, level);
         setLoggerLevel(ModuleList.class, level);
-        setLoggerLevel(Planner.class, level);
         setLoggerLevel(Timetable.class, level);
     }
 
