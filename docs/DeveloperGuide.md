@@ -2,43 +2,72 @@
 
 ## Acknowledgements
 
-{list here sources of all reused/adapted ideas, code, documentation, and third-party libraries -- include links to the original source as well}
+This project was built based on the architecture and documentation style of [AddressBook-Level3 (AB3)](https://se-education.org/addressbook-level3/).  
+Concepts, diagram formats, and document structure have been adapted from it for educational purposes.
 
-## Design & implementation
+---
 
-{Describe the design and implementation of the product. Use UML diagrams and short code snippets where applicable.}
+## Design & Implementation
+
+This section describes the overall design of **ModHero**, followed by explanations of each major component.  
+It serves as a roadmap for future developers to understand how the system is structured, how the components interact, and how each part fulfills its role.
+
+---
+
 ## High-Level Architecture
-![High Level Architecture Diagram](High-Level Architecture.png)
-## Product scope
-### Target user profile
 
-{Describe the target user profile}
+![High Level Architecture Diagram](High-Level%20Architecture.png)
 
-### Value proposition
+The **ModHero** architecture follows a modular structure inspired by AddressBook-Level3.  
+It comprises four main components:
+- **UI** — Handles user interaction and display.
+- **Logic** — Parses and executes user commands.
+- **Model** — Maintains in-memory data (modules, majors, timetable).
+- **Storage** — Manages persistent data on disk.
 
-{Describe the value proposition: what problem does it solve?}
+At launch, `Main` initializes these components and connects them.  
+At shutdown, it ensures all data is saved correctly to persistent storage.
 
-## User Stories
+---
 
-|Version| As a ... | I want to ... | So that I can ...|
-|--------|----------|---------------|------------------|
-|v1.0|new user|see usage instructions|refer to them when I forget how to use the application|
-|v2.0|user|find a to-do item by name|locate a to-do without having to go through the entire list|
+## Model Component
 
-## Non-Functional Requirements
+**API:** `Model.java`
 
-{Give non-functional requirements}
+The **Model component** is responsible for managing all in-memory data of ModHero.  
+It encapsulates the application’s state — including modules, majors, prerequisites, and the user’s 4-year timetable — and provides APIs for other components to access or modify this data safely.
 
-## Glossary
+It resides in the package `modhero.data` and its sub-packages:
+- `modhero.data.major`
+- `modhero.data.modules`
+- `modhero.data.timetable`
 
-* *glossary item* - Definition
+### Structure of the Model Component
 
-## Instructions for manual testing
+![Model Class Diagram](ModelClassDiagram.png)  
+*Figure 1 – UML class diagram showing relationships within the Model component.*
 
-{Give instructions on how to do a manual product testing e.g., how to load sample data to be used for testing}
+### Key Responsibilities
 
+- **DataManager** – Central data coordinator that loads, stores, and provides access to model entities.
+- **Timetable** – Maintains the 4-year plan, organizing modules by year and semester.
+- **Module** – Represents an individual module with code, name, MCs, and prerequisite structure.
+- **ModuleList** – Groups modules logically (e.g., core or elective).
+- **Prerequisites** – Captures module prerequisites as nested lists.
+- **MajorData** – Defines core module sets for each supported major.
+- **TimetableModule** – Extends `Module` by adding `year` and `term` fields to specify when a module is taken.
 
-## Storage Overview
+### Design Rationale
+
+- **Inheritance:** `TimetableModule` *is-a* `Module`, enriched with temporal (year, term) information.
+- **Composition:** `DataManager` *has-a* `Timetable`, `ModuleList`, and `Prerequisites` — they exist only while `DataManager` exists.
+- **Aggregation:** Modules and majors can exist independently and are aggregated under `DataManager`.
+
+This separation allows the Model to remain cohesive yet modular, enabling clean integration with other components such as Storage and Logic.
+
+---
+
+## Storage Component
 
 `Storage` is part of the `modhero.storage` package and is responsible for:
 - Maintaining file structure integrity.
@@ -48,5 +77,51 @@
 
 Interactions mainly involve the `Serialiser` and the `modhero.data` model classes.
 
+---
+
 ## Serialiser
-###
+
+The **Serialiser** component handles the conversion between in-memory objects and text representations for persistent storage.  
+It performs:
+- Object-to-text serialization when saving.
+- Text-to-object deserialization when loading.
+- Validation of stored data before converting it into usable `Module` or `Major` objects.
+
+The Serialiser works closely with `DataManager` to maintain data consistency across sessions.
+
+---
+
+## Product Scope
+
+### Target User Profile
+{Describe the target user profile.}
+
+### Value Proposition
+{Describe the value proposition: what problem does it solve?}
+
+---
+
+## User Stories
+
+|Version| As a ... | I want to ... | So that I can ...|
+|--------|----------|---------------|------------------|
+|v1.0|new user|see usage instructions|refer to them when I forget how to use the application|
+|v2.0|user|find a to-do item by name|locate a to-do without having to go through the entire list|
+
+---
+
+## Non-Functional Requirements
+
+{Give non-functional requirements.}
+
+---
+
+## Glossary
+
+* *glossary item* — Definition.
+
+---
+
+## Instructions for Manual Testing
+
+{Give instructions on how to do manual testing, e.g., how to load sample data or verify stored files.}
