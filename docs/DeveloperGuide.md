@@ -68,26 +68,18 @@ This separation allows the Model to remain cohesive yet modular, enabling clean 
 ---
 
 ## Storage Component
+![storageUML.png](storageUML.png)
+The Storage component is responsible for loading and saving essential application data.
+It reads text files from predefined directories and converts their contents into a structured, accessible format for other components to process.
 
-`Storage` is part of the `modhero.storage` package and is responsible for:
-- Maintaining file structure integrity.
-- Reading raw data lines from disk.
-- Writing serialized objects back to files.
-- Converting stored text data into in-memory objects (`Module`, `Major`, `Prerequisites`, `ModuleList`) through collaboration with the `Serialiser` class.
+Two primary classes, ModuleLoader and MajorLoader, rely on Storage to retrieve module and major data.
+These loaders then deserialize the loaded text into objects such as Module, Major, and Prerequisites, which are stored in in-memory hash maps for efficient access.
+The process is supported by two utility classes, SerialisationUtil and DeserialisationUtil, which enhance data conversion and validation.
 
-Interactions mainly involve the `Serialiser` and the `modhero.data` model classes.
+Each text file is stored in a unique, well-defined format, ensuring accurate data retrieval without missing words or parsing errors.
+Deserialization also serves as a validation step, confirming that the entire file has been successfully read and processed.
 
----
-
-## Serialiser
-
-The **Serialiser** component handles the conversion between in-memory objects and text representations for persistent storage.  
-It performs:
-- Object-to-text serialization when saving.
-- Text-to-object deserialization when loading.
-- Validation of stored data before converting it into usable `Module` or `Major` objects.
-
-The Serialiser works closely with `DataManager` to maintain data consistency across sessions.
+To maintain data integrity and readability, all data should be serialized before saving, ensuring a consistent and reliable file structure for future loading operations.
 
 ---
 
