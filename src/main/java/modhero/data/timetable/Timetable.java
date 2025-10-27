@@ -3,6 +3,7 @@ package modhero.data.timetable;
 import static modhero.common.Constants.AcademicConstants.MAX_MODULES_PER_SEM;
 import static modhero.common.Constants.AcademicConstants.NUM_TERMS;
 import static modhero.common.Constants.AcademicConstants.NUM_YEARS;
+import static modhero.common.Constants.MessageConstants.ARRAY_INDEX_OUT_BOUND;
 
 import modhero.exceptions.ModuleNotFoundException;
 import modhero.data.modules.Module;
@@ -45,33 +46,32 @@ public class Timetable {
     /**
      * Adds a module to the timetable, performing all business logic checks.
      *
-     * @param module The Module object to add.
-     * @param year The academic year (1-based).
+     * @param module   The Module object to add.
+     * @param year     The academic year (1-based).
      * @param semester The semester (1-based).
      * @return A CommandResult string indicating success, overload, or failure.
      */
     public String addModule(int year, int semester, Module module) {
-        // 1. Check if already exists in timetable
+        // Check if already exists in timetable
         if (this.getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(module.getCode()))) {
             return module.getCode() + " is already in your timetable!";
         }
 
-        // 2. Check prerequisites
+        // Check prerequisites
         PrereqGraph prereqGraph = new PrereqGraph(this.getAllModules());
         if (!prereqGraph.hasMetPrerequisites(module)) {
             return "Prerequisites not met for " + module.getCode();
         }
 
-        // 3. Add to timetable (using the 0-based private method)
+        // Add to timetable (using the 0-based private method)
         this.addModuleInternal(year - 1, semester - 1, module);
 
-        // 4. Check for overload *after* adding
+        // Check for overload *after* adding
         if (this.getModules(year - 1, semester - 1).size() > MAX_MODULES_PER_SEM) {
             return "You are overloading this semester! Please seek help if you need to. ("
                     + module.getCode() + " added)";
         }
 
-        // 5. Success
         return module.getCode() + " added successfully to Y" + year + "S" + semester + "!";
     }
 
@@ -79,8 +79,8 @@ public class Timetable {
      * Internal method to add a module to a specific year and term.
      * No checks are performed here.
      *
-     * @param year the year index (0-based)
-     * @param term the term index (0-based)
+     * @param year   the year index (0-based)
+     * @param term   the term index (0-based)
      * @param module the module to add
      */
     public void addModuleInternal(int year, int term, Module module) {
@@ -95,57 +95,58 @@ public class Timetable {
     /**
      * Removes a module from a specific year and term by module code.
      *
-     * @param year the year index (0-based)
-     * @param term the term index (0-based)
-     * @param moduleCode the code of the module to remove
+     * @param year       the year index (0-based)
+     * @param term       the term index (0-based)
+     * @param targetModule the module to remove
      * @return {@code true} if a module was removed, {@code false} otherwise
      */
-    public boolean removeModule(int year, int term, String moduleCode) throws ArrayIndexOutOfBoundsException{
-        if ( year < 0 || year > NUM_YEARS || term < 0 || term > NUM_TERMS){
+    public boolean removeModule(int year, int term, Module targetModule) throws ArrayIndexOutOfBoundsException {
+        if (year < 0 || year >= NUM_YEARS || term < 0 || term >= NUM_TERMS) {
             throw new ArrayIndexOutOfBoundsException();
         }
 
         boolean hasRemoved = timetable.get(year).get(term)
-                .removeIf(m -> m.getCode().equals(moduleCode));
+                .removeIf(m -> m.equals(targetModule));
 
         if (hasRemoved) {
-            logger.log(Level.FINEST, () -> String.format("Module %s removed from year %d term %d", moduleCode, year, term));
+            logger.log(Level.FINEST, () -> String.format("Module %s removed from year %d term %d", targetModule.getCode(), year, term));
         }
         return hasRemoved;
     }
+
     /**
      * Finds the year and term indices where a module is scheduled.
      *
-     * @param moduleCode the code of the module to find
+     * @param targetModule the module to find
      * @return an int array [year, term] where the module is found, or null if not found
      */
-    public int[] findModuleLocation(String moduleCode) throws ModuleNotFoundException {
+    public int[] findModuleLocation(Module targetModule) throws ModuleNotFoundException {
         for (int year = 0; year < timetable.size(); year++) {
             List<List<Module>> yearSemesters = timetable.get(year);
             for (int term = 0; term < yearSemesters.size(); term++) {
                 List<Module> modules = yearSemesters.get(term);
                 for (Module module : modules) {
-                    if (module.getCode().equals(moduleCode)) {
+                    if (module.equals(targetModule)) {
                         return new int[]{year, term};
                     }
                 }
             }
         }
 
-        throw new ModuleNotFoundException(moduleCode);
+        throw new ModuleNotFoundException(targetModule, "timetable");
     }
 
-    public void deleteModule(String code) throws ModuleNotFoundException {
+    public void deleteModule(Module targetModule) throws ModuleNotFoundException {
         int[] moduleLocation = new int[2]; // {year, term}
         try {
-            moduleLocation = findModuleLocation(code);
-        }catch (ModuleNotFoundException e){
+            moduleLocation = findModuleLocation(targetModule);
+        } catch (ModuleNotFoundException e) {
             throw e;
         }
-        try{
-            removeModule(moduleLocation[0], moduleLocation[1], code);
-        }catch (ArrayIndexOutOfBoundsException e){
-            throw new ModuleNotFoundException(code);
+        try {
+            removeModule(moduleLocation[0], moduleLocation[1], targetModule);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ModuleNotFoundException(targetModule, "timetable." + ARRAY_INDEX_OUT_BOUND);
         }
     }
 
@@ -183,8 +184,6 @@ public class Timetable {
      * organized by year and term in table format.
      */
     public void printTimetable() {
-        int COL_WIDTH = 20;
-
         for (int year = 0; year < timetable.size(); year++) {
             System.out.println("+--------------------+--------------------+");
             String yearTitle = "YEAR " + (year + 1);
@@ -211,7 +210,7 @@ public class Timetable {
      * Pads the given text with spaces or truncates it so that
      * it fits within a fixed-width table cell.
      *
-     * @param text the text to pad
+     * @param text  the text to pad
      * @param width the fixed width of the cell
      * @return the padded (or truncated) string
      */
