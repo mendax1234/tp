@@ -1,7 +1,7 @@
 package modhero.data.timetable;
 
-import static modhero.common.Constants.NUM_TERMS;
-import static modhero.common.Constants.NUM_YEARS;
+import static modhero.common.Constants.AcademicConstants.NUM_TERMS;
+import static modhero.common.Constants.AcademicConstants.NUM_YEARS;
 
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;

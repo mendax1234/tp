@@ -1,13 +1,14 @@
 package modhero.common.predata;
 
-import modhero.common.Constants;
-import modhero.common.util.Serialiser;
+import static modhero.common.Constants.FilePathConstants.MAJOR_FILE_PATH;
+import static modhero.common.Constants.FilePathConstants.MODULES_FILE_PATH;
+
+import modhero.common.util.SerialisationUtil;
 import modhero.data.nusmods.NusmodsAPIClient;
 import modhero.parser.ModuleParser;
 import modhero.storage.Storage;
 import modhero.data.modules.Module;
 import modhero.data.modules.Prerequisites;
-import modhero.common.predata.MajorSchedule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,9 +33,9 @@ public class DataGenerator {
         System.out.println("Fetching live module data from NUSMods API...");
         String moduleFileContent = generateModulesTxt();
         if (moduleFileContent != null) {
-            Storage moduleStorage = new Storage(Constants.MODULES_FILE_PATH);
+            Storage moduleStorage = new Storage(MODULES_FILE_PATH);
             moduleStorage.save(moduleFileContent);
-            System.out.println("Successfully saved to " + Constants.MODULES_FILE_PATH);
+            System.out.println("Successfully saved to " + MODULES_FILE_PATH);
         } else {
             System.err.println("Failed to generate module data. File not saved.");
         }
@@ -42,9 +43,10 @@ public class DataGenerator {
         // 2. Generate Major Data
         System.out.println("\nGenerating major data...");
         String majorFileContent = generateMajorsTxt();
-        Storage majorStorage = new Storage(Constants.MAJOR_FILE_PATH);
+        Storage majorStorage = new Storage(MAJOR_FILE_PATH);
+
         majorStorage.save(majorFileContent);
-        System.out.println("Successfully saved to " + Constants.MAJOR_FILE_PATH);
+        System.out.println("Successfully saved to " + MAJOR_FILE_PATH);
     }
 
     private static String generateModulesTxt() {
@@ -97,11 +99,11 @@ public class DataGenerator {
                 String desc = "core";
 
                 // Build the module line with triple-serialized prerequisites
-                String line = Serialiser.serialiseMessage(moduleCode)
-                        + Serialiser.serialiseMessage(moduleName)
-                        + Serialiser.serialiseMessage(moduleMc)
-                        + Serialiser.serialiseMessage(desc)
-                        + Serialiser.serialiseMessage(serialisedPrereqsBlob);
+                String line = SerialisationUtil.serialiseMessage(moduleCode)
+                        + SerialisationUtil.serialiseMessage(moduleName)
+                        + SerialisationUtil.serialiseMessage(moduleMc)
+                        + SerialisationUtil.serialiseMessage(desc)
+                        + SerialisationUtil.serialiseMessage(serialisedPrereqsBlob);
 
                 fileContent.append(line).append(System.lineSeparator());
 
@@ -145,11 +147,11 @@ public class DataGenerator {
             // WRAP 1: Serialize each module code
             StringBuilder comboBuilder = new StringBuilder();
             for (String moduleCode : combo) {
-                comboBuilder.append(Serialiser.serialiseMessage(moduleCode));
+                comboBuilder.append(SerialisationUtil.serialiseMessage(moduleCode));
             }
 
             // WRAP 2: Serialize the entire combination
-            prereqBlobBuilder.append(Serialiser.serialiseMessage(comboBuilder.toString()));
+            prereqBlobBuilder.append(SerialisationUtil.serialiseMessage(comboBuilder.toString()));
         }
 
         // Return the doubly-serialized blob
@@ -192,16 +194,16 @@ public class DataGenerator {
                 yearSem = new int[]{0, 0};
             }
 
-            String tripletContent = Serialiser.serialiseMessage(code)
-                    + Serialiser.serialiseMessage(String.valueOf(yearSem[0]))
-                    + Serialiser.serialiseMessage(String.valueOf(yearSem[1]));
+            String tripletContent = SerialisationUtil.serialiseMessage(code)
+                    + SerialisationUtil.serialiseMessage(String.valueOf(yearSem[0]))
+                    + SerialisationUtil.serialiseMessage(String.valueOf(yearSem[1]));
 
-            modulesBlobBuilder.append(Serialiser.serialiseMessage(tripletContent));
+            modulesBlobBuilder.append(SerialisationUtil.serialiseMessage(tripletContent));
         }
         String modulesBlob = modulesBlobBuilder.toString();
-        String line = Serialiser.serialiseMessage(name)
-                + Serialiser.serialiseMessage(abbr)
-                + Serialiser.serialiseMessage(modulesBlob);
+        String line = SerialisationUtil.serialiseMessage(name)
+                + SerialisationUtil.serialiseMessage(abbr)
+                + SerialisationUtil.serialiseMessage(modulesBlob);
         return line;
     }
 }

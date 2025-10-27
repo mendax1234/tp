@@ -1,4 +1,4 @@
-package modhero.common.exceptions;
+package modhero.exceptions;
 
 public class ModuleNotFoundException extends Exception {
     private String moduleCode;

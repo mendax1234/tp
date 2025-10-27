@@ -1,9 +1,9 @@
 package modhero.storage;
 
-import modhero.common.util.Serialiser;
+import modhero.common.util.SerialisationUtil;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
-import modhero.common.exceptions.CorruptedDataFileException;
+import modhero.exceptions.CorruptedDataFileException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,14 +31,14 @@ public class StorageTest {
 
     private File tempFile;
     private Storage storage;
-    private Serialiser serialiser;
+    private SerialisationUtil serialisationUtil;
 
     @BeforeEach
     void setUp() throws IOException {
         // We still use a specific temp file for most save/load tests
         tempFile = File.createTempFile("modhero_test", ".txt");
         storage = new Storage(tempFile.getAbsolutePath());
-        serialiser = new Serialiser();
+        serialisationUtil = new SerialisationUtil();
     }
 
     @AfterEach
@@ -129,14 +129,14 @@ public class StorageTest {
     void loadAllModulesData_success() throws IOException {
         // A. Create the mock file content
         // Line 1: CS2040, prereq CS1010
-        String prereq1 = serialiser.serialiseMessage("CS1010");
+        String prereq1 = serialisationUtil.serialiseMessage("CS1010");
         List<String> module1Args = List.of("CS2040", "Data Structures", "4", "core", prereq1);
-        String line1 = serialiser.serialiseList(module1Args);
+        String line1 = serialisationUtil.serialiseList(module1Args);
 
         // Line 2: CS1010, no prereq
-        String noPrereq = serialiser.serialiseMessage("");
+        String noPrereq = serialisationUtil.serialiseMessage("");
         List<String> module2Args = List.of("CS1010", "Programming", "4", "core", noPrereq);
-        String line2 = serialiser.serialiseList(module2Args);
+        String line2 = serialisationUtil.serialiseList(module2Args);
 
         // B. Save the content to the file
         storage.save(line1 + "\n" + line2);
@@ -173,7 +173,7 @@ public class StorageTest {
     void loadAllModulesData_skipsOnWrongArgumentCount() {
         // Create a line with only 3 arguments instead of 5
         List<String> moduleArgs = List.of("CS1010", "Programming", "4");
-        String line1 = serialiser.serialiseList(moduleArgs);
+        String line1 = serialisationUtil.serialiseList(moduleArgs);
         storage.save(line1);
 
         Map<String, Module> map = new HashMap<>();
@@ -186,9 +186,9 @@ public class StorageTest {
     @Test
     void loadAllModulesData_skipsOnInvalidModuleCredit() {
         // Create a line where MC is "four", not "4"
-        String noPrereq = serialiser.serialiseMessage("");
+        String noPrereq = serialisationUtil.serialiseMessage("");
         List<String> moduleArgs = List.of("CS1010", "Programming", "four", "core", noPrereq);
-        String line1 = serialiser.serialiseList(moduleArgs);
+        String line1 = serialisationUtil.serialiseList(moduleArgs);
         storage.save(line1);
 
         Map<String, Module> map = new HashMap<>();
@@ -211,9 +211,9 @@ public class StorageTest {
 
         // B. Create the mock file content
         // Line 1: Computer Science, requires CS1010 and CS2040
-        String reqModules = serialiser.serialiseMessage("CS1010") + serialiser.serialiseMessage("CS2040");
+        String reqModules = serialisationUtil.serialiseMessage("CS1010") + serialisationUtil.serialiseMessage("CS2040");
         List<String> majorArgs = List.of("Computer Science", "CS", reqModules);
-        String line1 = serialiser.serialiseList(majorArgs);
+        String line1 = serialisationUtil.serialiseList(majorArgs);
         storage.save(line1);
 
         // C. Run the method and assert
@@ -240,9 +240,9 @@ public class StorageTest {
         Map<String, Module> allModulesData = new HashMap<>();
 
         // B. Create file: Major requires "CS1010", but it's not in the map
-        String reqModules = serialiser.serialiseMessage("CS1010");
+        String reqModules = serialisationUtil.serialiseMessage("CS1010");
         List<String> majorArgs = List.of("Computer Science", "CS", reqModules);
-        String line1 = serialiser.serialiseList(majorArgs);
+        String line1 = serialisationUtil.serialiseList(majorArgs);
         storage.save(line1);
 
         // C. Run and assert
@@ -274,7 +274,7 @@ public class StorageTest {
     void loadAllMajorsData_skipsOnWrongArgumentCount() {
         // Create a line with only 2 arguments instead of 3
         List<String> majorArgs = List.of("Computer Science", "CS");
-        String line1 = serialiser.serialiseList(majorArgs);
+        String line1 = serialisationUtil.serialiseList(majorArgs);
         storage.save(line1);
 
         Map<String, Module> modules = new HashMap<>();

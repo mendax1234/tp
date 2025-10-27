@@ -1,4 +1,4 @@
-package modhero.common.util;
+package modhero.common.config;
 
 import modhero.ModHero;
 import modhero.commands.*;

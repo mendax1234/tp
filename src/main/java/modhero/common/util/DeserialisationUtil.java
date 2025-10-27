@@ -1,20 +1,20 @@
 package modhero.common.util;
 
-import modhero.common.exceptions.CorruptedDataFileException;
+import static modhero.common.Constants.FormatConstants.END_DELIMITER;
+import static modhero.common.Constants.FormatConstants.START_DELIMITER;
+
+import modhero.exceptions.CorruptedDataFileException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static modhero.common.Constants.FORMATED_STRING_END_DELIMITER;
-import static modhero.common.Constants.FORMATED_STRING_START_DELIMITER;
-
 /**
  * Provides utility methods for deserialising strings back into their original string lists.
  */
-public class Deserialiser {
-    private static final Logger logger = Logger.getLogger(Deserialiser.class.getName());
+public class DeserialisationUtil {
+    private static final Logger logger = Logger.getLogger(DeserialisationUtil.class.getName());
 
     /**
      * Deserialises a list of serialised strings into a nested list structure.
@@ -55,7 +55,7 @@ public class Deserialiser {
         int serialisedTaskLength = serialisedMessage.length();
 
         while (currentIndex < serialisedTaskLength) {
-            int delimiterIndex = serialisedMessage.indexOf(FORMATED_STRING_START_DELIMITER, currentIndex);
+            int delimiterIndex = serialisedMessage.indexOf(START_DELIMITER, currentIndex);
             boolean isDelimiterMissing = delimiterIndex == -1;
             if (isDelimiterMissing) {
                 logger.log(Level.WARNING, "Delimiter missing during deserialisation, " + serialisedMessage);
@@ -69,7 +69,7 @@ public class Deserialiser {
                 return null;
             }
 
-            currentIndex = delimiterIndex + FORMATED_STRING_START_DELIMITER.length();
+            currentIndex = delimiterIndex + START_DELIMITER.length();
             int nextIndex = currentIndex + argumentLength;
             if (nextIndex > serialisedTaskLength) {
                 logger.log(Level.WARNING, "Argument length exceeds message size, " + serialisedMessage);
@@ -78,7 +78,7 @@ public class Deserialiser {
 
             String argument = serialisedMessage.substring(currentIndex, nextIndex);
             message.add(argument);
-            currentIndex = nextIndex + FORMATED_STRING_END_DELIMITER.length();
+            currentIndex = nextIndex + END_DELIMITER.length();
         }
 
         logger.log(Level.FINEST, "Successful deserialising:" + serialisedMessage);
@@ -90,8 +90,8 @@ public class Deserialiser {
      * Extracts the substring between 'start' and 'end', and converts it to an integer.
      *
      * @param serialisedTask the serialized string
-     * @param startIndex the starting index of the substring
-     * @param endIndex the ending index (exclusive) of the substring
+     * @param startIndex     the starting index of the substring
+     * @param endIndex       the ending index (exclusive) of the substring
      * @return the parsed integer length, or -1 if parsing fails
      */
     private static int parseComponentLength(String serialisedTask, int startIndex, int endIndex) {

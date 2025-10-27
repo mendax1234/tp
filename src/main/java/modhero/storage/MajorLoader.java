@@ -1,7 +1,7 @@
 package modhero.storage;
 
-import modhero.common.exceptions.CorruptedDataFileException;
-import modhero.common.util.Deserialiser;
+import modhero.exceptions.CorruptedDataFileException;
+import modhero.common.util.DeserialisationUtil;
 import modhero.data.major.Major;
 import modhero.data.major.MajorModule;
 import modhero.data.modules.Module;
@@ -49,16 +49,16 @@ public class MajorLoader {
         List<String> rawMajorsList = storage.load();
 
         for (String aa : rawMajorsList) {
-            List<String> majorTop = Deserialiser.deserialiseMessage(aa);
+            List<String> majorTop = DeserialisationUtil.deserialiseMessage(aa);
             String name       = majorTop.get(0);
             String abbrName  = majorTop.get(1);
             String modulesBlob = majorTop.get(2);
 
-            List<String> moduleYTList = Deserialiser.deserialiseMessage(modulesBlob);
+            List<String> moduleYTList = DeserialisationUtil.deserialiseMessage(modulesBlob);
 
             List<MajorModule> majorModules = new ArrayList<>();
             for (String moduleYT : moduleYTList) {
-                List<String> triplet = Deserialiser.deserialiseMessage(moduleYT);
+                List<String> triplet = DeserialisationUtil.deserialiseMessage(moduleYT);
                 String code = triplet.get(0);
                 int year    = Integer.parseInt(triplet.get(1));
                 int sem     = Integer.parseInt(triplet.get(2));

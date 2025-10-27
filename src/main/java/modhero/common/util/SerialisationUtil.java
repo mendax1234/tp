@@ -1,19 +1,19 @@
 package modhero.common.util;
 
+import static modhero.common.Constants.FormatConstants.END_DELIMITER;
+import static modhero.common.Constants.FormatConstants.START_DELIMITER;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static modhero.common.Constants.FORMATED_STRING_END_DELIMITER;
-import static modhero.common.Constants.FORMATED_STRING_START_DELIMITER;
 
 /**
  * Provides utility methods for serialising strings and string lists into a
  * length-prefixed format suitable for persistent storage.
  * Serialisation Format: [length of content][START_DELIMITER][content][END_DELIMITER]
  */
-public class Serialiser {
-    private static final Logger logger = Logger.getLogger(Serialiser.class.getName());
+public class SerialisationUtil {
+    private static final Logger logger = Logger.getLogger(SerialisationUtil.class.getName());
 
     /**
      * Serialises a list of strings into a format suitable for file storage.
@@ -44,7 +44,7 @@ public class Serialiser {
     public static String serialiseMessage(String message) {
         assert message != null : "serialiseMessage message must not be null";
 
-        String serialisedMessage = message.length() + FORMATED_STRING_START_DELIMITER + message + FORMATED_STRING_END_DELIMITER;
+        String serialisedMessage = message.length() + START_DELIMITER + message + END_DELIMITER;
 
         logger.log(Level.FINEST, "Successful serialising message: " + serialisedMessage);
         return serialisedMessage;

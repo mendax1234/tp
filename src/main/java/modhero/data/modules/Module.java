@@ -1,6 +1,6 @@
 package modhero.data.modules;
 
-import modhero.common.util.Serialiser;
+import modhero.common.util.SerialisationUtil;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -94,12 +94,12 @@ public class Module {
     public String toFormatedString() {
         logger.log(Level.FINEST, "Serialising module: " + code);
 
-        Serialiser serialiser = new Serialiser();
-        String formattedString = serialiser.serialiseMessage(code)
-                + serialiser.serialiseMessage(name)
-                + serialiser.serialiseMessage(Integer.toString(mc))
-                + serialiser.serialiseMessage(type)
-                + serialiser.serialiseMessage(prerequisites.toFormatedString());
+        SerialisationUtil serialisationUtil = new SerialisationUtil();
+        String formattedString = serialisationUtil.serialiseMessage(code)
+                + serialisationUtil.serialiseMessage(name)
+                + serialisationUtil.serialiseMessage(Integer.toString(mc))
+                + serialisationUtil.serialiseMessage(type)
+                + serialisationUtil.serialiseMessage(prerequisites.toFormatedString());
 
         logger.log(Level.FINEST, "Successful serialising module: " + code);
         return formattedString;

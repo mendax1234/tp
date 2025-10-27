@@ -1,4 +1,4 @@
-package modhero.common.exceptions;
+package modhero.exceptions;
 
 public class CorruptedDataFileException extends Exception{
     public CorruptedDataFileException() {

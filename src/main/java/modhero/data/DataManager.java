@@ -1,6 +1,6 @@
 package modhero.data;
 
-import modhero.common.exceptions.CorruptedDataFileException;
+import modhero.exceptions.CorruptedDataFileException;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;

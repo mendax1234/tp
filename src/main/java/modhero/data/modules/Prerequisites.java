@@ -1,6 +1,6 @@
 package modhero.data.modules;
 
-import modhero.common.util.Serialiser;
+import modhero.common.util.SerialisationUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class Prerequisites {
             return ""; // Empty string for no prerequisites
         }
 
-        Serialiser serialiser = new Serialiser();
+        SerialisationUtil serialisationUtil = new SerialisationUtil();
         StringBuilder outerBuilder = new StringBuilder();
 
         // For each combination (OR group of prerequisites)
@@ -59,11 +59,11 @@ public class Prerequisites {
             // LAYER 1: Serialize each module code in the combination
             StringBuilder innerBuilder = new StringBuilder();
             for (String moduleCode : combination) {
-                innerBuilder.append(serialiser.serialiseMessage(moduleCode));
+                innerBuilder.append(serialisationUtil.serialiseMessage(moduleCode));
             }
 
             // LAYER 2: Serialize the entire combination
-            outerBuilder.append(serialiser.serialiseMessage(innerBuilder.toString()));
+            outerBuilder.append(serialisationUtil.serialiseMessage(innerBuilder.toString()));
         }
 
         String serialisedPrereqs = outerBuilder.toString();

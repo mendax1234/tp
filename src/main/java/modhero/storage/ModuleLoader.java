@@ -1,10 +1,10 @@
 package modhero.storage;
 
-import modhero.common.exceptions.CorruptedDataFileException;
-import modhero.common.util.Deserialiser;
+import modhero.exceptions.CorruptedDataFileException;
+import modhero.common.util.DeserialisationUtil;
 import modhero.data.modules.Module;
 import modhero.data.modules.Prerequisites;
-import modhero.storage.exceptions.ParsePrerequisitesException;
+import modhero.exceptions.ParsePrerequisitesException;
 
 import java.util.List;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class ModuleLoader {
         logger.log(Level.FINEST, "Loading all modules data");
 
         List<String> rawModulesList = storage.load();
-        List<List<String>> allModulesList = Deserialiser.deserialiseList(rawModulesList);
+        List<List<String>> allModulesList = DeserialisationUtil.deserialiseList(rawModulesList);
 
         for (List<String> moduleArgs : allModulesList) {
             if (moduleArgs.size() != EXPECTED_MODULE_ARGS) {
@@ -95,14 +95,14 @@ public class ModuleLoader {
         }
 
         // First deserialization: unwrap the outer layer
-        List<String> deserialisedPrereqs = Deserialiser.deserialiseMessage(serialisedPrereqs);
+        List<String> deserialisedPrereqs = DeserialisationUtil.deserialiseMessage(serialisedPrereqs);
         if (deserialisedPrereqs == null) {
             logger.log(Level.WARNING, "Unable to deserialize prerequisites (null result): " + serialisedPrereqs);
             throw new ParsePrerequisitesException();
         }
 
         // Second deserialization: convert to list of lists
-        List<List<String>> prereqList = Deserialiser.deserialiseList(deserialisedPrereqs);
+        List<List<String>> prereqList = DeserialisationUtil.deserialiseList(deserialisedPrereqs);
         if (prereqList == null) {
             logger.log(Level.WARNING, "Unable to deserialize prerequisite list (null result): " + serialisedPrereqs);
             throw new ParsePrerequisitesException();

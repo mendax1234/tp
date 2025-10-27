@@ -1,4 +1,4 @@
-package modhero.storage.exceptions;
+package modhero.exceptions;
 
 public class ParsePrerequisitesException extends Exception{
     public ParsePrerequisitesException() {
