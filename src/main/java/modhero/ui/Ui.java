@@ -79,14 +79,6 @@ public class Ui {
         assert result != null : "CommandResult must not be null";
 
         System.out.println(result.getFeedbackToUser());
-
-        Module module = result.getrelevantModule();
-        if (module != null) {
-            System.out.println("  " + module);
-            if (result.getTotalModules() > 0) {
-                System.out.println("Now you have " + result.getTotalModules() + " modules in the list.");
-            }
-        }
     }
 
     /**

@@ -56,13 +56,13 @@ public class Prerequisites {
 
         // For each combination (OR group of prerequisites)
         for (List<String> combination : prereq) {
-            // LAYER 1: Serialize each module code in the combination
+            // Serialize each module code in the combination
             StringBuilder innerBuilder = new StringBuilder();
             for (String moduleCode : combination) {
                 innerBuilder.append(serialisationUtil.serialiseMessage(moduleCode));
             }
 
-            // LAYER 2: Serialize the entire combination
+            // Serialize the entire combination
             outerBuilder.append(serialisationUtil.serialiseMessage(innerBuilder.toString()));
         }
 
@@ -80,7 +80,7 @@ public class Prerequisites {
         StringBuilder sb = new StringBuilder("Prerequisites: [");
         for (int i = 0; i < prereq.size(); i++) {
             List<String> group = prereq.get(i);
-            sb.append(group); // List<String> will automatically print as [A, B, C]
+            sb.append(group);
             if (i < prereq.size() - 1) {
                 sb.append(" OR ");
             }

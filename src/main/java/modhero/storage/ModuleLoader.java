@@ -98,14 +98,14 @@ public class ModuleLoader {
         List<String> deserialisedPrereqs = DeserialisationUtil.deserialiseMessage(serialisedPrereqs);
         if (deserialisedPrereqs == null) {
             logger.log(Level.WARNING, "Unable to deserialize prerequisites (null result): " + serialisedPrereqs);
-            throw new ParsePrerequisitesException();
+            throw new ParsePrerequisitesException("Unable to deserialize prerequisites (null result): " + serialisedPrereqs);
         }
 
         // Second deserialization: convert to list of lists
         List<List<String>> prereqList = DeserialisationUtil.deserialiseList(deserialisedPrereqs);
         if (prereqList == null) {
             logger.log(Level.WARNING, "Unable to deserialize prerequisite list (null result): " + serialisedPrereqs);
-            throw new ParsePrerequisitesException();
+            throw new ParsePrerequisitesException("Unable to deserialize prerequisite list (null result): " + serialisedPrereqs);
         }
 
         return new Prerequisites(prereqList);
