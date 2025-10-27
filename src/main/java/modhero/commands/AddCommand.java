@@ -3,8 +3,7 @@ package modhero.commands;
 import static modhero.common.Constants.AcademicConstants.ACAD_YEAR;
 
 import modhero.data.modules.Module;
-import modhero.data.nusmods.ModuleRetriever; // Import the retriever
-import modhero.common.Constants;
+import modhero.data.nusmods.ModuleRetriever;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,9 +19,6 @@ public class AddCommand extends Command {
     private final String moduleCode;
     private final int year;
     private final int semester;
-
-    // We can instantiate this here, or have it passed in.
-    // Instantiating is simpler for this example.
     private final ModuleRetriever moduleRetriever;
 
     public AddCommand(String moduleCode, int year, int semester) {
@@ -36,13 +32,12 @@ public class AddCommand extends Command {
     public CommandResult execute() {
         logger.log(Level.INFO, () -> String.format("Adding module %s to Y%dS%d", moduleCode, year, semester));
 
-        // 1. Check if module exists in our database
+        // Check if module exists in our database
         Module module = allModulesData.get(moduleCode);
 
-        // 2. If not, try fetching it from the API
         if (module == null) {
+            // If not, try fetching it from the API
             logger.log(Level.INFO, "Module " + moduleCode + " not in local data, trying API fetch...");
-            // You need to define ACAD_YEAR in Constants.java, e.g., "2025-2026"
             module = moduleRetriever.getModule(ACAD_YEAR, moduleCode);
 
             if (module == null) {
@@ -55,8 +50,7 @@ public class AddCommand extends Command {
             }
         }
 
-        // 3. Now, tell the (smarter) timetable to add the module
-        // The timetable will handle all the checks (prereqs, overload, etc.)
+        // Add the module to the timetable
         String resultMessage = timetable.addModule(year, semester, module);
 
         return new CommandResult(resultMessage);
