@@ -1,7 +1,7 @@
 package modhero.exceptions;
 
-public class CorruptedDataFileException extends Exception{
-    public CorruptedDataFileException() {
-        super();
+public class CorruptedDataFileException extends ModHeroException {
+    public CorruptedDataFileException(String message) {
+        super(message);
     }
 }
