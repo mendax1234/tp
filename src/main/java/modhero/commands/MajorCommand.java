@@ -61,16 +61,10 @@ public class MajorCommand extends Command {
         }
 
         //add all modules from the selected major into the timetable
-        try {
             for (MajorModule mm : majorObject.getMajorModules()) {
-                Module m = new Module(mm.getCode(), "", 0, "", new ArrayList<>());
-                timetable.addModule(mm.getYear(), mm.getTerm(), m);
+                Module m = allModulesData.get(mm.getCode());
+                timetable.addModuleInternal(mm.getYear() - 1, mm.getTerm() - 1, m);
             }
-        } catch (ModHeroException e) {
-            logger.log(Level.WARNING, "Error adding module for major: " + major, e);
-            return new CommandResult("Failed to load major modules: " + e.getMessage());
-        }
-
         logger.log(Level.INFO, () -> "Major successfully set to " + major);
 
         return new CommandResult("Major set to " + major + ". Type 'schedule' to view your 4-year plan!");

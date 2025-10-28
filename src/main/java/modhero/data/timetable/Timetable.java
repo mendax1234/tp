@@ -68,9 +68,29 @@ public class Timetable {
         addModuleInternal(year - 1, semester - 1, module);
     }
 
+
+
+    private boolean checkIsLevel1000Module(String moduleCode){
+        if (moduleCode == null || moduleCode.isEmpty()) {
+            return false;
+        }
+        for (char c : moduleCode.toCharArray()) {
+            if (Character.isDigit(c)) {
+                return c == '1';
+            }
+        }
+        return false;
+    }
+
     private void checkModuleAddable(int year, int semester, Module moduleToAdd) throws ModHeroException {
         if (getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(moduleToAdd.getCode()))) {
             throw new ModuleAlreadyExistsException(moduleToAdd.getCode());
+        }
+
+        //check if module is 1k, if yes then it has no prerequisites
+        boolean isLevel1000Module = checkIsLevel1000Module(moduleToAdd.getCode());
+        if (isLevel1000Module){
+            return;
         }
 
         List<Module> completedModules = getModulesTakenUpTo(year, semester);
@@ -148,7 +168,7 @@ public class Timetable {
     }
 
     public void deleteModule(String moduleCode) throws ModuleNotFoundException {
-        int[] moduleLocation = new int[2]; // {year, term}
+        int[] moduleLocation; // {year, term}
         try {
             moduleLocation = findModuleLocation(moduleCode);
         } catch (ModuleNotFoundException e) {
