@@ -91,8 +91,6 @@ public class ModHero {
         try {
             command.setData(
                     dataManager.getTimetable(),
-                    dataManager.getElectiveList(),
-                    dataManager.getCoreList(),
                     dataManager.getAllModulesData(),
                     dataManager.getAllMajorsData()
             );

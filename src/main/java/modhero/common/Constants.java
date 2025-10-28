@@ -36,6 +36,41 @@ public final class Constants {
     public static final class MessageConstants {
         public static final String INVALID_COMMAND_FORMAT = "Invalid command format! \n%1$s";
         public static final String ARRAY_INDEX_OUT_BOUND = "(Your index is out of bound)";
+        public static final String HELP = """
+            ┌────────────────────────────────────────────────────────────────┐
+            │                          ModHero Help                          │
+            ├────────────┬───────────────────────────────────────────────────┤
+            │ Command    │ Description                                       │
+            ├────────────┼───────────────────────────────────────────────────┤
+            │ help       │ Show this help message                            │
+            │            │ Format: help                                      │
+            │            │ Example: help                                     │
+            ├────────────┼───────────────────────────────────────────────────┤
+            │ major      │ Specify your major                                │
+            │            │ Format: major MAJOR_NAME                          │
+            │            │ Example: major Computer Science                   │
+            ├────────────┼───────────────────────────────────────────────────┤
+            │ add        │ Add elective modules to specific Year & Semester  │
+            │            │ Format: add MODULE_CODE to Y_S_                   │
+            │            │ Example: add CS3240 to Y2S2                       │
+            ├────────────┼───────────────────────────────────────────────────┤
+            │ delete     │ Remove elective modules                           │
+            │            │ Format: delete MODULE_CODE                        │
+            │            │ Example: delete CS2109S                           │
+            ├────────────┼───────────────────────────────────────────────────┤
+            │ schedule   │ Generate your recommended 4-Year Study Plan       │
+            │            │ Format: schedule                                  │
+            │            │ Example: schedule                                 │
+            ├────────────┼───────────────────────────────────────────────────┤
+            │ clear      │ Clear all modules in the plan                     │
+            │            │ Format: clear                                     │
+            │            │ Example: clear                                    │
+            ├────────────┼───────────────────────────────────────────────────┤
+            │ exit       │ Exit the program                                  │
+            │            │ Format: exit                                      │
+            │            │ Example: exit                                     │
+            └────────────┴───────────────────────────────────────────────────┘
+            """;
     }
 
     public static final class AcademicConstants {

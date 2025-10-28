@@ -33,34 +33,21 @@ public abstract class Command {
      * @param allModulesData the hashmap for loading and saving data
      * @param allMajorsData the hashmap for major information
      */
-    public void setData(Timetable timetable, ModuleList electiveList, ModuleList coreList,
-                        Map<String, Module> allModulesData, Map<String, Major> allMajorsData) {
+    public void setData(Timetable timetable, Map<String, Module> allModulesData, Map<String, Major> allMajorsData) {
         assert timetable != null : "Timetable must not be null";
-        assert electiveList != null : "Elective list must not be null";
-        assert coreList != null : "Core list must not be null";
         assert allModulesData != null : "All modules map must not be null";
         assert allMajorsData != null : "All majors map must not be null";
 
         this.timetable = timetable;
-        this.electiveList = electiveList;
-        this.coreList = coreList;
         this.allModulesData = allModulesData;
         this.allMajorsData = allMajorsData;
 
         logger.info("Command setData initialised");
-        logger.log(Level.FINEST, () -> String.format("SetData sizes - electives: %d, core: %d, modules: %d, majors: %d",
-                electiveList.getList().size(),
-                coreList.getList().size(),
+        logger.log(Level.FINEST, () -> String.format("SetData sizes - modules: %d, majors: %d",
                 allModulesData.size(),
                 allMajorsData.size()));
         logger.log(Level.FINEST, () -> String.format(
-                "ElectiveList: %s%nCoreList: %s%nModules: %s%nMajors: %s",
-                electiveList.getList().stream()
-                        .map(Module::getCode)
-                        .toList(),
-                coreList.getList().stream()
-                        .map(Module::getCode)
-                        .toList(),
+                "%s%nModules: %s%nMajors: %s",
                 allModulesData.keySet(),
                 allMajorsData.keySet()
         ));
