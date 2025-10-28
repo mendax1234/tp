@@ -99,6 +99,7 @@ public class Parser {
         String moduleCode = parts[0].trim();
         String destination = parts[1].trim().toUpperCase(); // Y3S2
 
+        // \d accpets any digit that is from 0 to 9
         if (!destination.matches("Y\\dS\\d")) {
             return new IncorrectCommand("Invalid year/semester format. Use YxSy (e.g. Y2S1)");
         }
@@ -108,5 +109,4 @@ public class Parser {
 
         return new AddCommand(moduleCode, year, semester);
     }
-
 }

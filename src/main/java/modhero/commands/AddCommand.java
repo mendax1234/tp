@@ -4,6 +4,8 @@ import modhero.common.Constants.AcademicConstants;
 
 import modhero.data.modules.Module;
 import modhero.data.nusmods.ModuleRetriever;
+import modhero.exceptions.ModHeroException;
+import modhero.exceptions.ModuleNotFoundException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,29 +35,27 @@ public class AddCommand extends Command {
 
     @Override
     public CommandResult execute() {
-        logger.log(Level.INFO, () -> String.format("Adding module %s to Y%dS%d", moduleCode, year, semester));
+        try {
+            logger.log(Level.INFO, () -> String.format("Adding module %s to Y%dS%d", moduleCode, year, semester));
 
-        // Check if module exists in our database
-        Module module = allModulesData.get(moduleCode);
-
-        if (module == null) {
-            // If not, try fetching it from the API
-            logger.log(Level.INFO, "Module " + moduleCode + " not in local data, trying API fetch...");
-            module = moduleRetriever.getModule(AcademicConstants.ACAD_YEAR, moduleCode);
-
+            Module module = allModulesData.get(moduleCode);
             if (module == null) {
-                // API fetch also failed
-                return new CommandResult("Module " + moduleCode + " not found in local database or NUSMods API.");
-            } else {
-                // API fetch succeeded, add it to our main list
+                logger.log(Level.INFO, "Module " + moduleCode + " not in local data, trying API fetch...");
+                module = moduleRetriever.getModule(AcademicConstants.ACAD_YEAR, moduleCode);
+                if (module == null) {
+                    throw new ModuleNotFoundException(moduleCode, "NUSMODS");
+                }
                 allModulesData.put(module.getCode(), module);
-                logger.log(Level.INFO, "Module " + moduleCode + " found via API and added to database.");
             }
+
+            timetable.addModule(year, semester, module);
+            return new CommandResult(String.format("%s added successfully to Y%dS%d!", moduleCode, year, semester));
+
+        } catch (ModHeroException e) {
+            return new CommandResult(e.getMessage());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected error while adding module", e);
+            return new CommandResult("An unexpected error occurred: " + e.getMessage());
         }
-
-        // Add the module to the timetable
-        String resultMessage = timetable.addModule(year, semester, module);
-
-        return new CommandResult(resultMessage);
     }
 }

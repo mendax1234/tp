@@ -3,9 +3,13 @@ package modhero.data.timetable;
 import static modhero.common.Constants.AcademicConstants;
 import static modhero.common.Constants.MessageConstants;
 
+import modhero.exceptions.InvalidYearOrSemException;
+import modhero.exceptions.ModHeroException;
+import modhero.exceptions.ModuleAlreadyExistsException;
 import modhero.exceptions.ModuleNotFoundException;
 import modhero.data.modules.Module;
 import modhero.data.modules.Prerequisites;
+import modhero.exceptions.PrerequisiteNotMetException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +24,6 @@ import java.util.stream.Collectors;
 public class Timetable {
     public static final Logger logger = Logger.getLogger(Timetable.class.getName());
 
-    private final int COL_WIDTH = 15; // standard column width for all cells
     private List<List<List<Module>>> timetable;
 
     /**
@@ -51,76 +54,41 @@ public class Timetable {
      * @param semester The semester (1-based).
      * @return A CommandResult string indicating success, overload, or failure.
      */
-    public String addModule(int year, int semester, Module module) {
-        // Perform all pre-add checks (exists, prerequisites)
-        String addabilityError = checkModuleAddable(year, semester, module);
-        if (addabilityError != null) {
-            return addabilityError; // Return the error message
+    public void addModule(int year, int semester, Module module) throws ModHeroException {
+        // Bounds check
+        if (year < 1 || year > AcademicConstants.NUM_YEARS ||
+                semester < 1 || semester > AcademicConstants.NUM_TERMS) {
+            throw new InvalidYearOrSemException(year, semester);
         }
 
-        // Add to timetable (using the 0-based private method)
-        this.addModuleInternal(year - 1, semester - 1, module);
+        // Check addability
+        checkModuleAddable(year, semester, module);
 
-        // Check for overload *after* adding
-        if (this.getModules(year - 1, semester - 1).size() > AcademicConstants.MAX_MODULES_PER_SEM) {
-            return "You are overloading this semester! Please seek help if you need to. ("
-                    + module.getCode() + " added)";
-        }
-
-        return module.getCode() + " added successfully to Y" + year + "S" + semester + "!";
+        // Add to timetable
+        addModuleInternal(year - 1, semester - 1, module);
     }
 
-    /**
-     * Checks if a module can be added to a specific year and term.
-     *
-     * @param year        The academic year (1-based).
-     * @param semester    The semester (1-based).
-     * @param moduleToAdd The Module object to check.
-     * @return {@code null} if the module can be added, or an error message string if it cannot.
-     */
-    public String checkModuleAddable(int year, int semester, Module moduleToAdd) {
-        // If already exists in timetable
-        if (this.getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(moduleToAdd.getCode()))) {
-            return moduleToAdd.getCode() + " is already in your timetable!";
+    private void checkModuleAddable(int year, int semester, Module moduleToAdd) throws ModHeroException {
+        if (getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(moduleToAdd.getCode()))) {
+            throw new ModuleAlreadyExistsException(moduleToAdd.getCode());
         }
 
-        // Prerequisites
-        // Get all modules taken up to and including this semester
-        List<Module> completedModules = this.getModulesTakenUpTo(year, semester);
-        List<String> completedCodes = completedModules.stream()
-                .map(Module::getCode)
-                .collect(Collectors.toList());
+        List<Module> completedModules = getModulesTakenUpTo(year, semester);
+        List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
 
         Prerequisites prereqs = moduleToAdd.getPrerequisites();
         List<List<String>> prereqSets = prereqs.getPrereq();
 
-        if (prereqSets == null || prereqSets.isEmpty()) {
-            return null; // No prerequisites, can be added
-        }
+        if (prereqSets == null || prereqSets.isEmpty()) return;
 
-        // Check if *any* of the OR-options is satisfied
-        boolean allOptionsFailed = true;
-        for (List<String> option : prereqSets) { // An option is an AND-group (e.g., [CS1010, CS1231])
-            boolean thisOptionSatisfied = true;
-            for (String prereqCode : option) { // Check each module in the AND-group
-                if (!completedCodes.contains(prereqCode)) {
-                    thisOptionSatisfied = false; // This AND-group failed
-                    break;
-                }
-            }
-            if (thisOptionSatisfied) {
-                allOptionsFailed = false; // One of the OR-groups succeeded
-                break;
-            }
-        }
+        boolean satisfied = prereqSets.stream().anyMatch(option ->
+                option.stream().allMatch(completedCodes::contains)
+        );
 
-        if (allOptionsFailed) {
-            return "Prerequisites not met for " + moduleToAdd.getCode() + ". Requires: " + prereqs.toString();
+        if (!satisfied) {
+            throw new PrerequisiteNotMetException(moduleToAdd.getCode(), prereqs.toString());
         }
-
-        return null; // All checks passed
     }
-
 
     /**
      * Internal method to add a module to a specific year and term.
@@ -273,23 +241,6 @@ public class Timetable {
 
             System.out.println("+--------------------+--------------------+\n");
         }
-    }
-
-
-    /**
-     * Pads the given text with spaces or truncates it so that
-     * it fits within a fixed-width table cell.
-     *
-     * @param text  the text to pad
-     * @param width the fixed width of the cell
-     * @return the padded (or truncated) string
-     */
-    private String padCell(String text, int width) {
-        if (text.length() >= width) {
-            return text.substring(0, width - 1) + " "; // truncate if too long
-        }
-        int spaces = width - text.length();
-        return text + " ".repeat(spaces);
     }
 
     /**
