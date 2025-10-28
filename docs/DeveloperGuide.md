@@ -96,20 +96,17 @@ To maintain data integrity and readability, all data should be serialized before
 ## User Stories
 
 | Version | As a ... | I want to ... | So that I can ... |
-|---------|-----------|---------------|-------------------|
-| v1.0    | new user | view a list of available commands | understand how to use the application |
-| v1.0    | NUS student | generate a recommended 4-year study plan | visualize my academic progression and ensure graduation requirements are met |
-| v1.0    | NUS student | add a specific module to a semester | customize my study plan according to my interests or scheduling needs |
-| v1.0    | NUS student | delete a module from my timetable | adjust my plan when I drop or change modules |
-| v1.0    | NUS student | list all core and elective modules for my major | plan my semesters with awareness of compulsory and optional modules |
-| v2.0    | exchange student | mark a semester as “exchange” | account for credits earned abroad in my 4-year plan |
-| v2.0    | user | check prerequisites of a module | avoid planning invalid module combinations |
-| v2.0    | user | automatically verify that all prerequisites are met | ensure my plan is valid before registration |
-| v2.0    | advanced user | save my timetable to a file | persist my customized schedule for later use |
-| v2.0    | advanced user | load my saved timetable | restore my plan without re-entering all modules |
-| v2.0    | user | specify preferred workload (MCs per semester) | let the planner auto-balance my study load |
-| v2.0    | admin/developer | extend the list of supported majors | make ModHero scalable to new faculties and specialisations |
-
+|----------|-----------|---------------|-------------------|
+| v1.0 | NUS student | view a list of available commands | understand how to use ModHero efficiently |
+| v1.0 | NUS student | specify my major | load the correct core and elective modules for my degree |
+| v1.0 | NUS student | generate a recommended 4-year study plan | visualize my academic progression and ensure graduation requirements are met |
+| v1.0 | NUS student | add a specific module to a semester | customize my study plan according to my interests or scheduling needs |
+| v1.0 | NUS student | delete a module from my timetable | adjust my plan when I drop or change modules |
+| v1.0 | NUS student | list all core and elective modules for my major | plan my semesters with awareness of compulsory and optional modules |
+| v2.0 | NUS student | check prerequisites of a module | avoid planning invalid module combinations |
+| v2.0 | NUS student | automatically verify that all prerequisites are met | ensure my plan is valid before registration |
+| v2.0 | NUS student | save my timetable to a file | persist my customized schedule for later use |
+| v2.0 | NUS student | load my saved timetable | restore my plan without re-entering all modules |
 ---
 
 ## Non-Functional Requirements
