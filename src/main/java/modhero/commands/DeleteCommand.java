@@ -1,6 +1,8 @@
 package modhero.commands;
 
 import modhero.exceptions.ModuleNotFoundException;
+import modhero.exceptions.PrerequisiteNotMetException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -42,6 +44,7 @@ public class DeleteCommand extends Command {
         }
         ArrayList<String> modulesSucessfullyDeleted = new ArrayList<>();
         ArrayList<String> modulesNotInTimetable = new ArrayList<>();
+        ArrayList<String> prerequisiteViolations = new ArrayList<>();
         for (String module: toDelete ){
             try{
                 timetable.deleteModule(module);
@@ -49,6 +52,8 @@ public class DeleteCommand extends Command {
             } catch (ModuleNotFoundException e) {
                 String moduleCodeNotFound = e.getModuleCode();
                 modulesNotInTimetable.add(moduleCodeNotFound);
+            } catch (PrerequisiteNotMetException e){
+               prerequisiteViolations.add(" { " + e.getRequisites() + " }");
             }
         }
 
@@ -67,6 +72,14 @@ public class DeleteCommand extends Command {
                 message = message + module + " ,";
             }
             message = message.substring(0, message.length() - 1) + "\n";
+        }
+
+        if (!prerequisiteViolations.isEmpty()){
+            message = message + "The following modules could not be deleted as that would violate the " +
+                    "preRequisites for the following modules:";
+            for ( String violation: prerequisiteViolations){
+                message = message + violation ;
+            }
         }
 
         return new CommandResult(message);
