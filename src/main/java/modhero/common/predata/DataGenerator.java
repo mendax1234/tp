@@ -30,7 +30,7 @@ public class DataGenerator {
     private static final String ACAD_YEAR = "2025-2026";
 
     public static void main(String[] args) {
-        // 1. Generate Module Data
+        // Generate Module Data
         System.out.println("Fetching live module data from NUSMods API...");
         String moduleFileContent = generateModulesTxt();
         if (moduleFileContent != null) {
@@ -41,7 +41,7 @@ public class DataGenerator {
             System.err.println("Failed to generate module data. File not saved.");
         }
 
-        // 2. Generate Major Data
+        // Generate Major Data
         System.out.println("\nGenerating major data...");
         String majorFileContent = generateMajorsTxt();
         MajorStorage majorStorage = new MajorStorage(MAJOR_FILE_PATH);
