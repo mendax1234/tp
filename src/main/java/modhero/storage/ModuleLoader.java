@@ -34,11 +34,11 @@ public class ModuleLoader extends Storage{
      * @param allModulesData map to populate; indexed by both code and name
      * @throws CorruptedDataFileException if critical data corruption detected
      */
-    public void loadAllModulesData(Map<String, Module> allModulesData) throws CorruptedDataFileException {
+    public void load(Map<String, Module> allModulesData) throws CorruptedDataFileException {
         assert allModulesData != null : "loadAllModulesData allModulesData must not be null";
         logger.log(Level.FINEST, "Loading all modules data");
 
-        List<String> rawModulesList = load();
+        List<String> rawModulesList = loadFromTextFile();
         List<List<String>> allModulesList = DeserialisationUtil.deserialiseList(rawModulesList);
 
         for (List<String> moduleArgs : allModulesList) {

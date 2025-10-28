@@ -42,8 +42,8 @@ public class DataManager {
         try {
             ModuleLoader moduleLoader = new ModuleLoader(modulesPath);
             MajorLoader majorLoader = new MajorLoader(majorPath);
-            moduleLoader.loadAllModulesData(allModulesData);
-            majorLoader.loadAllMajorsData(allModulesData, allMajorsData);
+            moduleLoader.load(allModulesData);
+            majorLoader.load(allModulesData, allMajorsData);
             logger.log(Level.INFO, "Data loaded successfully");
         } catch (CorruptedDataFileException e) {
             logger.log(Level.SEVERE, "Data file is corrupted", e);

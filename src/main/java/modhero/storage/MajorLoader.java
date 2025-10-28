@@ -37,14 +37,14 @@ public class MajorLoader extends Storage{
      * @param allMajorsData map to populate; indexed by both abbreviation and name
      * @throws CorruptedDataFileException if critical data corruption detected
      */
-    public void loadAllMajorsData(Map<String, Module> allModulesData, Map<String, Major> allMajorsData)
+    public void load(Map<String, Module> allModulesData, Map<String, Major> allMajorsData)
             throws CorruptedDataFileException {
         assert allModulesData != null : "loadAllMajorsData allModulesData must not be null";
         assert allMajorsData != null : "loadAllMajorsData allMajorsData must not be null";
         logger.log(Level.FINEST, "Loading all major data");
 
 
-        List<String> rawMajorsList = load();
+        List<String> rawMajorsList = loadFromTextFile();
 
         for (String aa : rawMajorsList) {
             List<String> majorTop = DeserialisationUtil.deserialiseMessage(aa);

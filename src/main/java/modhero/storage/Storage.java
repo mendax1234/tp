@@ -30,12 +30,20 @@ public abstract class Storage {
         this.filePath = filePath;
     }
 
+    public void load() {
+        System.out.println("This method is to be implemented by child classes");
+    };
+
+    public void save() {
+        System.out.println("This method is to be implemented by child classes");
+    };
+
     /**
      * Loads the file contents into a list of strings, each line a list element.
      *
      * @return list of lines from file, or empty list if file not found
      */
-    public List<String> load() {
+    public List<String> loadFromTextFile() {
         logger.log(Level.FINEST, "Loading file: " + filePath);
 
         try {
@@ -53,7 +61,7 @@ public abstract class Storage {
      *
      * @param textToAdd the text content to save
      */
-    public void save(String textToAdd) {
+    public void saveToTextFile(String textToAdd) {
         assert textToAdd != null : "save textToAdd must not be null";
         logger.log(Level.FINEST, "Saving file: " + filePath);
 

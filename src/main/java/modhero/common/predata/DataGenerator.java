@@ -6,6 +6,8 @@ import static modhero.common.Constants.FilePathConstants.MODULES_FILE_PATH;
 import modhero.common.util.SerialisationUtil;
 import modhero.data.nusmods.NusmodsAPIClient;
 import modhero.parser.ModuleParser;
+import modhero.storage.MajorLoader;
+import modhero.storage.ModuleLoader;
 import modhero.storage.Storage;
 import modhero.data.modules.Module;
 import modhero.data.modules.Prerequisites;
@@ -33,8 +35,8 @@ public class DataGenerator {
         System.out.println("Fetching live module data from NUSMods API...");
         String moduleFileContent = generateModulesTxt();
         if (moduleFileContent != null) {
-            Storage moduleStorage = new Storage(MODULES_FILE_PATH);
-            moduleStorage.save(moduleFileContent);
+            ModuleLoader moduleStorage = new ModuleLoader(MODULES_FILE_PATH);
+            moduleStorage.saveToTextFile(moduleFileContent);
             System.out.println("Successfully saved to " + MODULES_FILE_PATH);
         } else {
             System.err.println("Failed to generate module data. File not saved.");
@@ -43,9 +45,9 @@ public class DataGenerator {
         // 2. Generate Major Data
         System.out.println("\nGenerating major data...");
         String majorFileContent = generateMajorsTxt();
-        Storage majorStorage = new Storage(MAJOR_FILE_PATH);
+        MajorLoader majorStorage = new MajorLoader(MAJOR_FILE_PATH);
 
-        majorStorage.save(majorFileContent);
+        majorStorage.saveToTextFile(majorFileContent);
         System.out.println("Successfully saved to " + MAJOR_FILE_PATH);
     }
 
