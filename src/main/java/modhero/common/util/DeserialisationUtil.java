@@ -1,7 +1,6 @@
 package modhero.common.util;
 
-import static modhero.common.Constants.FormatConstants.END_DELIMITER;
-import static modhero.common.Constants.FormatConstants.START_DELIMITER;
+import modhero.common.Constants.FormatConstants;
 
 import modhero.exceptions.CorruptedDataFileException;
 
@@ -55,7 +54,7 @@ public class DeserialisationUtil {
         int serialisedTaskLength = serialisedMessage.length();
 
         while (currentIndex < serialisedTaskLength) {
-            int delimiterIndex = serialisedMessage.indexOf(START_DELIMITER, currentIndex);
+            int delimiterIndex = serialisedMessage.indexOf(FormatConstants.START_DELIMITER, currentIndex);
             boolean isDelimiterMissing = delimiterIndex == -1;
             if (isDelimiterMissing) {
                 logger.log(Level.WARNING, "Delimiter missing during deserialisation, " + serialisedMessage);
@@ -69,7 +68,7 @@ public class DeserialisationUtil {
                 return null;
             }
 
-            currentIndex = delimiterIndex + START_DELIMITER.length();
+            currentIndex = delimiterIndex + FormatConstants.START_DELIMITER.length();
             int nextIndex = currentIndex + argumentLength;
             if (nextIndex > serialisedTaskLength) {
                 logger.log(Level.WARNING, "Argument length exceeds message size, " + serialisedMessage);
@@ -78,7 +77,7 @@ public class DeserialisationUtil {
 
             String argument = serialisedMessage.substring(currentIndex, nextIndex);
             message.add(argument);
-            currentIndex = nextIndex + END_DELIMITER.length();
+            currentIndex = nextIndex + FormatConstants.END_DELIMITER.length();
         }
 
         logger.log(Level.FINEST, "Successful deserialising:" + serialisedMessage);

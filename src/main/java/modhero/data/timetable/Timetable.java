@@ -1,9 +1,7 @@
 package modhero.data.timetable;
 
-import static modhero.common.Constants.AcademicConstants.MAX_MODULES_PER_SEM;
-import static modhero.common.Constants.AcademicConstants.NUM_TERMS;
-import static modhero.common.Constants.AcademicConstants.NUM_YEARS;
-import static modhero.common.Constants.MessageConstants.ARRAY_INDEX_OUT_BOUND;
+import static modhero.common.Constants.AcademicConstants;
+import static modhero.common.Constants.MessageConstants;
 
 import modhero.exceptions.ModuleNotFoundException;
 import modhero.data.modules.Module;
@@ -34,15 +32,15 @@ public class Timetable {
         timetable = new ArrayList<>();
 
         // Initialize the timetable
-        for (int year = 0; year < NUM_YEARS; year++) {
+        for (int year = 0; year < AcademicConstants.NUM_YEARS; year++) {
             List<List<Module>> yearSemesters = new ArrayList<>();
-            for (int sem = 0; sem < NUM_TERMS; sem++) {
+            for (int sem = 0; sem < AcademicConstants.NUM_TERMS; sem++) {
                 yearSemesters.add(new ArrayList<>()); // each semester starts empty
             }
             timetable.add(yearSemesters);
         }
 
-        logger.log(Level.FINE, () -> String.format("Timetable initialised for %d years and %d terms", NUM_YEARS, NUM_TERMS));
+        logger.log(Level.FINE, () -> String.format("Timetable initialised for %d years and %d terms", AcademicConstants.NUM_YEARS, AcademicConstants.NUM_TERMS));
     }
 
     /**
@@ -64,7 +62,7 @@ public class Timetable {
         this.addModuleInternal(year - 1, semester - 1, module);
 
         // Check for overload *after* adding
-        if (this.getModules(year - 1, semester - 1).size() > MAX_MODULES_PER_SEM) {
+        if (this.getModules(year - 1, semester - 1).size() > AcademicConstants.MAX_MODULES_PER_SEM) {
             return "You are overloading this semester! Please seek help if you need to. ("
                     + module.getCode() + " added)";
         }
@@ -146,7 +144,7 @@ public class Timetable {
      * @return {@code true} if a module was removed, {@code false} otherwise
      */
     public boolean removeModule(int year, int term, String moduleCode) throws ArrayIndexOutOfBoundsException {
-        if (year < 0 || year > NUM_YEARS || term < 0 || term > NUM_TERMS) {
+        if (year < 0 || year > AcademicConstants.NUM_YEARS || term < 0 || term > AcademicConstants.NUM_TERMS) {
             throw new ArrayIndexOutOfBoundsException();
         }
 
@@ -191,7 +189,7 @@ public class Timetable {
         try {
             removeModule(moduleLocation[0], moduleLocation[1], moduleCode);
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ModuleNotFoundException(moduleCode, "timetable. " + ARRAY_INDEX_OUT_BOUND);
+            throw new ModuleNotFoundException(moduleCode, "timetable. " + MessageConstants.ARRAY_INDEX_OUT_BOUND);
         }
     }
 
@@ -203,8 +201,8 @@ public class Timetable {
      * @return list of modules in the specified term
      */
     public List<Module> getModules(int year, int term) {
-        assert year >= 0 && year < NUM_YEARS : "getModules year out of bounds";
-        assert term >= 0 && term < NUM_TERMS : "getModules term out of bounds";
+        assert year >= 0 && year < AcademicConstants.NUM_YEARS : "getModules year out of bounds";
+        assert term >= 0 && term < AcademicConstants.NUM_TERMS : "getModules term out of bounds";
 
         return timetable.get(year).get(term);
     }
@@ -221,8 +219,8 @@ public class Timetable {
         int targetYearIdx = targetYear - 1;
         int targetSemIdx = targetSem - 1;
 
-        for (int y = 0; y < NUM_YEARS; y++) {
-            for (int s = 0; s < NUM_TERMS; s++) {
+        for (int y = 0; y < AcademicConstants.NUM_YEARS; y++) {
+            for (int s = 0; s < AcademicConstants.NUM_TERMS; s++) {
                 if (y < targetYearIdx || (y == targetYearIdx && s <= targetSemIdx)) {
                     try {
                         completedModules.addAll(timetable.get(y).get(s));

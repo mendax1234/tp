@@ -1,6 +1,6 @@
 package modhero.parser;
 
-import static modhero.common.Constants.MessageConstants.INVALID_COMMAND_FORMAT;
+import modhero.common.Constants.MessageConstants;
 
 import modhero.commands.*;
 
@@ -27,7 +27,7 @@ public class Parser {
 
         String[] words = userInput.trim().split(" ", 2);  // split the input into command and arguments
         if (words.length == 0) {
-            return new IncorrectCommand(String.format(INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
+            return new IncorrectCommand(String.format(MessageConstants.INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
         }
 
         final String commandWord = words[0];
@@ -50,7 +50,7 @@ public class Parser {
         case HelpCommand.COMMAND_WORD:
             return new HelpCommand();
         default:
-            return new IncorrectCommand(String.format(INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
+            return new IncorrectCommand(String.format(MessageConstants.INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
         }
     }
 
@@ -63,7 +63,7 @@ public class Parser {
      */
     private Command prepareMajorCommand(String args) {
         if (args.isEmpty()) {
-            return new IncorrectCommand(String.format(INVALID_COMMAND_FORMAT, MajorCommand.MESSAGE_USAGE));
+            return new IncorrectCommand(String.format(MessageConstants.INVALID_COMMAND_FORMAT, MajorCommand.MESSAGE_USAGE));
         }
         String[] majorAndMinor = args.split(MajorCommand.MINOR_REGEX, 2);
         String minor = majorAndMinor.length > 1 ? majorAndMinor[1].trim() : "";
@@ -76,7 +76,7 @@ public class Parser {
 
     private Command prepareDeleteCommand(String args) {
         if (args.isEmpty()) {
-            return new IncorrectCommand(String.format(INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+            return new IncorrectCommand(String.format(MessageConstants.INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
         }
         List<String> deleteList = new ArrayList<>();
         String[] argsList =  args.split(" ");
@@ -88,7 +88,7 @@ public class Parser {
 
     private Command prepareAddCommand(String args) {
         if (args.isEmpty()) {
-            return new IncorrectCommand(String.format(INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
+            return new IncorrectCommand(String.format(MessageConstants.INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
         }
         
         String[] parts = args.split("\\s+to\\s+");

@@ -1,8 +1,6 @@
 package modhero.commands;
 
-import static modhero.common.Constants.AcademicConstants.ACAD_YEAR;
-import static modhero.common.Constants.AcademicConstants.NUM_TERMS;
-import static modhero.common.Constants.AcademicConstants.NUM_YEARS;
+import modhero.common.Constants.AcademicConstants;
 
 import modhero.data.modules.Module;
 import modhero.data.nusmods.ModuleRetriever;
@@ -24,8 +22,8 @@ public class AddCommand extends Command {
     private final ModuleRetriever moduleRetriever;
 
     public AddCommand(String moduleCode, int year, int semester) {
-        assert year >= 0 && year < NUM_YEARS : "addModule year out of bounds";
-        assert semester >= 0 && semester < NUM_TERMS : "addModule term out of bounds";
+        assert year >= 0 && year < AcademicConstants.NUM_YEARS : "addModule year out of bounds";
+        assert semester >= 0 && semester < AcademicConstants.NUM_TERMS : "addModule term out of bounds";
 
         this.moduleCode = moduleCode.toUpperCase();
         this.year = year;
@@ -43,7 +41,7 @@ public class AddCommand extends Command {
         if (module == null) {
             // If not, try fetching it from the API
             logger.log(Level.INFO, "Module " + moduleCode + " not in local data, trying API fetch...");
-            module = moduleRetriever.getModule(ACAD_YEAR, moduleCode);
+            module = moduleRetriever.getModule(AcademicConstants.ACAD_YEAR, moduleCode);
 
             if (module == null) {
                 // API fetch also failed
