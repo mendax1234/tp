@@ -21,6 +21,9 @@ import static modhero.common.Constants.AcademicConstants.NUM_YEARS;
 public class TimetableStorage extends Storage{
     private static final Logger logger = Logger.getLogger(TimetableStorage.class.getName());
 
+    private static final int EXPECTED_TIMETABLEDATA_ARGS = 3;
+
+
     /**
      * Constructs a TimetableStorage with the specified file path.
      * Calls the superclass constructor to initialize the file path used for loadingn or saving timetable data.
@@ -47,7 +50,7 @@ public class TimetableStorage extends Storage{
             }
             for (String module : moduleList) {
                 List<String> moduleArgs = DeserialisationUtil.deserialiseMessage(module);
-                if (moduleArgs != null && moduleArgs.size() != 3) {
+                if (moduleArgs != null && moduleArgs.size() != EXPECTED_TIMETABLEDATA_ARGS) {
                     logger.log(Level.WARNING, "TimetableStorage load moduleList does not have the right number of argument");
                     break;
                 }

@@ -30,14 +30,6 @@ public abstract class Storage {
         this.filePath = filePath;
     }
 
-    public void load() {
-        System.out.println("This method is to be implemented by child classes");
-    };
-
-    public void save() {
-        System.out.println("This method is to be implemented by child classes");
-    };
-
     /**
      * Loads the file contents into a list of strings, each line a list element.
      *

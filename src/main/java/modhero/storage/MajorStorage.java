@@ -70,25 +70,4 @@ public class MajorStorage extends Storage{
 
         }
     }
-
-
-    /**
-     * Return ModuleList for major object.
-     *
-     * @param allModulesData hashmap to get modules object from
-     * @param moduleCodes modules code in a list of string
-     * @return ModuleList
-     */
-    private ModuleList createModuleList(Map<String, Module> allModulesData, List<String> moduleCodes) {
-        ModuleList moduleList = new ModuleList();
-        for (String code : moduleCodes) {
-            Module module = allModulesData.get(code);
-            if (module != null) {
-                moduleList.add(module);
-            } else {
-                logger.log(Level.WARNING, "Missing module for major: " + code);
-            }
-        }
-        return moduleList;
-    }
 }
