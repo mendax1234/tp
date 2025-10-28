@@ -3,6 +3,7 @@ package modhero.commands;
 import modhero.data.major.Major;
 import modhero.data.major.MajorModule;
 import modhero.data.modules.Module;
+import modhero.exceptions.ModHeroException;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -60,10 +61,14 @@ public class MajorCommand extends Command {
         }
 
         //add all modules from the selected major into the timetable
-        for (MajorModule mm : majorObject.getMajorModules()) {
-            //create a new module (placeholder until allModulesData is implemented)
-            Module m = new Module(mm.getCode(), "", 0, "", new ArrayList<>());
-            timetable.addModule(mm.getYear(), mm.getTerm(), m);
+        try {
+            for (MajorModule mm : majorObject.getMajorModules()) {
+                Module m = new Module(mm.getCode(), "", 0, "", new ArrayList<>());
+                timetable.addModule(mm.getYear(), mm.getTerm(), m);
+            }
+        } catch (ModHeroException e) {
+            logger.log(Level.WARNING, "Error adding module for major: " + major, e);
+            return new CommandResult("Failed to load major modules: " + e.getMessage());
         }
 
         logger.log(Level.INFO, () -> "Major successfully set to " + major);

@@ -21,8 +21,6 @@ public class DataManager {
     private static final Logger logger = Logger.getLogger(DataManager.class.getName());
 
     private final Timetable timetable;
-    private final ModuleList electiveList;
-    private final ModuleList coreList;
     private final Map<String, Module> allModulesData;
     private final Map<String, Major> allMajorsData;
     private final Storage preLoadModuleStorage;
@@ -36,8 +34,6 @@ public class DataManager {
      */
     public DataManager(String modulesPath, String majorPath) {
         this.timetable = new Timetable();
-        this.electiveList = new ModuleList();
-        this.coreList = new ModuleList();
         this.allModulesData = new HashMap<>();
         this.allMajorsData = new HashMap<>();
         this.preLoadModuleStorage = new Storage(modulesPath);
@@ -66,14 +62,6 @@ public class DataManager {
     // Getters
     public Timetable getTimetable() {
         return timetable;
-    }
-
-    public ModuleList getElectiveList() {
-        return electiveList;
-    }
-
-    public ModuleList getCoreList() {
-        return coreList;
     }
 
     public Map<String, Module> getAllModulesData() {

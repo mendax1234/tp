@@ -1,7 +1,6 @@
 package modhero;
 
-import static modhero.common.Constants.FilePathConstants.MAJOR_FILE_PATH;
-import static modhero.common.Constants.FilePathConstants.MODULES_FILE_PATH;
+import modhero.common.Constants.FilePathConstants;
 
 import modhero.commands.Command;
 import modhero.commands.CommandResult;
@@ -54,7 +53,7 @@ public class ModHero {
         logger.log(Level.INFO, "Start setting up data required");
         this.ui = new Ui();
         this.parser = new Parser();
-        this.dataManager = new DataManager(MODULES_FILE_PATH, MAJOR_FILE_PATH);
+        this.dataManager = new DataManager(FilePathConstants.MODULES_FILE_PATH, FilePathConstants.MAJOR_FILE_PATH);
         logger.log(Level.INFO, "Completed setting up data required");
         ui.showWelcome();
     }
@@ -92,8 +91,6 @@ public class ModHero {
         try {
             command.setData(
                     dataManager.getTimetable(),
-                    dataManager.getElectiveList(),
-                    dataManager.getCoreList(),
                     dataManager.getAllModulesData(),
                     dataManager.getAllMajorsData()
             );
