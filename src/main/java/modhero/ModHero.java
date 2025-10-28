@@ -38,7 +38,7 @@ public class ModHero {
      * starting the command loop, and performing cleanup.
      */
     public void run() {
-        LoggerConfig.configureLoggers(Level.OFF);
+        LoggerConfig.configureLoggers(Level.WARNING);
         logger.log(Level.INFO, "Starting ModHero");
         start();
         runCommandLoopUntilExitCommand();
@@ -53,7 +53,7 @@ public class ModHero {
         logger.log(Level.INFO, "Start setting up data required");
         this.ui = new Ui();
         this.parser = new Parser();
-        this.dataManager = new DataManager(FilePathConstants.MODULES_FILE_PATH, FilePathConstants.MAJOR_FILE_PATH);
+        this.dataManager = new DataManager(FilePathConstants.MODULES_FILE_PATH, FilePathConstants.MAJOR_FILE_PATH, FilePathConstants.TIMETABLE_FILE_PATH);
         logger.log(Level.INFO, "Completed setting up data required");
         ui.showWelcome();
     }

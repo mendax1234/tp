@@ -7,6 +7,9 @@ import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
 import modhero.parser.Parser;
 import modhero.data.timetable.Timetable;
+import modhero.storage.MajorStorage;
+import modhero.storage.ModuleStorage;
+import modhero.storage.TimetableStorage;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,6 +38,9 @@ public class LoggerConfig {
         setLoggerLevel(Module.class, level);
         setLoggerLevel(ModuleList.class, level);
         setLoggerLevel(Timetable.class, level);
+        setLoggerLevel(MajorStorage.class, level);
+        setLoggerLevel(ModuleStorage.class, level);
+        setLoggerLevel(TimetableStorage.class, level);
     }
 
     private static void setLoggerLevel(Class<?> clazz, Level level) {

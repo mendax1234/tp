@@ -43,5 +43,7 @@ public class Major {
     }
 
     /** @return the list of core module objects for the major*/
-    public List<TimetableData> getMajorModules() { return timetableData; }
+    public List<TimetableData> getMajorModules() {
+        return timetableData;
+    }
 }

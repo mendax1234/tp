@@ -6,6 +6,7 @@ import modhero.data.modules.Module;
 import modhero.storage.MajorStorage;
 import modhero.storage.ModuleStorage;
 import modhero.data.timetable.Timetable;
+import modhero.storage.TimetableStorage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,23 +29,25 @@ public class DataManager {
      * @param modulesPath Path to module data storage.
      * @param majorPath Path to major data storage.
      */
-    public DataManager(String modulesPath, String majorPath) {
+    public DataManager(String modulesPath, String majorPath, String timetablePath) {
         this.timetable = new Timetable();
         this.allModulesData = new HashMap<>();
         this.allMajorsData = new HashMap<>();
-        initializeData(modulesPath, majorPath);
+        initializeData(modulesPath, majorPath, timetablePath);
     }
 
     /**
      * Loads all data from storage files.
      */
-    private void initializeData(String modulesPath, String majorPath) {
+    private void initializeData(String modulesPath, String majorPath, String timetablePath) {
         try {
             ModuleStorage moduleStorage = new ModuleStorage(modulesPath);
             MajorStorage majorStorage = new MajorStorage(majorPath);
             moduleStorage.load(allModulesData);
             majorStorage.load(allModulesData, allMajorsData);
             logger.log(Level.INFO, "Data loaded successfully");
+            TimetableStorage timetableStorage = new TimetableStorage(timetablePath);
+            timetableStorage.load(timetable, allModulesData);
         } catch (CorruptedDataFileException e) {
             logger.log(Level.SEVERE, "Data file is corrupted", e);
         }
