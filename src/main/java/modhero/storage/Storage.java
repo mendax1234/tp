@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  * Handles loading from and saving to a text file.
  * Provides persistence for data by reading and writing plain text.
  */
-public class Storage {
+public abstract class Storage {
     private static final Logger logger = Logger.getLogger(Storage.class.getName());
 
     private final String filePath;

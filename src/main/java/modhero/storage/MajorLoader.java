@@ -16,20 +16,18 @@ import java.util.logging.Logger;
 /**
  * Loads major data from persistent storage into memory.
  */
-public class MajorLoader {
+public class MajorLoader extends Storage{
     private static final Logger logger = Logger.getLogger(MajorLoader.class.getName());
     private static final int EXPECTED_MAJOR_ARGS = 3;
 
-    private final Storage storage;
-
     /**
-     * Creates a MajorLoader with specified storage.
+     * Constructs a MajorLoader with the specified file path.
+     * Calls the superclass constructor to initialize the file path used for loading module data.
      *
-     * @param storage the storage instance to use for file operations
+     * @param filePath the path to the module data file to be loaded
      */
-    public MajorLoader(Storage storage) {
-        assert storage != null : "Storage must not be null";
-        this.storage = storage;
+    public MajorLoader(String filePath) {
+        super(filePath);
     }
 
     /**
@@ -46,7 +44,7 @@ public class MajorLoader {
         logger.log(Level.FINEST, "Loading all major data");
 
 
-        List<String> rawMajorsList = storage.load();
+        List<String> rawMajorsList = load();
 
         for (String aa : rawMajorsList) {
             List<String> majorTop = DeserialisationUtil.deserialiseMessage(aa);

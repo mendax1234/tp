@@ -3,10 +3,8 @@ package modhero.data;
 import modhero.exceptions.CorruptedDataFileException;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
-import modhero.data.modules.ModuleList;
 import modhero.storage.MajorLoader;
 import modhero.storage.ModuleLoader;
-import modhero.storage.Storage;
 import modhero.data.timetable.Timetable;
 
 import java.util.HashMap;
@@ -23,8 +21,6 @@ public class DataManager {
     private final Timetable timetable;
     private final Map<String, Module> allModulesData;
     private final Map<String, Major> allMajorsData;
-    private final Storage preLoadModuleStorage;
-    private final Storage preLoadMajorStorage;
 
     /**
      * Creates a new DataManager with specified storage paths.
@@ -36,26 +32,21 @@ public class DataManager {
         this.timetable = new Timetable();
         this.allModulesData = new HashMap<>();
         this.allMajorsData = new HashMap<>();
-        this.preLoadModuleStorage = new Storage(modulesPath);
-        this.preLoadMajorStorage = new Storage(majorPath);
-
-        initializeData();
+        initializeData(modulesPath, majorPath);
     }
 
     /**
      * Loads all data from storage files.
      */
-    private void initializeData() {
+    private void initializeData(String modulesPath, String majorPath) {
         try {
-            ModuleLoader moduleLoader = new ModuleLoader(preLoadModuleStorage);
+            ModuleLoader moduleLoader = new ModuleLoader(modulesPath);
+            MajorLoader majorLoader = new MajorLoader(majorPath);
             moduleLoader.loadAllModulesData(allModulesData);
-            MajorLoader majorLoader = new MajorLoader(preLoadMajorStorage);
             majorLoader.loadAllMajorsData(allModulesData, allMajorsData);
             logger.log(Level.INFO, "Data loaded successfully");
         } catch (CorruptedDataFileException e) {
-            logger.log(Level.SEVERE, "Clearing corrupted file", e);
-            preLoadModuleStorage.save("");
-            preLoadMajorStorage.save("");
+            logger.log(Level.SEVERE, "Data file is corrupted", e);
         }
     }
 
