@@ -1,0 +1,103 @@
+@startuml
+!theme plain
+
+' --- Participants (colored based on your examples) ---
+participant "caller" as Caller
+participant "cmd:AddCommand" as AddCmd #LightGreen
+participant "allModulesData:Map" as Cache
+participant "retriever:ModuleRetriever" as Retriever #Plum
+participant "tt:Timetable" as Timetable #LightBlue
+participant "module:Module" as Module #Orange
+
+' --- Flow Start ---
+Caller -> AddCmd : execute()
+activate AddCmd
+
+AddCmd -> Cache : get(moduleCode)
+activate Cache
+Cache --> AddCmd : null
+deactivate Cache
+
+' --- Optional fragment for API fetch (matches image_7ccae0.png) ---
+opt module not in local data
+    AddCmd -> Retriever : getModule(acadYear, moduleCode)
+    activate Retriever
+
+    ' --- Alternative for API result ---
+    alt module not found in API
+        Retriever --> AddCmd : null
+        deactivate Retriever
+
+        ' Exception is caught by AddCommand's try-catch block
+        AddCmd -->> AddCmd : throw ModuleNotFoundException
+
+        ' Object creation (matches image_7cca86.png style)
+        create participant "result:CommandResult" as ResultFail
+        AddCmd -> ResultFail : new CommandResult(e.getMessage())
+        AddCmd --> Caller : result
+        deactivate AddCmd
+
+    else module found in API
+        Retriever --> AddCmd : module
+        deactivate Retriever
+
+        AddCmd -> Cache : put(moduleCode, module)
+        activate Cache
+        Cache --> AddCmd
+        deactivate Cache
+    end
+end
+
+' --- Continue with add logic ---
+AddCmd -> Timetable : addModule(year, sem, module)
+activate Timetable
+
+' Nested activation for internal checks (matches image_7cca9d.png)
+Timetable -> Timetable : checkModuleAddable(...)
+activate Timetable #DarkGray
+
+Timetable -> Timetable : getAllModules()
+Timetable -> Timetable : getModulesTakenUpTo(year, sem)
+
+Timetable -> Module : getPrerequisites()
+activate Module
+Module --> Timetable : prereqs
+deactivate Module
+
+note right of Timetable
+  Internal logic validates prerequisites
+  against modules taken up to this point.
+end note
+
+' --- Alternative for Prerequisite Check ---
+alt prerequisites not met
+    ' Dashed return arrow for exception
+    Timetable -->> AddCmd : throw PrerequisiteNotMetException
+    deactivate Timetable #DarkGray
+    deactivate Timetable
+
+    note left of AddCmd
+      Exception caught by
+      try-catch in execute()
+    end note
+
+    create participant "result:CommandResult" as ResultPrereq
+    AddCmd -> ResultPrereq : new CommandResult(e.getMessage())
+    AddCmd --> Caller : result
+    deactivate AddCmd
+
+else prerequisites met
+    Timetable -> Timetable : addModuleInternal(...)
+    deactivate Timetable #DarkGray
+
+    Timetable --> AddCmd
+    deactivate Timetable
+
+    create participant "result:CommandResult" as ResultSuccess
+    AddCmd -> ResultSuccess : new CommandResult(successMsg)
+
+    AddCmd --> Caller : result
+    deactivate AddCmd
+end
+
+@enduml
