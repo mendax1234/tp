@@ -110,27 +110,6 @@ public class Timetable {
         }
     }
 
-    private void checkPrerequisitesSatisfiedAfterDelete (int year, int semester, Module moduleToDelete) throws PrerequisiteNotMetException{
-
-        List<Module> modulesYetToComplete = getModulesTakenAfter(year, semester);
-        List<String> modulesYetToCompleteCodes = modulesYetToComplete.stream().map(Module::getCode).toList();
-        Prerequisites prereqs = moduleToDelete.getPrerequisites();
-        List<List<String>> prereqSets = prereqs.getPrereq();
-
-        if (prereqSets == null || prereqSets.isEmpty()){
-            return ;
-        }
-
-        boolean satisfied = prereqSets.stream().anyMatch(option ->
-                option.stream().allMatch(modulesYetToCompleteCodes::contains)
-        );
-
-        if (!satisfied) {
-            throw new PrerequisiteNotMetException(moduleToDelete.getCode(), prereqs.toString());
-        }
-        return ;
-    }
-
     /**
      * Internal method to add a module to a specific year and term.
      * No checks are performed here.
@@ -188,6 +167,54 @@ public class Timetable {
         throw new ModuleNotFoundException(moduleCode, "timetable");
     }
 
+    private void checkPrerequisitesSatisfied( Module target) throws PrerequisiteNotMetException {
+        //check if module is 1k, if yes then it has no prerequisites
+        boolean isLevel1000Module = checkIsLevel1000Module(target.getCode());
+        if (isLevel1000Module){
+            return ;
+        }
+        int year;
+        int semester;
+        int[] moduleLocation; // {year, term}
+        try {
+            moduleLocation = findModuleLocation(target.getCode());
+            year = moduleLocation[0];
+            semester = moduleLocation[1];
+        }catch (ModuleNotFoundException e){
+            return; //this is not going to happen
+        }
+
+
+        List<Module> completedModules = getModulesTakenUpTo(year, semester);
+        List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
+
+        Prerequisites prereqs = target.getPrerequisites();
+        List<List<String>> prereqSets = prereqs.getPrereq();
+
+        if (prereqSets == null || prereqSets.isEmpty()) return;
+
+        boolean satisfied = prereqSets.stream().anyMatch(option ->
+                option.stream().allMatch(completedCodes::contains)
+        );
+
+        if (!satisfied) {
+            throw new PrerequisiteNotMetException(target.getCode(), prereqs.toString());
+        }
+    }
+
+    private void checkPrerequisitesSatisfiedAfterDelete (int year, int semester, Module moduleToDelete) throws PrerequisiteNotMetException{
+
+        // check whether all subsequent modules have had their prerequisites affected
+        List<Module> modulesYetToComplete = getModulesTakenAfter(year, semester);
+        for (Module module: modulesYetToComplete){
+            try {
+                checkPrerequisitesSatisfied(module);
+            } catch (PrerequisiteNotMetException e) {
+                throw e;
+            }
+        }
+    }
+
     public void deleteModule(String moduleCode) throws ModuleNotFoundException, PrerequisiteNotMetException {
         int[] moduleLocation; // {year, term}
         try {
@@ -243,8 +270,8 @@ public class Timetable {
      */
     private List<Module> getModulesTakenUpTo(int targetYear, int targetSem) {
         List<Module> completedModules = new ArrayList<>();
-        int targetYearIdx = targetYear - 1;
-        int targetSemIdx = targetSem - 1;
+        int targetYearIdx = targetYear;
+        int targetSemIdx = targetSem;
 
         for (int y = 0; y < AcademicConstants.NUM_YEARS; y++) {
             for (int s = 0; s < AcademicConstants.NUM_TERMS; s++) {
