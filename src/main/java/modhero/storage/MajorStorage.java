@@ -1,9 +1,9 @@
 package modhero.storage;
 
+import modhero.data.timetable.TimetableData;
 import modhero.exceptions.CorruptedDataFileException;
 import modhero.common.util.DeserialisationUtil;
 import modhero.data.major.Major;
-import modhero.data.major.MajorModule;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
 
@@ -16,17 +16,17 @@ import java.util.logging.Logger;
 /**
  * Loads major data from persistent storage into memory.
  */
-public class MajorLoader extends Storage{
-    private static final Logger logger = Logger.getLogger(MajorLoader.class.getName());
+public class MajorStorage extends Storage{
+    private static final Logger logger = Logger.getLogger(MajorStorage.class.getName());
     private static final int EXPECTED_MAJOR_ARGS = 3;
 
     /**
-     * Constructs a MajorLoader with the specified file path.
+     * Constructs a MajorStorage with the specified file path.
      * Calls the superclass constructor to initialize the file path used for loading module data.
      *
      * @param filePath the path to the module data file to be loaded
      */
-    public MajorLoader(String filePath) {
+    public MajorStorage(String filePath) {
         super(filePath);
     }
 
@@ -54,18 +54,18 @@ public class MajorLoader extends Storage{
 
             List<String> moduleYTList = DeserialisationUtil.deserialiseMessage(modulesBlob);
 
-            List<MajorModule> majorModules = new ArrayList<>();
+            List<TimetableData> timetableData = new ArrayList<>();
             for (String moduleYT : moduleYTList) {
                 List<String> triplet = DeserialisationUtil.deserialiseMessage(moduleYT);
                 String code = triplet.get(0);
                 int year    = Integer.parseInt(triplet.get(1));
                 int sem     = Integer.parseInt(triplet.get(2));
-                MajorModule mod = new MajorModule(code.toUpperCase(), year, sem);
+                TimetableData mod = new TimetableData(code.toUpperCase(), year, sem);
                 //TODO: add code here when allModulesData is implemented
-                majorModules.add(mod);
+                timetableData.add(mod);
             }
 
-            Major major = new Major(name, abbrName.toUpperCase(), majorModules);
+            Major major = new Major(name, abbrName.toUpperCase(), timetableData);
             allMajorsData.put(abbrName.toLowerCase(), major);
 
         }

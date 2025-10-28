@@ -6,9 +6,8 @@ import static modhero.common.Constants.FilePathConstants.MODULES_FILE_PATH;
 import modhero.common.util.SerialisationUtil;
 import modhero.data.nusmods.NusmodsAPIClient;
 import modhero.parser.ModuleParser;
-import modhero.storage.MajorLoader;
-import modhero.storage.ModuleLoader;
-import modhero.storage.Storage;
+import modhero.storage.MajorStorage;
+import modhero.storage.ModuleStorage;
 import modhero.data.modules.Module;
 import modhero.data.modules.Prerequisites;
 
@@ -22,7 +21,7 @@ import java.util.Map;
  *
  * This version contains the correct TRIPLE-SERIALIZATION logic
  * in the 'serializePrereqList' helper method, which matches
- * the triple-deserialization logic in the fixed ModuleLoader.
+ * the triple-deserialization logic in the fixed ModuleStorage.
  *
  * REQUIRES: An active internet connection.
  */
@@ -35,7 +34,7 @@ public class DataGenerator {
         System.out.println("Fetching live module data from NUSMods API...");
         String moduleFileContent = generateModulesTxt();
         if (moduleFileContent != null) {
-            ModuleLoader moduleStorage = new ModuleLoader(MODULES_FILE_PATH);
+            ModuleStorage moduleStorage = new ModuleStorage(MODULES_FILE_PATH);
             moduleStorage.saveToTextFile(moduleFileContent);
             System.out.println("Successfully saved to " + MODULES_FILE_PATH);
         } else {
@@ -45,7 +44,7 @@ public class DataGenerator {
         // 2. Generate Major Data
         System.out.println("\nGenerating major data...");
         String majorFileContent = generateMajorsTxt();
-        MajorLoader majorStorage = new MajorLoader(MAJOR_FILE_PATH);
+        MajorStorage majorStorage = new MajorStorage(MAJOR_FILE_PATH);
 
         majorStorage.saveToTextFile(majorFileContent);
         System.out.println("Successfully saved to " + MAJOR_FILE_PATH);
@@ -121,7 +120,7 @@ public class DataGenerator {
     /**
      * Serializes the complex List<List<String>> prerequisite structure.
      *
-     * Serialization structure (to match ModuleLoader's triple deserialization):
+     * Serialization structure (to match ModuleStorage's triple deserialization):
      * 1. Each module code is serialized (WRAP 1)
      * 2. Each combination (list of codes) is serialized (WRAP 2)
      * 3. The entire blob is serialized one more time in generateModulesTxt (WRAP 3)

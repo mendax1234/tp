@@ -14,17 +14,17 @@ import java.util.logging.Logger;
 /**
  * Loads module data from persistent storage into memory.
  */
-public class ModuleLoader extends Storage{
-    private static final Logger logger = Logger.getLogger(ModuleLoader.class.getName());
+public class ModuleStorage extends Storage{
+    private static final Logger logger = Logger.getLogger(ModuleStorage.class.getName());
     private static final int EXPECTED_MODULE_ARGS = 5;
 
     /**
-     * Constructs a ModuleLoader with the specified file path.
+     * Constructs a ModuleStorage with the specified file path.
      * Calls the superclass constructor to initialize the file path used for loading module data.
      *
      * @param filePath the path to the module data file to be loaded
      */
-    public ModuleLoader(String filePath) {
+    public ModuleStorage(String filePath) {
         super(filePath);
     }
 
