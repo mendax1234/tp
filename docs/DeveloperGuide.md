@@ -44,7 +44,7 @@ It resides in the package `modhero.data` and its sub-packages:
 
 ### Structure of the Model Component
 
-![Model Class Diagram](ModelClassDiagram.png)  
+![Model Class Diagram](diagrams/ModelClassDiagram.png)  
 *Figure 1 – UML class diagram showing relationships within the Model component.*
 
 ### Key Responsibilities
@@ -68,7 +68,7 @@ This separation allows the Model to remain cohesive yet modular, enabling clean 
 ---
 
 ## Storage Component
-![storageUML.png](storageUML.png)
+![storageUML.png](diagrams/storageUML.png)
 The Storage component is responsible for loading and saving essential application data.
 It reads text files from predefined directories and converts their contents into a structured, accessible format for other components to process.
 
