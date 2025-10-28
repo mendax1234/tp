@@ -3,16 +3,12 @@
 - [Design & Implementation](#design--implementation)
     - [High-Level Architecture](#high-level-architecture)
     - [Model Component](#model-component)
-        - [Structure of the Model Component](#structure-of-the-model-component)
-        - [Key Responsibilities](#key-responsibilities)
-        - [Design Rationale](#design-rationale)
     - [Storage Component](#storage-component)
 - [Implementation](#implementation)
+  - [Add Feature](#add-feature)
 - [Documentation, Logging and Testing](#documentation-logging-and-testing)
 - [Appendix: Requirements](#appendix-requirements)
     - [Product Scope](#product-scope)
-        - [Target User Profile](#target-user-profile)
-        - [Value Proposition](#value-proposition)
     - [User Stories](#user-stories)
     - [Non-Functional Requirements](#non-functional-requirements)
     - [Glossary](#glossary)
@@ -97,6 +93,54 @@ Deserialization also serves as a validation step, confirming that the entire fil
 To maintain data integrity and readability, all data should be serialized before saving, ensuring a consistent and reliable file structure for future loading operations.
 
 ## Implementation
+This section describes some noteworthy details on how certain features are implemented.
+
+### Add Feature
+
+#### Overview
+The `add` feature allows users to add a module to their timetable in a specific year and semester. (For the usage, please go to our [User Guide](UserGuide.md) for more information) The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModuleData` or the NUSMODS API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
+
+#### Key Components
+- **`AddCommand.java`**: The command class that parses the user's intent. Its `execute()` method orchestrates the entire "add" operation.
+- **`Timetable.java`**: The data model representing the user's timetable. It is responsible for all business logic, such as checking for duplicates, validating prerequisites (`checkModuleAddable`), and storing the module (`addModuleInternal`).
+- **`ModuleRetriever.java`**: A utility class used by `AddCommand` to fetch module details from the external NUSMODS API if the module isn't found in the local `allModulesData` cache.
+- **`allModulesData` (Map)**: A map that acts as a local cache for module data to minimize API calls.
+
+#### Sequence Diagram
+This diagram illustrates the typical flow for adding a module that is *not* yet in the local cache (`allModulesData`) but *is* found in the NUSMODS API, and for which the user *meets* the prerequisites.
+
+<figure align="center">
+    <img src="diagrams/addCommand.png" alt="Add Command Sequence Diagram" />
+    <figcaption><em>Add Command Sequence Diagram</em></figcaption>
+</figure>
+
+#### Detailed Execution Flow
+1.  **Initiation**: The `execute()` method of `AddCommand` is called.
+2.  **Cache Check**: It first attempts to get the `Module` object from the local `allModulesData` cache.
+3.  **API Fallback (Optional)**:
+    * If the module is `null` (not in the cache), the command enters an **`opt`** (optional) fragment.
+    * It calls `getModule()` on the `ModuleRetriever`.
+    * **`alt` [Module Not Found]**: If the retriever returns `null`, a `ModuleNotFoundException` is thrown, caught by `AddCommand`, and returned as an error `CommandResult`.
+    * **`else` [Module Found]**: If the retriever returns a valid `Module` object, it is saved to the `allModulesData` cache for future use.
+4.  **Timetable Delegation**: The `AddCommand` calls `timetable.addModule()` with the `Module` object and target location.
+5.  **Business Logic Validation**:
+    * Inside `timetable.addModule()`, the first step is to call its own `checkModuleAddable()` method.
+    * This check performs two key validations:
+        1.  **Duplicate Check**: It calls `getAllModules()` to see if the module code already exists in the timetable.
+        2.  **Prerequisite Check**: It calls `getModulesTakenUpTo()` to get a list of all modules taken before or during the target semester. It then gets the `Prerequisites` from the `module` and checks if the list of completed modules satisfies any of the prerequisite options.
+6.  **Handling Validation Result**:
+    * **`alt` [Checks Fail]**: If the module already exists or prerequisites are not met, `checkModuleAddable()` throws a `ModHeroException` (e.g., `ModuleAlreadyExistsException`, `PrerequisiteNotMetException`).
+    * This exception propagates up to `AddCommand`, which catches it and returns a `CommandResult` with the error message.
+    * **`else` [Checks Pass]**: If all checks pass, `timetable.addModule()` proceeds.
+7.  **Final Add**: The method calls `addModuleInternal()`, which performs the simple action of adding the `Module` object to the correct `ArrayList` in the `timetable` data structure.
+8.  **Success Result**: `AddCommand` creates a new `CommandResult` with a success message and returns it to the caller.
+
+#### Error Handling
+Error handling is centralized within the `execute()` method of `AddCommand`. A `try-catch` block wraps the entire logic.
+
+- Any `ModHeroException` (e.g., `InvalidYearOrSemException`, `ModuleNotFoundException`, `ModuleAlreadyExistsException`,`PrerequisiteNotMetException`) thrown by `Timetable` or `ModuleRetriever` is caught.
+- The exception's message (`e.getMessage()`) is used to create a new `CommandResult`, ensuring that the user receives a clean, specific error message without crashing the application.
+- A general `Exception` catch block also exists to handle any unexpected errors, logging them and returning a generic error message.
 
 ## Documentation, Logging and Testing
 
@@ -123,7 +167,7 @@ To maintain data integrity and readability, all data should be serialized before
 
 ### Glossary
 
-* *glossary item* — Definition.
+- *glossary item* — Definition.
 
 ## Appendix: Instructions for Manual Testing
 
