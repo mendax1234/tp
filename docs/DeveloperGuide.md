@@ -110,7 +110,6 @@ To maintain data integrity and readability, all data should be serialized before
 | v3.0 | user | specify preferred workload (MCs per semester) | let the planner auto-balance my study load |
 | v3.0 | admin/developer | extend the list of supported majors | make ModHero scalable to new faculties and specialisations |
 
-
 ---
 
 ## Non-Functional Requirements
