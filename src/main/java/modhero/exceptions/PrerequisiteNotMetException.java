@@ -10,6 +10,6 @@ public class PrerequisiteNotMetException extends ModHeroException {
     }
 
     public String getRequisites(){
-        return moduleCode + ". Requires: " + required;
+        return moduleCode + " Requires: " + required;
     }
 }
