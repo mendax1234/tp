@@ -200,64 +200,51 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 
 {Give instructions on how to do manual testing, e.g., how to load sample data or verify stored files.}
 
-#### Launch and shutdown
-Initial launch
+### Launch and shutdown
+1. Initial launch 
+2. Download the jar file and copy into an empty folder 
+3. Double-click the jar file Expected: Shows the Command prompt terminal. 
+4. Close the window or give the `exit` command. 
+5. Re-launch the app by double-clicking the jar file.
 
-Download the jar file and copy into an empty folder
+### Selecting a major
+1. Test case: `major cs`  
+   Expected: Will show successful message
 
-Double-click the jar file Expected: Shows the Command prompt terminal.
+2. Test case: `major computer science`  
+   Expected: Will show successful message
 
-Close the window or give the `exit` command.
+3. Test case: `major cs minor in business`  
+   Expected: Will not be successful added as only the main major is needed
 
-Re-launch the app by double-clicking the jar file.
+4. Test case: `major ce`  
+   Expected: Will not be added only cs and ceg are supported
 
-#### Selecting a major
+### Adding a module
+**Prerequisites:** Start a new session without any exemption
 
-Test case: major cs
-Expected: Will show successful message
+1. Test case: `add CS2113 to Y1S1`  
+   Expected: Will not be added successfully as there are required prerequisites before taking CS2113
 
-Test case: major computer science
-Expected: Will show successful message
+2. Test case: `add CS2113 to Y10S1`  
+   Expected: Will not be added successfully as it is a planner for 4 years in NUS
 
-Test case: major cs minor in business
-Expected: Will not be successful added as only the main major is needed
+3. Test case: `add ES1000 to Y1S1`  
+   Expected: Will be added successfully as there is no prerequisites for this module
 
-Test case: major ce
-Expected: Will be not be added only cs and ceg are supported
-
-
-#### Adding a module
-
-Prerequisites: Start a new session without any exemption
-
-Test case: add CS2113 to Y1S1
-Expected: Will not be added successfully as there a required prerequisites before taking CS2113 
-
-Test case: add CS2113 to Y10S1
-Expected: Will not be added successfully as it is a planner for 4 years in NUS
-
-Test case: add ES1000 to Y1S1
-Expected: Will be added successfully as there is no prerequisites for this module
-
-Test case: add ES1000 to Y1S2
-Expected: Will be not be added as this module is already in the timetable
-
+4. Test case: `add ES1000 to Y1S2`  
+   Expected: Will not be added as this module is already in the timetable
 
 #### Deleting a module
+**Prerequisites:** Generate schedule using `schedule` to know what module code is in there. Ensure CS2113 is in there
 
-Prerequisites: Generate schedule using `schedule` to know what module code is in there. Ensure CS2113 is in there
+1. Test case: `delete CS2113`  
+   Expected: Will be deleted
 
-Test case: delete CS2113
-Expected: Will be deleted
-
-Test case: delete ABCDEF
-Expected: Will not be deleted as no such module code exist
-
+2. Test case: `delete ABCDEF`  
+   Expected: Will not be deleted as no such module code exist
 
 #### Loading and saving of customised timetable
-
-After customising timetable, type `schedule` to generate the timetable, it will also save it
-
-Close the application.
-
-Re-launch the application will load the timetable data automatically.
+- After customising timetable, type `schedule` to generate the timetable, it will also save it
+- Close the application.
+- Re-launch the application will load the timetable data automatically.
