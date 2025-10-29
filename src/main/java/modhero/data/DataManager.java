@@ -3,11 +3,10 @@ package modhero.data;
 import modhero.exceptions.CorruptedDataFileException;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
-import modhero.data.modules.ModuleList;
-import modhero.storage.MajorLoader;
-import modhero.storage.ModuleLoader;
-import modhero.storage.Storage;
+import modhero.storage.MajorStorage;
+import modhero.storage.ModuleStorage;
 import modhero.data.timetable.Timetable;
+import modhero.storage.TimetableStorage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +22,6 @@ public class DataManager {
     private final Timetable timetable;
     private final Map<String, Module> allModulesData;
     private final Map<String, Major> allMajorsData;
-    private final Storage preLoadModuleStorage;
-    private final Storage preLoadMajorStorage;
 
     /**
      * Creates a new DataManager with specified storage paths.
@@ -32,30 +29,27 @@ public class DataManager {
      * @param modulesPath Path to module data storage.
      * @param majorPath Path to major data storage.
      */
-    public DataManager(String modulesPath, String majorPath) {
+    public DataManager(String modulesPath, String majorPath, String timetablePath) {
         this.timetable = new Timetable();
         this.allModulesData = new HashMap<>();
         this.allMajorsData = new HashMap<>();
-        this.preLoadModuleStorage = new Storage(modulesPath);
-        this.preLoadMajorStorage = new Storage(majorPath);
-
-        initializeData();
+        initializeData(modulesPath, majorPath, timetablePath);
     }
 
     /**
      * Loads all data from storage files.
      */
-    private void initializeData() {
+    private void initializeData(String modulesPath, String majorPath, String timetablePath) {
         try {
-            ModuleLoader moduleLoader = new ModuleLoader(preLoadModuleStorage);
-            moduleLoader.loadAllModulesData(allModulesData);
-            MajorLoader majorLoader = new MajorLoader(preLoadMajorStorage);
-            majorLoader.loadAllMajorsData(allModulesData, allMajorsData);
+            ModuleStorage moduleStorage = new ModuleStorage(modulesPath);
+            MajorStorage majorStorage = new MajorStorage(majorPath);
+            moduleStorage.load(allModulesData);
+            majorStorage.load(allModulesData, allMajorsData);
             logger.log(Level.INFO, "Data loaded successfully");
+            TimetableStorage timetableStorage = new TimetableStorage(timetablePath);
+            timetableStorage.load(timetable, allModulesData);
         } catch (CorruptedDataFileException e) {
-            logger.log(Level.SEVERE, "Clearing corrupted file", e);
-            preLoadModuleStorage.save("");
-            preLoadMajorStorage.save("");
+            logger.log(Level.SEVERE, "Data file is corrupted", e);
         }
     }
 

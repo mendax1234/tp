@@ -83,6 +83,7 @@ public final class Constants {
     public static final class FilePathConstants {
         public static final String MODULES_FILE_PATH = "src/main/resources/modules.txt";
         public static final String MAJOR_FILE_PATH = "src/main/resources/major.txt";
+        public static final String TIMETABLE_FILE_PATH = "data/save.txt";
     }
 
     public static final class FormatConstants {

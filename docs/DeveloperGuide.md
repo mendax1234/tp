@@ -42,6 +42,12 @@ It comprises four main components:
 At launch, `Main` initializes these components and connects them.  
 At shutdown, it ensures all data is saved correctly to persistent storage.
 
+### Logic Component
+<figure align="center">
+    <img src="diagrams/ParserUML.png" alt="Parser Class Diagram" />
+    <figcaption><em>UML class diagram showing relationships within the Parser component.</em></figcaption>
+</figure>
+
 ### Model Component
 **API:** `Model.java`
 
@@ -83,7 +89,7 @@ This separation allows the Model to remain cohesive yet modular, enabling clean 
 The Storage component is responsible for loading and saving essential application data.
 It reads text files from predefined directories and converts their contents into a structured, accessible format for other components to process.
 
-Two primary classes, ModuleLoader and MajorLoader, rely on Storage to retrieve module and major data.
+Three primary classes, ModuleStorage, MajorStorage and TimetableStorage, rely on Storage to retrieve module and major data to construct the timetable.
 These loaders then deserialize the loaded text into objects such as Module, Major, and Prerequisites, which are stored in in-memory hash maps for efficient access.
 The process is supported by two utility classes, SerialisationUtil and DeserialisationUtil, which enhance data conversion and validation.
 
@@ -91,6 +97,17 @@ Each text file is stored in a unique, well-defined format, ensuring accurate dat
 Deserialization also serves as a validation step, confirming that the entire file has been successfully read and processed.
 
 To maintain data integrity and readability, all data should be serialized before saving, ensuring a consistent and reliable file structure for future loading operations.
+
+#### Serialiser
+
+All data are stored in a serialised format following this convention `[content length][start delimiter][content][end delimiter]`.
+This format ensures that any characters and symbols in the content will not be able to interfere with splitting the content into the correct component.
+Furthermore, it is able to ensure that all the text required for the component has been read successfully without any data corruption.
+
+It can be used to serialise a string or a one dimension list of strings. Deserialising it will return it back to it original list form.
+Nested List can also be serialised by performing serialised on each dimension of the list and combining them together as a string.
+It is also able to serialise objects with different data types. For example, the module data consist of module code and prerequisite which is in String and Nested List.
+It can be serialised by performing serialised on each data type and combing them together.
 
 ## Implementation
 This section describes some noteworthy details on how certain features are implemented.
@@ -183,3 +200,65 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 ## Appendix: Instructions for Manual Testing
 
 {Give instructions on how to do manual testing, e.g., how to load sample data or verify stored files.}
+
+#### Launch and shutdown
+Initial launch
+
+Download the jar file and copy into an empty folder
+
+Double-click the jar file Expected: Shows the Command prompt terminal.
+
+Close the window or give the `exit` command.
+
+Re-launch the app by double-clicking the jar file.
+
+#### Selecting a major
+
+Test case: major cs
+Expected: Will show successful message
+
+Test case: major computer science
+Expected: Will show successful message
+
+Test case: major cs minor in business
+Expected: Will not be successful added as only the main major is needed
+
+Test case: major ce
+Expected: Will be not be added only cs and ceg are supported
+
+
+#### Adding a module
+
+Prerequisites: Start a new session without any exemption
+
+Test case: add CS2113 to Y1S1
+Expected: Will not be added successfully as there a required prerequisites before taking CS2113 
+
+Test case: add CS2113 to Y10S1
+Expected: Will not be added successfully as it is a planner for 4 years in NUS
+
+Test case: add ES1000 to Y1S1
+Expected: Will be added successfully as there is no prerequisites for this module
+
+Test case: add ES1000 to Y1S2
+Expected: Will be not be added as this module is already in the timetable
+
+
+#### Deleting a module
+
+Prerequisites: Generate schedule using `schedule` to know what module code is in there. Ensure CS2113 is in there
+
+Test case: delete CS2113
+Expected: Will be deleted
+
+Test case: delete ABCDEF
+Expected: Will not be deleted as no such module code exist
+
+
+#### Loading and saving of customised timetable
+
+After customising timetable, type `schedule` to generate the timetable, it will also save it
+
+Close the application.
+
+Re-launch the application will load the timetable data automatically.
