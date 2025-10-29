@@ -144,16 +144,23 @@ delete MODULE_CODE1 MODULE_CODE2 ...
 delete CS2109S CS2040C
 ```
 #### Expected output
-1. If all module codes are valid and deleting those modules does not affect any prerequisites only the list of sucessfully
-deleted modules will be output:   
-`Successfully deleted : CS2113, CS2100`
+1.  If all module codes are valid and deleting those modules does not affect any prerequisites only the list of sucessfully
+    deleted modules will be output:
+    ```
+    Successfully deleted : CS2113, CS2100
+    ```
 
-2. If there are invalid module codes, the following will be added to the output: `The following modules were not found in timetable: CS6767, COM420 `
+2.  If there are invalid module codes, the following will be added to the output:
+    ```
+    The following modules were not found in timetable: CS6767, COM420 
+    ```
 
-3. If deleting any modules would violate another module's prerequisites, the affected module will be output along with its
-possible prerequisite combinations:  
-`The following modules could not be deleted as that would violate the preRequisites for 
-the following modules: {CS2040C Requires: CS1010} {CS2109 Requires: CS1231}`
+3.  If deleting any modules would violate another module's prerequisites, the affected module will be output along with its
+    possible prerequisite combinations:
+    ```
+    The following modules could not be deleted as that would violate the preRequisites for 
+    the following modules: {CS2040C Requires: CS1010} {CS2109 Requires: CS1231}
+    ```
 
 ### Printing a Recommended Schedule: `schedule`
 Generates a personalised 4-year study plan factoring in prerequisites, NUSMods availability, exchanges, and graduation requirements.

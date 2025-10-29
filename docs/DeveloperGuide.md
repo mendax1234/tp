@@ -82,9 +82,10 @@ This separation allows the Model to remain cohesive yet modular, enabling clean 
 
 ### Storage Component
 <figure align="center">
-    <img src="diagrams/storageUML.png" alt="Storage Class Diagram" />
+    <img src="diagrams/StorageUML.png" alt="Storage Class Diagram" />
     <figcaption><em>UML class diagram showing relationships within the Storage component.</em></figcaption>
 </figure>
+
 The Storage component is responsible for loading and saving essential application data.
 It reads text files from predefined directories and converts their contents into a structured, accessible format for other components to process.
 
@@ -162,9 +163,7 @@ This diagram illustrates the typical flow for adding a module that is *not* yet 
 7.  **Final Add**: The method calls `addModuleInternal()`, which performs the simple action of adding the `Module` object to the correct `ArrayList` in the `timetable` data structure.
 8.  **Success Result**: `AddCommand` creates a new `CommandResult` with a success message and returns it to the caller.
 
-
 ### Delete Feature
-
 #### Overview
 The ```Delete``` feature allows the user to delete a given module from the timetable while making sure
 that it doesn't affect the prerequisites for one of the other modules in the timetable. The expected arguments taken in
@@ -177,6 +176,7 @@ The details about how to use the feature are in the user guide.
     <img src="diagrams/Delete_sequence_diagram.png" alt="Add Command Sequence Diagram" />
     <figcaption><em>Delete Command Sequence Diagram</em></figcaption>
 </figure>
+
 #### Execution Flow of the Delete Command
 1. The Delete feature is encapsulated in the `DeleteCommand` Class, which is instantiated by the parser when the user 
 inputs the delete command
@@ -199,7 +199,6 @@ to another module in the timetable. This method is silently executed and returns
 which the prerequisite is being violated, it throws a PrerequisiteNotMet exception and cancels the delete operation.
 4. Given that the module exists in the timetable and deleting it does not affect another module's prerequisites, it now 
 deletes the module.
-
 
 #### Error Handling
 Error handling is centralized within the `execute()` method of `AddCommand`. A `try-catch` block wraps the entire logic.
@@ -234,7 +233,6 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 | v2.0 | NUS student | automatically verify that all prerequisites are met | ensure my plan is valid before registration |
 | v2.0 | NUS student | save my timetable to a file | persist my customized schedule for later use |
 | v2.0 | NUS student | load my saved timetable | restore my plan without re-entering all modules |
----
 
 ### Use Cases
 
