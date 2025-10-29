@@ -48,21 +48,21 @@ public class MajorLoader {
 
         List<String> rawMajorsList = storage.load();
 
-        for (String aa : rawMajorsList) {
-            List<String> majorTop = DeserialisationUtil.deserialiseMessage(aa);
-            String name       = majorTop.get(0);
-            String abbrName  = majorTop.get(1);
+        for (String line : rawMajorsList) {
+            List<String> majorTop = DeserialisationUtil.deserialiseMessage(line);
+            String name = majorTop.get(0);
+            String abbrName = majorTop.get(1);
             String modulesBlob = majorTop.get(2);
 
-            List<String> moduleYTList = DeserialisationUtil.deserialiseMessage(modulesBlob);
+            List<String> moduleWithYearAndTermList = DeserialisationUtil.deserialiseMessage(modulesBlob);
 
             List<MajorModule> majorModules = new ArrayList<>();
-            for (String moduleYT : moduleYTList) {
-                List<String> triplet = DeserialisationUtil.deserialiseMessage(moduleYT);
+            for (String moduleWithYearAndTerm : moduleWithYearAndTermList) {
+                List<String> triplet = DeserialisationUtil.deserialiseMessage(moduleWithYearAndTerm);
                 String code = triplet.get(0);
-                int year    = Integer.parseInt(triplet.get(1));
-                int sem     = Integer.parseInt(triplet.get(2));
-                MajorModule mod = new MajorModule(code.toUpperCase(), year, sem);
+                int year = Integer.parseInt(triplet.get(1));
+                int term = Integer.parseInt(triplet.get(2));
+                MajorModule mod = new MajorModule(code.toUpperCase(), year, term);
                 //TODO: add code here when allModulesData is implemented
                 majorModules.add(mod);
             }
