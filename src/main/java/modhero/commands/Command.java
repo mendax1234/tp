@@ -49,10 +49,6 @@ public abstract class Command {
         ));
     }
 
-    public void setData(Timetable timetable){
-        this.timetable = timetable;
-    }
-
     /**
      * Executes the command.
      *
