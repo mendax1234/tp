@@ -28,8 +28,6 @@ public abstract class Command {
      * and lists of elective and core modules.
      *
      * @param timetable the timetable to operate on
-     * @param electiveList the list of elective modules
-     * @param coreList the list of core modules
      * @param allModulesData the hashmap for loading and saving data
      * @param allMajorsData the hashmap for major information
      */

@@ -1,7 +1,7 @@
 @startuml
-title ModHero Model Component (CS2113 UML conventions)
+title ModHero Model Component
 
-' ======== CS2113 STYLE SETTINGS ========
+' CS2113 STYLE SETTINGS
 hide circle
 hide stereotypes
 skinparam monochrome true
@@ -12,8 +12,7 @@ skinparam ArrowColor black
 skinparam ClassBorderColor black
 skinparam ClassBackgroundColor white
 
-' ======== CLASSES ========
-
+' CLASSES
 class DataManager {
   - timetable : Timetable
   - coreList : ModuleList
@@ -54,7 +53,7 @@ class Timetable {
   - timetable : List<List<List<TimetableModule>>>
 }
 
-' ======== RELATIONSHIPS ========
+' RELATIONSHIPS
 
 DataManager "1" *-- "1" Timetable : manages >
 DataManager "1" *-- "1" ModuleList : coreList >
