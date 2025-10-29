@@ -61,7 +61,7 @@ public class MajorCommand extends Command {
         }
 
         //add all modules from the selected major into the timetable
-            for (MajorModule mm : majorObject.getMajorModules()) {
+            for (TimetableData mm : majorObject.getMajorModules()) {
                 Module m = allModulesData.get(mm.getCode());
                 timetable.addModuleInternal(mm.getYear() - 1, mm.getTerm() - 1, m);
             }
