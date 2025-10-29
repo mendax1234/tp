@@ -235,7 +235,7 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 4. Test case: `add ES1000 to Y1S2`  
    Expected: Will not be added as this module is already in the timetable
 
-#### Deleting a module
+### Deleting a module
 **Prerequisites:** Generate schedule using `schedule` to know what module code is in there. Ensure CS2113 is in there
 
 1. Test case: `delete CS2113`  
@@ -244,7 +244,7 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 2. Test case: `delete ABCDEF`  
    Expected: Will not be deleted as no such module code exist
 
-#### Loading and saving of customised timetable
+### Loading and saving of customised timetable
 - After customising timetable, type `schedule` to generate the timetable, it will also save it
 - Close the application.
 - Re-launch the application will load the timetable data automatically.
