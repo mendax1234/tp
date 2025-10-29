@@ -1,16 +1,16 @@
-package modhero.data.major;
+package modhero.data.timetable;
 
 /**
  * Represents a module that is required for a specific major.
- * Each {@code MajorModule} includes the module code,
+ * Each {@code TimetableData} includes the module code,
  * the year, and the term in which it should be taken.
  */
-public class MajorModule {
+public class TimetableData {
     private final String code;
     private final int year;
     private final int term;
 
-    public MajorModule(String code, int year, int term) {
+    public TimetableData(String code, int year, int term) {
         this.code = code;
         this.year = year;
         this.term = term;

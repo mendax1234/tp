@@ -1,0 +1,73 @@
+package modhero.storage;
+
+import modhero.data.timetable.TimetableData;
+import modhero.exceptions.CorruptedDataFileException;
+import modhero.common.util.DeserialisationUtil;
+import modhero.data.major.Major;
+import modhero.data.modules.Module;
+import modhero.data.modules.ModuleList;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * Loads major data from persistent storage into memory.
+ */
+public class MajorStorage extends Storage{
+    private static final Logger logger = Logger.getLogger(MajorStorage.class.getName());
+    private static final int EXPECTED_MAJOR_ARGS = 3;
+
+    /**
+     * Constructs a MajorStorage with the specified file path.
+     * Calls the superclass constructor to initialize the file path used for loading module data.
+     *
+     * @param filePath the path to the module data file to be loaded
+     */
+    public MajorStorage(String filePath) {
+        super(filePath);
+    }
+
+    /**
+     * Loads all majors from storage and populates the provided map.
+     *
+     * @param allModulesData existing modules map for module lookup
+     * @param allMajorsData map to populate; indexed by both abbreviation and name
+     * @throws CorruptedDataFileException if critical data corruption detected
+     */
+    public void load(Map<String, Module> allModulesData, Map<String, Major> allMajorsData)
+            throws CorruptedDataFileException {
+        assert allModulesData != null : "loadAllMajorsData allModulesData must not be null";
+        assert allMajorsData != null : "loadAllMajorsData allMajorsData must not be null";
+        logger.log(Level.FINEST, "Loading all major data");
+
+
+        List<String> rawMajorsList = loadFromTextFile();
+
+        for (String aa : rawMajorsList) {
+            List<String> majorTop = DeserialisationUtil.deserialiseMessage(aa);
+            String name       = majorTop.get(0);
+            String abbrName  = majorTop.get(1);
+            String modulesBlob = majorTop.get(2);
+
+            List<String> moduleYTList = DeserialisationUtil.deserialiseMessage(modulesBlob);
+
+            List<TimetableData> timetableData = new ArrayList<>();
+            for (String moduleYT : moduleYTList) {
+                List<String> triplet = DeserialisationUtil.deserialiseMessage(moduleYT);
+                String code = triplet.get(0);
+                int year    = Integer.parseInt(triplet.get(1));
+                int sem     = Integer.parseInt(triplet.get(2));
+                TimetableData mod = new TimetableData(code.toUpperCase(), year, sem);
+                //TODO: add code here when allModulesData is implemented
+                timetableData.add(mod);
+            }
+
+            Major major = new Major(name, abbrName.toUpperCase(), timetableData);
+            allMajorsData.put(abbrName.toLowerCase(), major);
+
+        }
+    }
+}

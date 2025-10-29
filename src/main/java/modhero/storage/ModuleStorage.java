@@ -14,20 +14,18 @@ import java.util.logging.Logger;
 /**
  * Loads module data from persistent storage into memory.
  */
-public class ModuleLoader {
-    private static final Logger logger = Logger.getLogger(ModuleLoader.class.getName());
+public class ModuleStorage extends Storage{
+    private static final Logger logger = Logger.getLogger(ModuleStorage.class.getName());
     private static final int EXPECTED_MODULE_ARGS = 5;
 
-    private final Storage storage;
-
     /**
-     * Creates a ModuleLoader with specified storage.
+     * Constructs a ModuleStorage with the specified file path.
+     * Calls the superclass constructor to initialize the file path used for loading module data.
      *
-     * @param storage the storage instance to use for file operations
+     * @param filePath the path to the module data file to be loaded
      */
-    public ModuleLoader(Storage storage) {
-        assert storage != null : "Storage must not be null";
-        this.storage = storage;
+    public ModuleStorage(String filePath) {
+        super(filePath);
     }
 
     /**
@@ -36,11 +34,11 @@ public class ModuleLoader {
      * @param allModulesData map to populate; indexed by both code and name
      * @throws CorruptedDataFileException if critical data corruption detected
      */
-    public void loadAllModulesData(Map<String, Module> allModulesData) throws CorruptedDataFileException {
+    public void load(Map<String, Module> allModulesData) throws CorruptedDataFileException {
         assert allModulesData != null : "loadAllModulesData allModulesData must not be null";
         logger.log(Level.FINEST, "Loading all modules data");
 
-        List<String> rawModulesList = storage.load();
+        List<String> rawModulesList = loadFromTextFile();
         List<List<String>> allModulesList = DeserialisationUtil.deserialiseList(rawModulesList);
 
         for (List<String> moduleArgs : allModulesList) {

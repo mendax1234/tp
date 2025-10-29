@@ -4,9 +4,11 @@ import modhero.common.Constants.AcademicConstants;
 
 import modhero.data.modules.Module;
 import modhero.data.nusmods.ModuleRetriever;
+import modhero.data.timetable.Timetable;
 import modhero.exceptions.ModHeroException;
 import modhero.exceptions.ModuleNotFoundException;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +23,6 @@ public class AddCommand extends Command {
     private final String moduleCode;
     private final int year;
     private final int semester;
-    private final ModuleRetriever moduleRetriever;
 
     public AddCommand(String moduleCode, int year, int semester) {
         assert year >= 0 && year < AcademicConstants.NUM_YEARS : "addModule year out of bounds";
@@ -30,7 +31,6 @@ public class AddCommand extends Command {
         this.moduleCode = moduleCode.toUpperCase();
         this.year = year;
         this.semester = semester;
-        this.moduleRetriever = new ModuleRetriever();
     }
 
     @Override
@@ -38,17 +38,8 @@ public class AddCommand extends Command {
         try {
             logger.log(Level.INFO, () -> String.format("Adding module %s to Y%dS%d", moduleCode, year, semester));
 
-            Module module = allModulesData.get(moduleCode);
-            if (module == null) {
-                logger.log(Level.INFO, "Module " + moduleCode + " not in local data, trying API fetch...");
-                module = moduleRetriever.getModule(AcademicConstants.ACAD_YEAR, moduleCode);
-                if (module == null) {
-                    throw new ModuleNotFoundException(moduleCode, "NUSMODS");
-                }
-                allModulesData.put(module.getCode(), module);
-            }
+            addModule(timetable, allModulesData, moduleCode, year, semester);
 
-            timetable.addModule(year, semester, module);
             return new CommandResult(String.format("%s added successfully to Y%dS%d!", moduleCode, year, semester));
 
         } catch (ModHeroException e) {
@@ -57,5 +48,20 @@ public class AddCommand extends Command {
             logger.log(Level.SEVERE, "Unexpected error while adding module", e);
             return new CommandResult("An unexpected error occurred: " + e.getMessage());
         }
+    }
+
+    public static void addModule(Timetable timetable, Map<String, Module> allModulesData, String moduleCode, int year, int term) throws ModHeroException {
+        ModuleRetriever moduleRetriever = new ModuleRetriever();
+        Module module = allModulesData.get(moduleCode);
+        if (module == null) {
+            logger.log(Level.INFO, "Module " + moduleCode + " not in local data, trying API fetch...");
+            module = moduleRetriever.getModule(AcademicConstants.ACAD_YEAR, moduleCode);
+            if (module == null) {
+                throw new ModuleNotFoundException(moduleCode, "NUSMODS");
+            }
+            allModulesData.put(module.getCode(), module);
+        }
+
+        timetable.addModule(year, term, module);
     }
 }
