@@ -23,6 +23,7 @@ public class MajorModule {
     public int getYear() {
         return year;
     }
+
     public int getTerm() {
         return term;
     }
