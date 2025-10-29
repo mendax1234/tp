@@ -344,7 +344,7 @@ public class Timetable {
 
         for (int y = 0; y < AcademicConstants.NUM_YEARS; y++) {
             for (int s = 0; s < AcademicConstants.NUM_TERMS; s++) {
-                if (y > targetYearIdx || (y == targetYearIdx && s >= targetSemIdx)) {
+                if (y > targetYearIdx || (y == targetYearIdx && s > targetSemIdx)) {
                     try {
                         modulesYetToDo.addAll(timetable.get(y).get(s));
                     } catch (IndexOutOfBoundsException e) {

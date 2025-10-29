@@ -82,9 +82,10 @@ This separation allows the Model to remain cohesive yet modular, enabling clean 
 
 ### Storage Component
 <figure align="center">
-    <img src="diagrams/storageUML.png" alt="Storage Class Diagram" />
+    <img src="diagrams/StorageUML.png" alt="Storage Class Diagram" />
     <figcaption><em>UML class diagram showing relationships within the Storage component.</em></figcaption>
 </figure>
+
 The Storage component is responsible for loading and saving essential application data.
 It reads text files from predefined directories and converts their contents into a structured, accessible format for other components to process.
 
@@ -125,7 +126,7 @@ This section describes some noteworthy details on how certain features are imple
 ### Add Feature
 
 #### Overview
-The `add` feature allows users to add a module to their timetable in a specific year and semester. (For the usage, please go to our [User Guide](UserGuide.md) for more information) The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModuleData` or the NUSMODS API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
+The `add` feature allows users to add a module to their timetable in a specific year and semester. (For the usage, please go to our [User Guide](UserGuide.md) for more information) The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModulesData` or the NUSMODS API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
 
 #### Key Components
 - **`AddCommand.java`**: The command class that parses the user's intent. Its `execute()` method orchestrates the entire "add" operation.
@@ -174,9 +175,7 @@ The following two diagrams illustrate how modules are added to the timetable whe
 7.  **Final Add**: The method calls `addModuleInternal()`, which performs the simple action of adding the `Module` object to the correct `ArrayList` in the `timetable` data structure.
 8.  **Success Result**: `AddCommand` creates a new `CommandResult` with a success message and returns it to the caller.
 
-
 ### Delete Feature
-
 #### Overview
 The ```Delete``` feature allows the user to delete a given module from the timetable while making sure
 that it doesn't affect the prerequisites for one of the other modules in the timetable. The expected arguments taken in
@@ -189,6 +188,7 @@ The details about how to use the feature are in the user guide.
     <img src="diagrams/Delete_sequence_diagram.png" alt="Add Command Sequence Diagram" />
     <figcaption><em>Delete Command Sequence Diagram</em></figcaption>
 </figure>
+
 #### Execution Flow of the Delete Command
 1. The Delete feature is encapsulated in the `DeleteCommand` Class, which is instantiated by the parser when the user 
 inputs the delete command
@@ -211,7 +211,6 @@ to another module in the timetable. This method is silently executed and returns
 which the prerequisite is being violated, it throws a PrerequisiteNotMet exception and cancels the delete operation.
 4. Given that the module exists in the timetable and deleting it does not affect another module's prerequisites, it now 
 deletes the module.
-
 
 #### Error Handling
 Error handling is centralized within the `execute()` method of `AddCommand`. A `try-catch` block wraps the entire logic.
@@ -246,7 +245,6 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 | v2.0 | NUS student | automatically verify that all prerequisites are met | ensure my plan is valid before registration |
 | v2.0 | NUS student | save my timetable to a file | persist my customized schedule for later use |
 | v2.0 | NUS student | load my saved timetable | restore my plan without re-entering all modules |
----
 
 ### Use Cases
 
@@ -262,64 +260,51 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 
 {Give instructions on how to do manual testing, e.g., how to load sample data or verify stored files.}
 
-#### Launch and shutdown
-Initial launch
+### Launch and shutdown
+1. Initial launch 
+2. Download the jar file and copy into an empty folder 
+3. Double-click the jar file Expected: Shows the Command prompt terminal. 
+4. Close the window or give the `exit` command. 
+5. Re-launch the app by double-clicking the jar file.
 
-Download the jar file and copy into an empty folder
+### Selecting a major
+1. Test case: `major cs`  
+   Expected: Will show successful message
 
-Double-click the jar file Expected: Shows the Command prompt terminal.
+2. Test case: `major computer science`  
+   Expected: Will show successful message
 
-Close the window or give the `exit` command.
+3. Test case: `major cs minor in business`  
+   Expected: Will not be successful added as only the main major is needed
 
-Re-launch the app by double-clicking the jar file.
+4. Test case: `major ce`  
+   Expected: Will not be added only cs and ceg are supported
 
-#### Selecting a major
+### Adding a module
+**Prerequisites:** Start a new session without any exemption
 
-Test case: major cs
-Expected: Will show successful message
+1. Test case: `add CS2113 to Y1S1`  
+   Expected: Will not be added successfully as there are required prerequisites before taking CS2113
 
-Test case: major computer science
-Expected: Will show successful message
+2. Test case: `add CS2113 to Y10S1`  
+   Expected: Will not be added successfully as it is a planner for 4 years in NUS
 
-Test case: major cs minor in business
-Expected: Will not be successful added as only the main major is needed
+3. Test case: `add ES1000 to Y1S1`  
+   Expected: Will be added successfully as there is no prerequisites for this module
 
-Test case: major ce
-Expected: Will be not be added only cs and ceg are supported
+4. Test case: `add ES1000 to Y1S2`  
+   Expected: Will not be added as this module is already in the timetable
 
+### Deleting a module
+**Prerequisites:** Generate schedule using `schedule` to know what module code is in there. Ensure CS2113 is in there
 
-#### Adding a module
+1. Test case: `delete CS2113`  
+   Expected: Will be deleted
 
-Prerequisites: Start a new session without any exemption
+2. Test case: `delete ABCDEF`  
+   Expected: Will not be deleted as no such module code exist
 
-Test case: add CS2113 to Y1S1
-Expected: Will not be added successfully as there a required prerequisites before taking CS2113 
-
-Test case: add CS2113 to Y10S1
-Expected: Will not be added successfully as it is a planner for 4 years in NUS
-
-Test case: add ES1000 to Y1S1
-Expected: Will be added successfully as there is no prerequisites for this module
-
-Test case: add ES1000 to Y1S2
-Expected: Will be not be added as this module is already in the timetable
-
-
-#### Deleting a module
-
-Prerequisites: Generate schedule using `schedule` to know what module code is in there. Ensure CS2113 is in there
-
-Test case: delete CS2113
-Expected: Will be deleted
-
-Test case: delete ABCDEF
-Expected: Will not be deleted as no such module code exist
-
-
-#### Loading and saving of customised timetable
-
-After customising timetable, type `schedule` to generate the timetable, it will also save it
-
-Close the application.
-
-Re-launch the application will load the timetable data automatically.
+### Loading and saving of customised timetable
+- After customising timetable, type `schedule` to generate the timetable, it will also save it
+- Close the application.
+- Re-launch the application will load the timetable data automatically.
