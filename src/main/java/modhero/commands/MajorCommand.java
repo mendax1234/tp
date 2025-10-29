@@ -60,6 +60,9 @@ public class MajorCommand extends Command {
                     + " is not supported. Try 'CS' or 'CEG'.");
         }
 
+        //clear the timetable to prevent clashes when user redeclares major
+        timetable.clearTimetable();
+
         //add all modules from the selected major into the timetable
         try {
             for (TimetableData mm : majorObject.getMajorModules()) {
@@ -73,6 +76,6 @@ public class MajorCommand extends Command {
 
         logger.log(Level.INFO, () -> "Major successfully set to " + major);
 
-        return new CommandResult("Major set to " + major + ". Type 'schedule' to view your 4-year plan!");
+        return new CommandResult("Timetable cleared! Major set to " + major + ". Type 'schedule' to view your 4-year plan!");
     }
 }
