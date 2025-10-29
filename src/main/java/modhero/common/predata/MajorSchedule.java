@@ -30,21 +30,36 @@ public class MajorSchedule {
 
         if (major.equals("computer engineering")) {
             Map<String, int[]> cegSchedule = new HashMap<>();
+
+            // CEG Graduation List
             cegSchedule.put("CG1111A", new int[]{1, 1});
-            cegSchedule.put("CS1010", new int[]{1, 1});
-            cegSchedule.put("CS1231", new int[]{1, 1});
+            cegSchedule.put("EG1311", new int[]{1, 1});
+            cegSchedule.put("MA1511", new int[]{1, 1});
+            cegSchedule.put("MA1512", new int[]{1, 1});
+
             cegSchedule.put("CG2111A", new int[]{1, 2});
-            cegSchedule.put("CS2040C", new int[]{1, 2});
-            cegSchedule.put("CG2023", new int[]{1, 2});
-            cegSchedule.put("CS2113", new int[]{2, 1});
+            cegSchedule.put("DTK1234", new int[]{1, 2});
+            cegSchedule.put("MA1508E", new int[]{1, 2});
+            cegSchedule.put("CS1231", new int[]{1, 2});
+
             cegSchedule.put("EE2026", new int[]{2, 1});
-            cegSchedule.put("CG2027", new int[]{2, 2});
-            cegSchedule.put("CG2028", new int[]{2, 2});
+            cegSchedule.put("CS2040C", new int[]{2, 1});
+            cegSchedule.put("CS2107", new int[]{2, 1});
+
+            cegSchedule.put("CG2023", new int[]{2, 2});
+            cegSchedule.put("CS2113", new int[]{2, 2});
+            cegSchedule.put("EE2211", new int[]{2, 2});
             cegSchedule.put("CG2271", new int[]{2, 2});
-            cegSchedule.put("EE4204", new int[]{3, 1});
+
+            cegSchedule.put("CG2027", new int[]{3, 2});
+            cegSchedule.put("CG2028", new int[]{3, 2});
+            cegSchedule.put("CG3201", new int[]{3, 2});
+
+            cegSchedule.put("EE4204", new int[]{4, 1});
+            cegSchedule.put("CG3207", new int[]{4, 1});
+
             return cegSchedule;
         }
-
         return new HashMap<>();
     }
 }
