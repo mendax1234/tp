@@ -32,9 +32,8 @@ It serves as a roadmap for future developers to understand how the system is str
   <figcaption><em>High-Level Architecture Diagram of ModHero</em></figcaption>
 </figure>
 
-The **ModHero** architecture follows a modular structure inspired by AddressBook-Level3.  
-It comprises four main components:
-- **UI** — Handles user interaction and display.
+The **ModHero** architecture follows a modular structure inspired by AddressBook-Level3. It comprises four main components:
+- **UI** -- Handles user interaction and display.
 - **Logic** — Parses and executes user commands.
 - **Model** — Maintains in-memory data (modules, majors, timetable).
 - **Storage** — Manages persistent data on disk.
