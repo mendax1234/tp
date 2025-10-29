@@ -10,7 +10,12 @@ import java.util.logging.Logger;
 
 
 /**
- * Removes a specified elective from your plan.
+ * Represents a command that removes one or more specified modules (electives) from the user's timetable plan.
+ * <p>
+ * The {@code DeleteCommand} converts all given module codes to uppercase to ensure consistency and attempts
+ * to delete each from the current timetable. It reports which deletions succeeded, which modules were not found,
+ * and which deletions were blocked due to prerequisite violations.
+ * </p>
  */
 public class DeleteCommand extends Command {
     public static final Logger logger = Logger.getLogger(DeleteCommand.class.getName());
@@ -24,6 +29,14 @@ public class DeleteCommand extends Command {
 
     private final List<String> toDelete;
 
+    /**
+     * Constructs a {@code DeleteCommand} with the list of module codes to delete.
+     * <p>
+     * All module codes are converted to uppercase for consistency before execution.
+     * </p>
+     *
+     * @param toDelete the list of module codes to delete
+     */
     public DeleteCommand(List<String> toDelete) {
         ArrayList<String> toDeleteUpperCase = new ArrayList<String>();
         for (String module: toDelete){
@@ -35,7 +48,21 @@ public class DeleteCommand extends Command {
     }
 
 
-    /** Searches for the corresponding module in electiveList and deletes it if found.*/
+    /**
+     * Executes the delete command.
+     * <p>
+     * For each module code specified, the method attempts to delete it from the timetable.
+     * It tracks and reports:
+     * <ul>
+     *   <li>Modules successfully deleted</li>
+     *   <li>Modules not found in the timetable</li>
+     *   <li>Modules that cannot be deleted because doing so would violate prerequisites</li>
+     * </ul>
+     * If no modules are specified, an appropriate error message is returned.
+     * </p>
+     *
+     * @return a {@code CommandResult} summarizing the outcome of the delete operation
+     */
     @Override
     public CommandResult execute() {
         if (toDelete == null || toDelete.isEmpty()){

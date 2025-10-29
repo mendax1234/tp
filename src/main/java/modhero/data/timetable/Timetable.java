@@ -167,6 +167,24 @@ public class Timetable {
         throw new ModuleNotFoundException(moduleCode, "timetable");
     }
 
+    /**
+     * Verifies that all prerequisite requirements for a specified module are satisfied
+     * based on the modules completed up to its scheduled year and semester.
+     * <p>
+     * The method first checks whether the target module is a level-1000 module, which
+     * has no prerequisites by definition. For other modules, it determines the module's
+     * position in the timetable, collects all completed modules up to that point, and
+     * verifies whether at least one valid prerequisite combination is fully met.
+     * </p>
+     * <p>
+     * If no prerequisite combination is satisfied, a {@link PrerequisiteNotMetException}
+     * is thrown to indicate that the module's requirements have not been fulfilled.
+     * </p>
+     *
+     * @param target the module whose prerequisites are to be validated
+     * @throws PrerequisiteNotMetException if the prerequisites for the specified module
+     *                                     are not satisfied by the completed modules
+     */
     private void checkPrerequisitesSatisfied( Module target) throws PrerequisiteNotMetException {
         //check if module is 1k, if yes then it has no prerequisites
         boolean isLevel1000Module = checkIsLevel1000Module(target.getCode());
@@ -202,6 +220,22 @@ public class Timetable {
         }
     }
 
+    /**
+     * Checks whether deleting a specified module would cause prerequisite violations
+     * for any modules scheduled after the given year and semester.
+     * <p>
+     * The method retrieves all modules that occur after the specified term in the
+     * user's timetable and verifies that each still satisfies its prerequisite
+     * requirements after the proposed deletion. If any subsequent module would have
+     * unmet prerequisites as a result, an exception is thrown.
+     * </p>
+     *
+     * @param year the academic year of the module being deleted
+     * @param semester the semester of the module being deleted
+     * @param moduleToDelete the module planned for deletion
+     * @throws PrerequisiteNotMetException if deleting the specified module would cause
+     *                                     prerequisite violations for any later module
+     */
     private void checkPrerequisitesSatisfiedAfterDelete (int year, int semester, Module moduleToDelete) throws PrerequisiteNotMetException{
 
         // check whether all subsequent modules have had their prerequisites affected
@@ -215,6 +249,23 @@ public class Timetable {
         }
     }
 
+    /**
+     * Deletes the specified module from the timetable.
+     * <p>
+     * This method locates the module in the timetable, verifies that its removal will not violate
+     * any prerequisite requirements of other modules, and removes it if all checks pass.
+     * </p>
+     * <p>
+     * If the module cannot be found or removing it would break prerequisite constraints,
+     * the method throws the corresponding exception.
+     * </p>
+     *
+     * @param moduleCode the code of the module to delete
+     * @throws ModuleNotFoundException if the specified module does not exist in the timetable
+     *                                 or an invalid index is encountered during lookup
+     * @throws PrerequisiteNotMetException if deleting the module would violate a prerequisite
+     *                                     required by another module in the timetable
+     */
     public void deleteModule(String moduleCode) throws ModuleNotFoundException, PrerequisiteNotMetException {
         int[] moduleLocation; // {year, term}
         try {
