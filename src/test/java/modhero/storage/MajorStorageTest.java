@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit tests for {@link Storage}.
  */
-public class StorageTest {
+public class MajorStorageTest {
 
     // @TempDir creates a temporary directory for tests and cleans it up afterward.
     // This is great for testing directory creation.
@@ -30,14 +30,14 @@ public class StorageTest {
     Path tempDir;
 
     private File tempFile;
-    private Storage storage;
+    private MajorStorage majorStorage;
     private SerialisationUtil serialisationUtil;
 
     @BeforeEach
     void setUp() throws IOException {
         // We still use a specific temp file for most save/load tests
         tempFile = File.createTempFile("modhero_test", ".txt");
-        storage = new Storage(tempFile.getAbsolutePath());
+        majorStorage = new MajorStorage(tempFile.getAbsolutePath());
         serialisationUtil = new SerialisationUtil();
     }
 
@@ -51,46 +51,46 @@ public class StorageTest {
     // --- Tests for save() and load() ---
 
     @Test
-    void saveAndLoad_roundTrip_handlesMultipleLines() {
+    void saveToTextFileAndLoad_FromTextFile_roundTrip_handlesMultipleLines() {
         String testContent = "This is line 1\nThis is line 2\nThis is line 3";
-        storage.save(testContent);
+        majorStorage.saveToTextFile(testContent);
 
         List<String> expected = List.of("This is line 1", "This is line 2", "This is line 3");
-        List<String> loaded = storage.load();
+        List<String> loaded = majorStorage.loadFromTextFile();
 
         assertEquals(expected, loaded);
     }
 
     @Test
-    void save_overwritesExistingFile() {
-        storage.save("First content");
-        storage.save("Second content"); // This should overwrite
+    void save_ToTextFile_overwritesExistingFile() {
+        majorStorage.saveToTextFile("First content");
+        majorStorage.saveToTextFile("Second content"); // This should overwrite
 
-        List<String> loaded = storage.load();
+        List<String> loaded = majorStorage.loadFromTextFile();
 
         assertEquals(1, loaded.size(), "File should only have one line");
         assertEquals("Second content", loaded.get(0));
     }
 
     @Test
-    void save_createsParentDirectories() {
+    void save_ToTextFile_createsParentDirectories() {
         // Use the @TempDir path to create a nested, non-existent directory
         Path nestedFilePath = tempDir.resolve("new/nested/dir/testfile.txt");
-        Storage nestedStorage = new Storage(nestedFilePath.toString());
+        Storage nestedStorage = new MajorStorage(nestedFilePath.toString());
 
         // We are testing the public `save` method,
         // which should *cause* the private `ensureFileDirectoryExist` to run.
-        nestedStorage.save("test data");
+        nestedStorage.saveToTextFile("test data");
 
         assertTrue(Files.exists(nestedFilePath.getParent()), "Parent directories should be created");
         assertTrue(Files.exists(nestedFilePath), "File should be created");
     }
 
     @Test
-    void load_nonExistentFile_returnsEmptyList() {
+    void load_FromTextFile_nonExistentFile_returnsEmptyList() {
         // Create a storage object pointing to a file that will be deleted
         File nonExistentFile = new File(tempDir.resolve("nonexistent.txt").toString());
-        Storage nonExistentStorage = new Storage(nonExistentFile.getAbsolutePath());
+        Storage nonExistentStorage = new MajorStorage(nonExistentFile.getAbsolutePath());
 
         // Ensure it doesn't exist
         if (nonExistentFile.exists()) {
@@ -99,20 +99,20 @@ public class StorageTest {
 
         // load() should call ensureFileExist(), creating an empty file,
         // and then read from it, returning an empty list.
-        List<String> result = nonExistentStorage.load();
+        List<String> result = nonExistentStorage.loadFromTextFile();
 
         assertNotNull(result, "Load should never return null");
         assertTrue(result.isEmpty(), "Loading a non-existent file should result in an empty list");
     }
 
     @Test
-    void load_unreadableFile_returnsEmptyList() {
+    void load_FromTextFile_unreadableFile_returnsEmptyList() {
         // This tests the catch(IOException) block in load()
-        storage.save("test data");
+        majorStorage.saveToTextFile("test data");
 
         // Make the file unreadable. This will cause new Scanner(file) to throw FileNotFoundException
         if (tempFile.setReadable(false)) {
-            List<String> result = storage.load();
+            List<String> result = majorStorage.loadFromTextFile();
             assertNotNull(result, "Load should never return null");
             assertTrue(result.isEmpty(), "Should return empty list if file is unreadable");
 
@@ -123,85 +123,10 @@ public class StorageTest {
         }
     }
 
-    // --- Tests for loadAllModulesData() ---
-
-    @Test
-    void loadAllModulesData_success() throws IOException {
-        // A. Create the mock file content
-        // Line 1: CS2040, prereq CS1010
-        String prereq1 = serialisationUtil.serialiseMessage("CS1010");
-        List<String> module1Args = List.of("CS2040", "Data Structures", "4", "core", prereq1);
-        String line1 = serialisationUtil.serialiseList(module1Args);
-
-        // Line 2: CS1010, no prereq
-        String noPrereq = serialisationUtil.serialiseMessage("");
-        List<String> module2Args = List.of("CS1010", "Programming", "4", "core", noPrereq);
-        String line2 = serialisationUtil.serialiseList(module2Args);
-
-        // B. Save the content to the file
-        storage.save(line1 + "\n" + line2);
-
-        // C. Run the method and assert
-        Map<String, Module> allModulesData = new HashMap<>();
-        assertDoesNotThrow(() -> storage.loadAllModulesData(allModulesData));
-
-        // Should have 4 entries: 2 modules added by code and by name
-        assertEquals(4, allModulesData.size());
-
-        Module cs2040 = allModulesData.get("CS2040");
-        assertNotNull(cs2040);
-        assertEquals("Data Structures", cs2040.getName());
-        assertEquals(4, cs2040.getMc());
-        assertEquals(List.of("CS1010"), cs2040.getPrerequisites());
-
-        // Check that it was also added by name
-        assertEquals(cs2040, allModulesData.get("Data Structures"));
-    }
-
-    @Test
-    void loadAllModulesData_throwsCorruptedDataFileException() {
-        storage.save("This is not valid serialised data");
-
-        Map<String, Module> map = new HashMap<>();
-        // This test correctly asserts that the *expected* exception is thrown
-        assertThrows(CorruptedDataFileException.class, () -> {
-            storage.loadAllModulesData(map);
-        });
-    }
-
-    @Test
-    void loadAllModulesData_skipsOnWrongArgumentCount() {
-        // Create a line with only 3 arguments instead of 5
-        List<String> moduleArgs = List.of("CS1010", "Programming", "4");
-        String line1 = serialisationUtil.serialiseList(moduleArgs);
-        storage.save(line1);
-
-        Map<String, Module> map = new HashMap<>();
-        // The method should log a warning and 'break', not throw an exception
-        assertDoesNotThrow(() -> storage.loadAllModulesData(map));
-
-        assertTrue(map.isEmpty(), "Module with wrong arg count should be skipped");
-    }
-
-    @Test
-    void loadAllModulesData_skipsOnInvalidModuleCredit() {
-        // Create a line where MC is "four", not "4"
-        String noPrereq = serialisationUtil.serialiseMessage("");
-        List<String> moduleArgs = List.of("CS1010", "Programming", "four", "core", noPrereq);
-        String line1 = serialisationUtil.serialiseList(moduleArgs);
-        storage.save(line1);
-
-        Map<String, Module> map = new HashMap<>();
-        // The method catches NumberFormatException and logs, not throws
-        assertDoesNotThrow(() -> storage.loadAllModulesData(map));
-
-        assertTrue(map.isEmpty(), "Module with invalid MC should be skipped");
-    }
-
     // --- Tests for loadAllMajorsData() ---
 
     @Test
-    void loadAllMajorsData_success() {
+    void loadFromTextFileAllMajorsData_success() {
         // A. Setup: We need a pre-filled allModulesData map
         Map<String, Module> allModulesData = new HashMap<>();
         Module cs1010 = new Module("CS1010", "Programming", 4, "core", List.of());
@@ -214,11 +139,11 @@ public class StorageTest {
         String reqModules = serialisationUtil.serialiseMessage("CS1010") + serialisationUtil.serialiseMessage("CS2040");
         List<String> majorArgs = List.of("Computer Science", "CS", reqModules);
         String line1 = serialisationUtil.serialiseList(majorArgs);
-        storage.save(line1);
+        majorStorage.saveToTextFile(line1);
 
         // C. Run the method and assert
         Map<String, Major> allMajorsData = new HashMap<>();
-        assertDoesNotThrow(() -> storage.loadAllMajorsData(allModulesData, allMajorsData));
+        assertDoesNotThrow(() -> majorStorage.load(allModulesData, allMajorsData));
 
         // Should have 2 entries: added by full name and by abbreviation
         assertEquals(2, allMajorsData.size());
@@ -235,7 +160,7 @@ public class StorageTest {
     }
 
     @Test
-    void loadAllMajorsData_skipsMissingModules() {
+    void loadFromTextFileAllMajorsData_skipsMissingModules() {
         // A. Setup: allModulesData is EMPTY
         Map<String, Module> allModulesData = new HashMap<>();
 
@@ -243,11 +168,11 @@ public class StorageTest {
         String reqModules = serialisationUtil.serialiseMessage("CS1010");
         List<String> majorArgs = List.of("Computer Science", "CS", reqModules);
         String line1 = serialisationUtil.serialiseList(majorArgs);
-        storage.save(line1);
+        majorStorage.saveToTextFile(line1);
 
         // C. Run and assert
         Map<String, Major> allMajorsData = new HashMap<>();
-        assertDoesNotThrow(() -> storage.loadAllMajorsData(allModulesData, allMajorsData));
+        assertDoesNotThrow(() -> majorStorage.load(allModulesData, allMajorsData));
 
         // The major is still created
         assertEquals(2, allMajorsData.size());
@@ -259,29 +184,29 @@ public class StorageTest {
     }
 
     @Test
-    void loadAllMajorsData_throwsCorruptedDataFileException() {
-        storage.save("This is not valid serialised data");
+    void loadFromTextFileAllMajorsData_throwsCorruptedDataFileException() {
+        majorStorage.saveToTextFile("This is not valid serialised data");
 
         Map<String, Module> modules = new HashMap<>();
         Map<String, Major> majors = new HashMap<>();
 
         assertThrows(CorruptedDataFileException.class, () -> {
-            storage.loadAllMajorsData(modules, majors);
+            majorStorage.load(modules, majors);
         });
     }
 
     @Test
-    void loadAllMajorsData_skipsOnWrongArgumentCount() {
+    void loadFromTextFileAllMajorsData_skipsOnWrongArgumentCount() {
         // Create a line with only 2 arguments instead of 3
         List<String> majorArgs = List.of("Computer Science", "CS");
         String line1 = serialisationUtil.serialiseList(majorArgs);
-        storage.save(line1);
+        majorStorage.saveToTextFile(line1);
 
         Map<String, Module> modules = new HashMap<>();
         Map<String, Major> majors = new HashMap<>();
 
         // The method should log a warning and 'break', not throw an exception
-        assertDoesNotThrow(() -> storage.loadAllMajorsData(modules, majors));
+        assertDoesNotThrow(() -> majorStorage.load(modules, majors));
 
         assertTrue(majors.isEmpty(), "Major with wrong arg count should be skipped");
     }

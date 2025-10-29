@@ -1,7 +1,7 @@
 package modhero.commands;
 
 import modhero.data.major.Major;
-import modhero.data.major.MajorModule;
+import modhero.data.timetable.TimetableData;
 import modhero.data.modules.Module;
 import modhero.exceptions.ModHeroException;
 

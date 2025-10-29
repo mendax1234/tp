@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import modhero.commands.ClearCommand;
 import modhero.commands.Command;
 import modhero.commands.DeleteCommand;
-import modhero.commands.ElectiveCommand;
 import modhero.commands.ExitCommand;
 import modhero.commands.HelpCommand;
 import modhero.commands.IncorrectCommand;
@@ -105,24 +104,6 @@ public class ParserTest {
     }
 
     // --- Elective Command Tests ---
-
-    @Test
-    void parse_electiveCommandSingle_returnsElectiveCommand() {
-        Command result = parser.parseCommand("elective CS2100");
-        assertInstanceOf(ElectiveCommand.class, result);
-    }
-
-    @Test
-    void parse_electiveCommandMultiple_returnsElectiveCommand() {
-        Command result = parser.parseCommand("elective CS2100 CS2113 CS3243");
-        assertInstanceOf(ElectiveCommand.class, result);
-    }
-
-    @Test
-    void parse_electiveCommandWithExtraSpaces_returnsElectiveCommand() {
-        Command result = parser.parseCommand("elective   CS2100  CS3243 ");
-        assertInstanceOf(ElectiveCommand.class, result);
-    }
 
     @Test
     void parse_electiveCommandEmpty_returnsIncorrectCommand() {

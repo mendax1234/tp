@@ -18,8 +18,6 @@ public abstract class Command {
     public static final Logger logger = Logger.getLogger(Command.class.getName());
 
     protected Timetable timetable;
-    protected ModuleList electiveList;
-    protected ModuleList coreList;
     protected Map<String, Module> allModulesData;
     protected Map<String, Major> allMajorsData;
 

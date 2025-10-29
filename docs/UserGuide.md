@@ -3,8 +3,6 @@
 _ModHero_ is a **CLI-first desktop app** for planning your university degree, designed to give you the speed and precision of command-line input while retaining the clarity of a graphical overview.  
 It helps you build and adapt your 4-year course roadmap more efficiently than traditional spreadsheet or browser-based tools.
 
----
-
 ## Contents
 - [Quick Start](#quick-start)
 - [Features](#features)
@@ -39,46 +37,42 @@ It helps you build and adapt your 4-year course roadmap more efficiently than tr
    help
    major CEG
    generate
-   elective CS2113
+   add CS2113 to Y1S1
    delete CS2113
    clear
    exit
    ```
 7. Refer to the [Features](#features) section for full command details.
 
----
-
 ## Features
 ### Notes about command format
 - Words in **UPPER_CASE** are parameters you must supply.  
   Example:
   ```
-  elective MODULE_CODE
-  → elective CS2113
+  add MODULE_CODE to YXSY
+  -> add CS2113 to Y1S1
   ```
-
+  
 - Square brackets `[ ]` denote optional fields.  
   Example:
   ```
-  major MAJOR_NAME [specialisation SPECIALISATION]
-  → major Computer Science specialisation AI
+  major MAJOR_NAME 
+  -> major CS
   ```
 
 - Parameters followed by `...` can be repeated.  
   Example:
   ```
-  elective MODULE_CODE...
-  → elective CS2109S CS3230 CS3219
+  delete MODULE_CODE...
+  -> delete CS2109S CS3230 CS3219
   ```
 
 - Parameters can be entered in any order unless specified.
 - Extra parameters for commands that take no input (e.g., `help`, `exit`) are ignored.  
   Example:
   ```
-  help 123 → interpreted as help
+  help 123 -> interpreted as help
   ```
-
----
 
 ### Viewing Help: `help`
 Shows a message explaining how to access the help page.
@@ -87,8 +81,6 @@ Shows a message explaining how to access the help page.
 ```
 help
 ```
-
----
 
 ### Specifying Your Major: `major`
 Defines your primary degree major, which ModHero uses to load graduation requirements.
@@ -105,8 +97,6 @@ major Information Security minor Statistics
 major Computer Science specialisation Artificial Intelligence
 major CS
 ```
-
----
 
 ### Adding a Module: `add`
 Adds a specific module (core, elective, or any valid NUS module) to a chosen year and semester in your degree plan.
@@ -139,8 +129,6 @@ If any of these checks fail, ModHero will display an error message explaining th
 
 > [!CAUTION]
 > Currently, our modhero doesn't support check if the mod you add is mutually exclusive to any of the existing module.
-
----
 
 ### Deleting an Elective: `delete`
 Removes one or more electives from your plan.
@@ -179,10 +167,8 @@ schedule
 **Example:**
 ```
 schedule
--> Returns recommended Year 1 and Year 2 modules, including core courses
+-> Returns the timetable in a ui-friendly format
 ```
-
----
 
 ### Clearing All Data: `clear`
 Deletes all modules and resets your plan.
@@ -192,8 +178,6 @@ Deletes all modules and resets your plan.
 clear
 ```
 
----
-
 ### Exiting the Program: `exit`
 Closes the program.
 
@@ -202,17 +186,11 @@ Closes the program.
 exit
 ```
 
----
-
 ### Saving the Data
-
-All changes — adding electives, setting majors, generating schedules — are **saved automatically**.  
+All changes - adding electives, setting majors, generating schedules - are **saved automatically**.  
 No manual saving is required.
 
----
-
 ### Loading and Editing Data Files
-
 ModHero stores your degree plan in:
 
 ```
@@ -222,26 +200,12 @@ ModHero stores your degree plan in:
 - Advanced users can manually edit this JSON file if needed.
 - **Caution:** Invalid edits may cause ModHero to reset your plan. Always back up before editing.
 
----
-
-### Archiving Data Files *(coming in v2.0)*
-
-Future versions will allow archiving older study plans (e.g., SEP/NOC scenarios).
-
----
-
 ## FAQ
-
 **Q:** Can I use ModHero offline?  
 **A:** ModHero requires internet access to retrieve elective data from NUSMods.
 
----
-
 ## Known Issues
-
 - None reported.
-
----
 
 ## Command Summary
 
@@ -254,7 +218,5 @@ Future versions will allow archiving older study plans (e.g., SEP/NOC scenarios)
 | **Clear**    | `clear`                                                                                                                                         |a
 | **Help**     | `help`                                                                                                                                          |
 
----
-
-2025 ModHero Team — CS2113-T10-4  
+2025 ModHero Team - CS2113-T10-4  
 Based on SE-EDU framework.

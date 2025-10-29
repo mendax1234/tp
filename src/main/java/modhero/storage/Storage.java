@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  * Handles loading from and saving to a text file.
  * Provides persistence for data by reading and writing plain text.
  */
-public class Storage {
+public abstract class Storage {
     private static final Logger logger = Logger.getLogger(Storage.class.getName());
 
     private final String filePath;
@@ -35,7 +35,7 @@ public class Storage {
      *
      * @return list of lines from file, or empty list if file not found
      */
-    public List<String> load() {
+    public List<String> loadFromTextFile() {
         logger.log(Level.FINEST, "Loading file: " + filePath);
 
         try {
@@ -53,7 +53,7 @@ public class Storage {
      *
      * @param textToAdd the text content to save
      */
-    public void save(String textToAdd) {
+    public void saveToTextFile(String textToAdd) {
         assert textToAdd != null : "save textToAdd must not be null";
         logger.log(Level.FINEST, "Saving file: " + filePath);
 
