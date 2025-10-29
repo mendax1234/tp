@@ -67,9 +67,29 @@ public class Timetable {
         addModuleInternal(year - 1, semester - 1, module);
     }
 
+
+
+    private boolean checkIsLevel1000Module(String moduleCode){
+        if (moduleCode == null || moduleCode.isEmpty()) {
+            return false;
+        }
+        for (char c : moduleCode.toCharArray()) {
+            if (Character.isDigit(c)) {
+                return c == '1';
+            }
+        }
+        return false;
+    }
+
     private void checkModuleAddable(int year, int semester, Module moduleToAdd) throws ModHeroException {
         if (getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(moduleToAdd.getCode()))) {
             throw new ModuleAlreadyExistsException(moduleToAdd.getCode());
+        }
+
+        //check if module is 1k, if yes then it has no prerequisites
+        boolean isLevel1000Module = checkIsLevel1000Module(moduleToAdd.getCode());
+        if (isLevel1000Module){
+            return;
         }
 
         List<Module> completedModules = getModulesTakenUpTo(year, semester);
@@ -146,17 +166,119 @@ public class Timetable {
         throw new ModuleNotFoundException(moduleCode, "timetable");
     }
 
-    public void deleteModule(String moduleCode) throws ModuleNotFoundException {
-        int[] moduleLocation = new int[2]; // {year, term}
+    /**
+     * Verifies that all prerequisite requirements for a specified module are satisfied
+     * based on the modules completed up to its scheduled year and semester.
+     * <p>
+     * The method first checks whether the target module is a level-1000 module, which
+     * has no prerequisites by definition. For other modules, it determines the module's
+     * position in the timetable, collects all completed modules up to that point, and
+     * verifies whether at least one valid prerequisite combination is fully met.
+     * </p>
+     * <p>
+     * If no prerequisite combination is satisfied, a {@link PrerequisiteNotMetException}
+     * is thrown to indicate that the module's requirements have not been fulfilled.
+     * </p>
+     *
+     * @param target the module whose prerequisites are to be validated
+     * @throws PrerequisiteNotMetException if the prerequisites for the specified module
+     *                                     are not satisfied by the completed modules
+     */
+    private void checkPrerequisitesSatisfied( Module target) throws PrerequisiteNotMetException {
+        //check if module is 1k, if yes then it has no prerequisites
+        boolean isLevel1000Module = checkIsLevel1000Module(target.getCode());
+        if (isLevel1000Module){
+            return ;
+        }
+        int year;
+        int semester;
+        int[] moduleLocation; // {year, term}
+        try {
+            moduleLocation = findModuleLocation(target.getCode());
+            year = moduleLocation[0];
+            semester = moduleLocation[1];
+        }catch (ModuleNotFoundException e){
+            return; //this is not going to happen
+        }
+
+
+        List<Module> completedModules = getModulesTakenUpTo(year, semester);
+        List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
+
+        Prerequisites prereqs = target.getPrerequisites();
+        List<List<String>> prereqSets = prereqs.getPrereq();
+
+        if (prereqSets == null || prereqSets.isEmpty()) return;
+
+        boolean satisfied = prereqSets.stream().anyMatch(option ->
+                option.stream().allMatch(completedCodes::contains)
+        );
+
+        if (!satisfied) {
+            throw new PrerequisiteNotMetException(target.getCode(), prereqs.toString());
+        }
+    }
+
+    /**
+     * Checks whether deleting a specified module would cause prerequisite violations
+     * for any modules scheduled after the given year and semester.
+     * <p>
+     * The method retrieves all modules that occur after the specified term in the
+     * user's timetable and verifies that each still satisfies its prerequisite
+     * requirements after the proposed deletion. If any subsequent module would have
+     * unmet prerequisites as a result, an exception is thrown.
+     * </p>
+     *
+     * @param year the academic year of the module being deleted
+     * @param semester the semester of the module being deleted
+     * @param moduleToDelete the module planned for deletion
+     * @throws PrerequisiteNotMetException if deleting the specified module would cause
+     *                                     prerequisite violations for any later module
+     */
+    private void checkPrerequisitesSatisfiedAfterDelete (int year, int semester, Module moduleToDelete) throws PrerequisiteNotMetException{
+
+        // check whether all subsequent modules have had their prerequisites affected
+        List<Module> modulesYetToComplete = getModulesTakenAfter(year, semester);
+        for (Module module: modulesYetToComplete){
+            try {
+                checkPrerequisitesSatisfied(module);
+            } catch (PrerequisiteNotMetException e) {
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * Deletes the specified module from the timetable.
+     * <p>
+     * This method locates the module in the timetable, verifies that its removal will not violate
+     * any prerequisite requirements of other modules, and removes it if all checks pass.
+     * </p>
+     * <p>
+     * If the module cannot be found or removing it would break prerequisite constraints,
+     * the method throws the corresponding exception.
+     * </p>
+     *
+     * @param moduleCode the code of the module to delete
+     * @throws ModuleNotFoundException if the specified module does not exist in the timetable
+     *                                 or an invalid index is encountered during lookup
+     * @throws PrerequisiteNotMetException if deleting the module would violate a prerequisite
+     *                                     required by another module in the timetable
+     */
+    public void deleteModule(String moduleCode) throws ModuleNotFoundException, PrerequisiteNotMetException {
+        int[] moduleLocation; // {year, term}
         try {
             moduleLocation = findModuleLocation(moduleCode);
+            Module retrievedModule = retrieveModule( moduleCode);
+            checkPrerequisitesSatisfiedAfterDelete(moduleLocation[0], moduleLocation[1], retrievedModule);
+            removeModule(moduleLocation[0], moduleLocation[1], moduleCode);
         } catch (ModuleNotFoundException e) {
             throw e;
         }
-        try {
-            removeModule(moduleLocation[0], moduleLocation[1], moduleCode);
-        } catch (ArrayIndexOutOfBoundsException e) {
+         catch (ArrayIndexOutOfBoundsException e) {
             throw new ModuleNotFoundException(moduleCode, "timetable. " + MessageConstants.ARRAY_INDEX_OUT_BOUND);
+        }catch (PrerequisiteNotMetException e){
+            throw e;
         }
     }
 
@@ -175,6 +297,21 @@ public class Timetable {
     }
 
     /**
+     * Retrieves a particular module based on its module code
+     * @param targetModuleCode
+     * @return module
+     */
+    private Module retrieveModule( String targetModuleCode) throws ModuleNotFoundException{
+        List<Module> allModules = getAllModules();
+        for (Module module: allModules){
+            if (module.getCode().equals(targetModuleCode)){
+                return module;
+            }
+        }
+        throw new ModuleNotFoundException( targetModuleCode, "your timetable") ;
+    }
+
+    /**
      * Retrieves all modules taken up to and including a specific year and term.
      *
      * @param targetYear the target year (1-based)
@@ -183,8 +320,8 @@ public class Timetable {
      */
     private List<Module> getModulesTakenUpTo(int targetYear, int targetSem) {
         List<Module> completedModules = new ArrayList<>();
-        int targetYearIdx = targetYear - 1;
-        int targetSemIdx = targetSem - 1;
+        int targetYearIdx = targetYear;
+        int targetSemIdx = targetSem;
 
         for (int y = 0; y < AcademicConstants.NUM_YEARS; y++) {
             for (int s = 0; s < AcademicConstants.NUM_TERMS; s++) {
@@ -192,13 +329,33 @@ public class Timetable {
                     try {
                         completedModules.addAll(timetable.get(y).get(s));
                     } catch (IndexOutOfBoundsException e) {
-                        // Should not happen, but good to log
                         logger.log(Level.WARNING, "Error accessing timetable slot: Y" + y + " S" + s, e);
                     }
                 }
             }
         }
         return completedModules;
+    }
+
+    private List<Module> getModulesTakenAfter( int targetYear, int targetSem){
+        List<Module> modulesYetToDo = new ArrayList<>();
+        int targetYearIdx = targetYear - 1;
+        int targetSemIdx = targetSem - 1;
+
+        for (int y = 0; y < AcademicConstants.NUM_YEARS; y++) {
+            for (int s = 0; s < AcademicConstants.NUM_TERMS; s++) {
+                if (y > targetYearIdx || (y == targetYearIdx && s >= targetSemIdx)) {
+                    try {
+                        modulesYetToDo.addAll(timetable.get(y).get(s));
+                    } catch (IndexOutOfBoundsException e) {
+                        // Should not happen, but good to log
+                        logger.log(Level.WARNING, "Error accessing timetable slot: Y" + y + " S" + s, e);
+                    }
+                }
+            }
+        }
+        return modulesYetToDo;
+
     }
 
     /**
