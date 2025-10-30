@@ -54,7 +54,7 @@ public class Timetable {
      * @param semester The semester (1-based).
      * @return A CommandResult string indicating success, overload, or failure.
      */
-    public void addModule(int year, int semester, Module module) throws ModHeroException {
+    public void addModule(int year, int semester, Module module, List<String> exemptedModules) throws ModHeroException {
         // Bounds check
         if (year < 1 || year > AcademicConstants.NUM_YEARS ||
                 semester < 1 || semester > AcademicConstants.NUM_TERMS) {
@@ -62,7 +62,7 @@ public class Timetable {
         }
 
         // Check addability
-        checkModuleAddable(year, semester, module);
+        checkModuleAddable(year, semester, module, exemptedModules);
 
         // Add to timetable
         addModuleInternal(year - 1, semester - 1, module);
@@ -80,15 +80,18 @@ public class Timetable {
         return false;
     }
 
-    private void checkModuleAddable(int year, int semester, Module moduleToAdd) throws ModHeroException {
+    private void checkModuleAddable(int year, int semester, Module moduleToAdd, List<String> exemptedModules) throws ModHeroException {
         if (getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(moduleToAdd.getCode()))) {
             throw new ModuleAlreadyExistsException(moduleToAdd.getCode());
+        }
+        if (PrerequisiteUtil.isExemptedModule(moduleToAdd.getCode(), exemptedModules)) {
+            return;
         }
 
         List<Module> completedModules = getModulesTakenUpTo(year - 1, semester - 1);
         List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
 
-        PrerequisiteUtil.validatePrerequisites(moduleToAdd.getCode(), moduleToAdd.getPrerequisites(), completedCodes);
+        PrerequisiteUtil.validatePrerequisites(moduleToAdd.getCode(), moduleToAdd.getPrerequisites(), completedCodes, exemptedModules);
     }
 
     /**

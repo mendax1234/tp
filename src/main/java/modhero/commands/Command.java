@@ -5,6 +5,7 @@ import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
 
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +21,7 @@ public abstract class Command {
     protected Timetable timetable;
     protected Map<String, Module> allModulesData;
     protected Map<String, Major> allMajorsData;
+    protected List<String> exemptedModules;
 
     /**
      * Sets the data context for the command, including the timetable
@@ -29,7 +31,7 @@ public abstract class Command {
      * @param allModulesData the hashmap for loading and saving data
      * @param allMajorsData the hashmap for major information
      */
-    public void setData(Timetable timetable, Map<String, Module> allModulesData, Map<String, Major> allMajorsData) {
+    public void setData(Timetable timetable, Map<String, Module> allModulesData, Map<String, Major> allMajorsData, List<String> exemptedModules) {
         assert timetable != null : "Timetable must not be null";
         assert allModulesData != null : "All modules map must not be null";
         assert allMajorsData != null : "All majors map must not be null";
@@ -37,6 +39,7 @@ public abstract class Command {
         this.timetable = timetable;
         this.allModulesData = allModulesData;
         this.allMajorsData = allMajorsData;
+        this.exemptedModules = exemptedModules;
 
         logger.info("Command setData initialised");
         logger.log(Level.FINEST, () -> String.format("SetData sizes - modules: %d, majors: %d",

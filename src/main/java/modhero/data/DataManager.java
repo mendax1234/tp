@@ -8,7 +8,10 @@ import modhero.storage.ModuleStorage;
 import modhero.data.timetable.Timetable;
 import modhero.storage.TimetableStorage;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +25,7 @@ public class DataManager {
     private final Timetable timetable;
     private final Map<String, Module> allModulesData;
     private final Map<String, Major> allMajorsData;
+    private final List<String> exemptedModules;
 
     /**
      * Creates a new DataManager with specified storage paths.
@@ -33,6 +37,7 @@ public class DataManager {
         this.timetable = new Timetable();
         this.allModulesData = new HashMap<>();
         this.allMajorsData = new HashMap<>();
+        this.exemptedModules = new ArrayList<>();
         initializeData(modulesPath, majorPath, timetablePath);
     }
 
@@ -47,7 +52,7 @@ public class DataManager {
             majorStorage.load(allModulesData, allMajorsData);
             logger.log(Level.INFO, "Data loaded successfully");
             TimetableStorage timetableStorage = new TimetableStorage(timetablePath);
-            timetableStorage.load(timetable, allModulesData);
+            timetableStorage.load(timetable, allModulesData, exemptedModules);
         } catch (CorruptedDataFileException e) {
             logger.log(Level.SEVERE, "Data file is corrupted", e);
         }
@@ -64,5 +69,9 @@ public class DataManager {
 
     public Map<String, Major> getAllMajorsData() {
         return allMajorsData;
+    }
+
+    public List<String> getExemptedModules() {
+        return exemptedModules;
     }
 }

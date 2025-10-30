@@ -23,7 +23,7 @@ public class ScheduleCommand extends Command {
         timetable.printTimetable();
 
         TimetableStorage ts = new TimetableStorage(TIMETABLE_FILE_PATH);
-        ts.save(timetable);
+        ts.save(timetable, exemptedModules);
 
         return new CommandResult("Here's your recommended 4-year schedule above!");
     }
