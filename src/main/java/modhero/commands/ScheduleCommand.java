@@ -1,6 +1,6 @@
 package modhero.commands;
 
-import modhero.storage.TimetableStorage;
+import modhero.storage.SaveStorage;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +22,7 @@ public class ScheduleCommand extends Command {
         // Just display the timetable; don’t rebuild or print module codes
         timetable.printTimetable();
 
-        TimetableStorage ts = new TimetableStorage(TIMETABLE_FILE_PATH);
+        SaveStorage ts = new SaveStorage(TIMETABLE_FILE_PATH);
         ts.save(timetable, exemptedModules);
 
         return new CommandResult("Here's your recommended 4-year schedule above!");
