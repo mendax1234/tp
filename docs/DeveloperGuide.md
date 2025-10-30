@@ -319,7 +319,74 @@ Extensions
 
 ### Non-Functional Requirements
 
-{Give non-functional requirements.}
+Non-Functional Requirements
+1. Performance
+
+- ModHero should respond to user commands within 1 second under normal usage.
+
+- The system should handle up to 500 modules and 10,000 prerequisite links without noticeable delay.
+
+- File read/write operations (saving and loading) should complete within 2 seconds.
+
+2. Reliability
+
+- Data should be automatically saved after every major operation (e.g. add, delete, major).
+
+- The system must detect and recover gracefully from corrupted or missing data files by showing a clear error message and loading a clean state. 
+
+- All deserialization processes must validate file structure before parsing to prevent data loss.
+
+3. Compatibility
+
+- ModHero must run on any operating system with Java 17 or higher installed.
+
+- It should work consistently across Windows, macOS, and Linux.
+
+4. Usability
+
+- Commands should follow a consistent command ARGUMENTS syntax.
+
+- Error messages must clearly explain what went wrong and how to fix it.
+
+- The CLI output should be formatted using monospaced alignment to improve timetable readability.
+
+5. Maintainability
+
+- The codebase must remain modular — each component (UI, Logic, Model, Storage) should be independently testable.
+
+- Logging should use Java’s built-in java.util.logging framework with appropriate levels (INFO, WARNING, SEVERE).
+
+- All public classes and methods must include concise Javadoc comments describing their purpose and behavior.
+
+6. Extensibility
+
+- New commands or data types should be implementable without modifying core logic, following the Command pattern.
+
+- The modular architecture should allow easy integration of new features such as undo, export, or recommend.
+
+7. Security
+
+- File operations should be restricted to ModHero’s working directory to prevent unauthorized access.
+
+- Deserialization must reject malformed or unexpected input to ensure application safety.
+
+8. Portability
+
+- The application must be distributable as a single standalone .jar file with no external dependencies.
+
+- All file paths should be relative, ensuring consistent behavior across machines.
+
+9. Scalability
+
+- The data model should support adding new majors, module types, or academic structures without restructuring the architecture.
+
+- The storage format should remain human-readable and backward-compatible with future versions.
+
+10. Testing Coverage
+
+- Each component should achieve at least 80% unit test coverage.
+
+- Core features (Add, Delete, Major, Schedule) must include both valid and invalid JUnit test cases.
 
 ### Glossary
 
