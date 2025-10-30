@@ -6,6 +6,7 @@
     - [Storage Component](#storage-component)
 - [Implementation](#implementation)
     - [Add Feature](#add-feature)
+    - [Major Feature](#major-feature)
 - [Documentation, Logging and Testing](#documentation-logging-and-testing)
 - [Appendix: Requirements](#appendix-requirements)
     - [Product Scope](#product-scope)
@@ -127,7 +128,7 @@ This section describes some noteworthy details on how certain features are imple
 ### Add Feature
 
 #### Overview
-The `add` feature allows users to add a module to their timetable in a specific year and semester. (For the usage, please go to our [User Guide](UserGuide.md) for more information) The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModulesData` or the NUSMODS API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
+The `add` feature allows users to add a module to their timetable in a specific year and semester.  The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModulesData` or the NUSMODS API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
 
 #### Key Components
 - **`AddCommand.java`**: The command class that parses the user's intent. Its `execute()` method orchestrates the entire "add" operation.
@@ -141,17 +142,6 @@ This diagram illustrates the typical flow for adding a module that is *not* yet 
 <figure align="center">
     <img src="diagrams/addCommand.png" alt="Add Command Sequence Diagram" />
     <figcaption><em>Add Command Sequence Diagram</em></figcaption>
-</figure>
-
-The following two diagrams illustrate how modules are added to the timetable when the user declares a major.
-
-<figure align="center">
-    <img src="diagrams/majorCommand.png" alt="Major Command Sequence Diagram" />
-    <figcaption><em>Major Command Sequence Diagram</em></figcaption>
-</figure>
-<figure align="center">
-    <img src="diagrams/majorCommand-GetModuleFromMajorObject.png" alt="Get Module From Major Object Sequence Diagram" width="70%" />
-    <figcaption><em>Get Module From Major Object Sequence Diagram</em></figcaption>
 </figure>
 
 
@@ -222,6 +212,7 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 
 ### Major feature
 #### Overview
+The Major feature allows users to declare their university major (e.g. Computer Science or Computer Engineering) using the major command.
 
 #### Sequence Diagram
 The following two diagrams illustrate how modules are added to the timetable when the user declares a major.
@@ -237,10 +228,18 @@ The following two diagrams illustrate how modules are added to the timetable whe
 </figure>
 
 #### Execution flow of the Major Command
+1. The user types a command such as major cs.
+2. Parser identifies the command word major and creates a MajorCommand object with the argument "cs".
+3. When execute() is called, the MajorCommand retrieves the matching Major object from the pre-loaded hashmap in Storage.
+4. The command clears the current core module list (if any) and fills it with the modules listed in the Major object.
+5. UI then displays “Timetable cleared! Major set to (major)."
 
 #### Internal Details
+- We only allow users to declare their major as CS or CEG because the prerequisites for the other majors are not included in our major.txt preloaded data file.
+- You can update major.txt to add a new major. (For the serialised data format, please go to the [Serialiser](#serialiser) section for the details)
 
 #### Error Handling
+- If the user provides an invalid or unknown major short code (e.g. major ISE), the program returns an error message: "Sorry, [major] is not supported. Try 'CS' or 'CEG'."
 
 ## Documentation, Logging and Testing
 

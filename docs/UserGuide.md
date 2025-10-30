@@ -87,14 +87,14 @@ Defines your primary degree major, which ModHero uses to load graduation require
 
 **Format:**
 ```
-major MAJOR_NAME [specialisation SPECIALISATION] [minor MINOR_NAME]
+major MAJOR_NAME
 ```
 
 **Examples:**
 ```
-major Computer Science
-major Information Security minor Statistics
-major Computer Science specialisation Artificial Intelligence
+major ceg
+major CEG
+major cs
 major CS
 ```
 
