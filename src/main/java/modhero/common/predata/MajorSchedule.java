@@ -41,6 +41,7 @@ public class MajorSchedule {
             cegSchedule.put("EG1311", new int[]{1, 1});
             cegSchedule.put("MA1511", new int[]{1, 1});
             cegSchedule.put("MA1512", new int[]{1, 1});
+            cegSchedule.put("CS1010", new int[]{1, 1});
 
             cegSchedule.put("CG2111A", new int[]{1, 2});
             cegSchedule.put("DTK1234", new int[]{1, 2});

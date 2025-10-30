@@ -58,8 +58,9 @@ public class DataGenerator {
                 "CS2100", "CS2101", "CS2103T", "CS2109S", "IS1108",
                 "CS2106", "CS3230", "ST2334",
                 // Computer Engineering
-                "CG1111A", "EG1311", "MA1511", "MA1512", "CG2111A", "DTK1234", "MA1508E",
-                "EE2026", "CS2040C", "CS2107", "CG2023", "CS2113", "CS1231", "EE2211",
+                "CG1111A", "EG1311", "MA1511", "MA1512", "CS1010",
+                "CG2111A", "DTK1234", "MA1508E", "EE2026", "CS2040C",
+                "CS2107", "CG2023", "CS2113", "CS1231", "EE2211",
                 "CG2027", "CG2028", "CG2271", "CG3201", "EE4204", "CG3207"
         );
 
@@ -161,7 +162,7 @@ public class DataGenerator {
 
         // CEG
         List<String> cegCodes = Arrays.asList(
-                "CG1111A", "EG1311", "MA1511", "MA1512", "CG2111A", "DTK1234", "MA1508E",
+                "CG1111A", "EG1311", "MA1511", "MA1512", "CS1010", "CG2111A", "DTK1234", "MA1508E",
                 "EE2026", "CS2040C", "CS2107", "CG2023", "CS2113", "CS1231", "EE2211",
                 "CG2027", "CG2028", "CG2271", "CG3201", "EE4204", "CG3207"
         );

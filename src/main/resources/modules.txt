@@ -17,6 +17,7 @@
 6#EG1311|15#Design and Make|1#4|4#core|0#|
 6#MA1511|20#Engineering Calculus|1#2|4#core|26#9#6#MA1301||10#7#MA1301X|||
 6#MA1512|38#Differential Equations for Engineering|1#2|4#core|26#9#6#MA1301||10#7#MA1301X|||
+6#CS1010|23#Programming Methodology|1#4|4#core|0#|
 7#CG2111A|38#Engineering Principles and Practice II|1#4|4#core|14#10#7#CS1010%|||
 7#DTK1234|15#Design Thinking|1#4|4#core|0#|
 7#MA1508E|30#Linear Algebra for Engineering|1#4|4#core|26#9#6#MA1301||10#7#MA1301X|||
