@@ -51,9 +51,8 @@ public class Timetable {
      * @param module   The Module object to add.
      * @param year     The academic year (1-based).
      * @param semester The semester (1-based).
-     * @return A CommandResult string indicating success, overload, or failure.
      */
-    public void addModule(int year, int semester, Module module) throws ModHeroException {
+    public void addModule(int year, int semester, Module module, List<String> exemptedModules) throws ModHeroException {
         // Bounds check
         if (year < 1 || year > AcademicConstants.NUM_YEARS ||
                 semester < 1 || semester > AcademicConstants.NUM_TERMS) {
@@ -61,21 +60,24 @@ public class Timetable {
         }
 
         // Check addability
-        checkModuleAddable(year, semester, module);
+        checkModuleAddable(year, semester, module, exemptedModules);
 
         // Add to timetable
         addModuleDirect(year - 1, semester - 1, module);
     }
 
-    private void checkModuleAddable(int year, int semester, Module moduleToAdd) throws ModHeroException {
+    private void checkModuleAddable(int year, int semester, Module moduleToAdd, List<String> exemptedModules) throws ModHeroException {
         if (getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(moduleToAdd.getCode()))) {
             throw new ModuleAlreadyExistsException(moduleToAdd.getCode());
+        }
+        if (PrerequisiteUtil.isExemptedModule(moduleToAdd.getCode(), exemptedModules)) {
+            return;
         }
 
         List<Module> completedModules = getModulesTakenUpTo(year - 1, semester - 1);
         List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
 
-        PrerequisiteUtil.validatePrerequisites(moduleToAdd.getCode(), moduleToAdd.getPrerequisites(), completedCodes);
+        PrerequisiteUtil.validatePrerequisites(moduleToAdd.getCode(), moduleToAdd.getPrerequisites(), completedCodes, exemptedModules);
     }
 
     /**
@@ -98,14 +100,14 @@ public class Timetable {
      * @throws ModuleNotFoundException     if the module is not found in the timetable
      * @throws ModuleAdditionBlockedException if other modules depend on this module as a prerequisite
      */
-    public void deleteModule(String moduleCode) throws ModHeroException {
+    public void deleteModule(String moduleCode, List<String> exemptedModules) throws ModHeroException {
         // Find the module location
         int[] location = findModuleLocation(moduleCode);
         int year = location[0];
         int semester = location[1];
 
         // Check if deletion is safe
-        checkModuleDeletable(year, semester, moduleCode);
+        checkModuleDeletable(year, semester, moduleCode, exemptedModules);
 
         // Delete the module
         deleteModuleDirect(year, semester, moduleCode);
@@ -117,30 +119,19 @@ public class Timetable {
      * @param year       the year index (0-based)
      * @param semester   the semester index (0-based)
      * @param moduleCode the code of the module to delete
-     * @throws ModuleAdditionBlockedException if other modules depend on this module
+     * @throws ModuleDeletionBlockedException if other modules depend on this module
      */
-    private void checkModuleDeletable(int year, int semester, String moduleCode) throws ModuleDeletionBlockedException {
+    private void checkModuleDeletable(int year, int semester, String moduleCode, List<String> exemptedModules) throws ModuleDeletionBlockedException {
         // Get all modules taken after this module
         List<Module> futureModules = getModulesTakenAfter(year, semester);
 
         // Simulate what completed modules would be if we delete this module
-        List<Module> completedModules = getModulesTakenUpTo(year, semester);
+        // Include the current semester here
+        List<Module> completedModules = getModulesTakenUpTo(year, semester + 1);
         completedModules.removeIf(m -> m.getCode().equals(moduleCode));
         List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
 
-        // Check each future module to see if they still have prerequisites met
-        for (Module futureModule : futureModules) {
-            try {
-                PrerequisiteUtil.validatePrerequisites(
-                        futureModule.getCode(),
-                        futureModule.getPrerequisites(),
-                        completedCodes
-                );
-            } catch (ModuleAdditionBlockedException e) {
-                // This future module would fail prerequisites if we delete the current module
-                throw new ModuleDeletionBlockedException(moduleCode, futureModule.getCode());
-            }
-        }
+        PrerequisiteUtil.validateFutureDependencies(moduleCode, futureModules, completedCodes, exemptedModules);
     }
 
     /**

@@ -43,7 +43,7 @@ public class DeleteCommand extends Command {
         try {
             logger.log(Level.INFO, () -> String.format("Attempting to delete module: %s", moduleCode));
 
-            timetable.deleteModule(moduleCode);
+            timetable.deleteModule(moduleCode, exemptedModules);
 
             return new CommandResult(String.format("%s deleted successfully!", moduleCode));
 

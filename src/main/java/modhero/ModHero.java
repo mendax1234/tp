@@ -92,7 +92,8 @@ public class ModHero {
             command.setData(
                     dataManager.getTimetable(),
                     dataManager.getAllModulesData(),
-                    dataManager.getAllMajorsData()
+                    dataManager.getAllMajorsData(),
+                    dataManager.getExemptedModules()
             );
             CommandResult result = command.execute();
             logger.log(Level.INFO, "Command execution completed");

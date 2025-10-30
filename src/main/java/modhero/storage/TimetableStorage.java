@@ -7,6 +7,7 @@ import modhero.data.modules.Module;
 import modhero.data.timetable.Timetable;
 import modhero.exceptions.ModHeroException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -40,28 +41,46 @@ public class TimetableStorage extends Storage{
      * @param timetable the Timetable object to populate with loaded data
      * @param allModulesData a mapping of module codes to Module objects, used to validate and reconstruct entries
      */
-    public void load(Timetable timetable, Map<String, Module> allModulesData) {
+    public void load(Timetable timetable, Map<String, Module> allModulesData, List<String> exemptedModules) {
         List<String> lines = loadFromTextFile();
         for (String line : lines) {
-            List<String> moduleList = DeserialisationUtil.deserialiseMessage(line);
+            List<String> moduleListAndExemptedList = DeserialisationUtil.deserialiseMessage(line);
+            if (moduleListAndExemptedList == null) {
+                logger.log(Level.WARNING, "TimetableStorage load moduleListAndExemptedList is null");
+                break;
+            } else if (moduleListAndExemptedList.size() != 2) {
+                logger.log(Level.WARNING, "TimetableStorage load moduleListAndExemptedList does not contains the right amount of arguments");
+                break;
+            }
+
+            List<String> exemptedList = DeserialisationUtil.deserialiseMessage(moduleListAndExemptedList.get(1));
+            if (exemptedList == null) {
+                logger.log(Level.WARNING, "TimetableStorage load exemptedList is null");
+                break;
+            }
+            exemptedModules.addAll(exemptedList);
+
+            List<String> moduleList = DeserialisationUtil.deserialiseMessage(moduleListAndExemptedList.get(0));
             if (moduleList == null) {
                 logger.log(Level.WARNING, "TimetableStorage load moduleList is null");
                 break;
             }
+
             for (String module : moduleList) {
                 List<String> moduleArgs = DeserialisationUtil.deserialiseMessage(module);
-                if (moduleArgs != null && moduleArgs.size() != EXPECTED_TIMETABLEDATA_ARGS) {
-                    logger.log(Level.WARNING, "TimetableStorage load moduleList does not have the right number of argument");
+                if (moduleArgs == null || moduleArgs.size() != EXPECTED_TIMETABLEDATA_ARGS) {
+                    logger.log(Level.WARNING, "TimetableStorage load moduleArgs does not have the right number of argument");
                     break;
                 }
+
                 int parseYear = parseInteger(moduleArgs.get(1));
                 int parseTerm = parseInteger(moduleArgs.get(2));
                 if (parseYear == -1 && parseTerm == -1) {
-                    logger.log(Level.WARNING, "TimetableStorage load moduleList parse failed");
+                    logger.log(Level.WARNING, "TimetableStorage load moduleArgs parse failed");
                     break;
                 }
                 try {
-                    AddCommand.addModule(timetable, allModulesData, moduleArgs.get(0), parseYear, parseTerm);
+                    AddCommand.addModule(timetable, allModulesData, moduleArgs.get(0), parseYear, parseTerm, exemptedList);
                 } catch (ModHeroException e) {
                     logger.log(Level.WARNING, "Load Timetable Failed",e);
                 }
@@ -74,17 +93,19 @@ public class TimetableStorage extends Storage{
      *
      * @param timetable the Timetable object containing the data to be saved
      */
-    public void save(Timetable timetable) {
+    public void save(Timetable timetable, List<String> exemptedModules) {
         StringBuilder timetableSaveFormat = new StringBuilder();
         for (int year = 0; year < NUM_YEARS; year++) {
             for (int term = 0; term < NUM_TERMS; term++) {
                 for (Module module : timetable.getModules(year, term)) {
-                    List<String> saveInformation =  List.of(module.getCode(), String.valueOf(year+1), String.valueOf(term+1));
+                    List<String> saveInformation = List.of(module.getCode(), String.valueOf(year + 1), String.valueOf(term + 1));
                     timetableSaveFormat.append(SerialisationUtil.serialiseList(saveInformation));
                 }
             }
         }
-        saveToTextFile(timetableSaveFormat.toString());
+
+        saveToTextFile(SerialisationUtil.serialiseMessage(timetableSaveFormat.toString())
+                + SerialisationUtil.serialiseList(exemptedModules));
     }
 
     /**
