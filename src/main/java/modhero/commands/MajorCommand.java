@@ -1,5 +1,6 @@
 package modhero.commands;
 
+import modhero.common.Constants;
 import modhero.data.major.Major;
 import modhero.data.timetable.TimetableData;
 import modhero.data.modules.Module;
@@ -58,6 +59,12 @@ public class MajorCommand extends Command {
         if (majorObject == null) {
             return new CommandResult("Sorry, " + major
                     + " is not supported. Try 'CS' or 'CEG'.");
+        }
+
+        if (majorObject.getAbbrName().equals("CS")) {
+            exemptedModules.addAll(Constants.ExemptedModulesConstants.CS_EXEMPTED_MODULES);
+        } else if (majorObject.getAbbrName().equals("CEG")) {
+            exemptedModules.addAll(Constants.ExemptedModulesConstants.CEG_EXEMPTED_MODULES);
         }
 
         //clear the timetable to prevent clashes when user redeclares major

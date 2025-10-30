@@ -8,6 +8,7 @@ import modhero.data.timetable.Timetable;
 import modhero.exceptions.ModHeroException;
 import modhero.exceptions.ModuleNotFoundException;
 
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +39,7 @@ public class AddCommand extends Command {
         try {
             logger.log(Level.INFO, () -> String.format("Adding module %s to Y%dS%d", moduleCode, year, semester));
 
-            addModule(timetable, allModulesData, moduleCode, year, semester);
+            addModule(timetable, allModulesData, moduleCode, year, semester, exemptedModules);
 
             return new CommandResult(String.format("%s added successfully to Y%dS%d!", moduleCode, year, semester));
 
@@ -50,7 +51,7 @@ public class AddCommand extends Command {
         }
     }
 
-    public static void addModule(Timetable timetable, Map<String, Module> allModulesData, String moduleCode, int year, int term) throws ModHeroException {
+    public static void addModule(Timetable timetable, Map<String, Module> allModulesData, String moduleCode, int year, int term, List<String> exemptedModules) throws ModHeroException {
         ModuleRetriever moduleRetriever = new ModuleRetriever();
         Module module = allModulesData.get(moduleCode);
         if (module == null) {
@@ -62,6 +63,6 @@ public class AddCommand extends Command {
             allModulesData.put(module.getCode(), module);
         }
 
-        timetable.addModule(year, term, module);
+        timetable.addModule(year, term, module, exemptedModules);
     }
 }

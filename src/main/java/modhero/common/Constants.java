@@ -1,5 +1,7 @@
 package modhero.common;
 
+import java.util.List;
+
 public final class Constants {
     public static final class UiConstants {
         public static final String WELCOME = """
@@ -89,5 +91,10 @@ public final class Constants {
     public static final class FormatConstants {
         public static final String START_DELIMITER = "#";
         public static final String END_DELIMITER = "|";
+    }
+
+    public static final class ExemptedModulesConstants {
+        public static final List<String> CS_EXEMPTED_MODULES = List.of("MA1301", "PC1201") ;
+        public static final List<String> CEG_EXEMPTED_MODULES = List.of("MA1301", "PC1201") ;
     }
 }

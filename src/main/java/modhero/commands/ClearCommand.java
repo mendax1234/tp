@@ -19,6 +19,7 @@ public class ClearCommand extends Command {
         logger.log(Level.INFO, "Executing Clear Command");
 
         timetable.clearTimetable();
+        exemptedModules.clear();
         return new CommandResult("Reset the timetable.");
     }
 }
