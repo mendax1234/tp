@@ -16,7 +16,15 @@ public class TimetableData {
         this.term = term;
     }
 
-    public String getCode()     { return code; }
-    public int getYear()        { return year; }
-    public int getTerm()    { return term; }
+    public String getCode() {
+        return code;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public int getTerm() {
+        return term;
+    }
 }
