@@ -17,14 +17,19 @@ public class MajorSchedule {
             Map<String, int[]> csSchedule = new HashMap<>();
             csSchedule.put("CS1101S", new int[]{1, 1});
             csSchedule.put("CS1231S", new int[]{1, 1});
+            csSchedule.put("MA1522", new int[]{1, 1});
+            csSchedule.put("ES2660", new int[]{1, 1});
             csSchedule.put("CS2030S", new int[]{1, 2});
             csSchedule.put("CS2040S", new int[]{1, 2});
-            csSchedule.put("CS2101", new int[]{1, 2});
+            csSchedule.put("MA1521", new int[]{1, 2});
             csSchedule.put("CS2100", new int[]{2, 1});
+            csSchedule.put("CS2101", new int[]{2, 1});
             csSchedule.put("CS2103T", new int[]{2, 1});
-            csSchedule.put("CS2106", new int[]{2, 1});
-            csSchedule.put("CS2109S", new int[]{2, 2});
-            csSchedule.put("CS3230", new int[]{3, 1});
+            csSchedule.put("IS1108", new int[]{2, 1});
+            csSchedule.put("CS2109S", new int[]{2, 1});
+            csSchedule.put("CS2106", new int[]{2, 2});
+            csSchedule.put("ST2334", new int[]{2, 2});
+            csSchedule.put("CS3230", new int[]{2, 2});
             return csSchedule;
         }
 
@@ -36,6 +41,7 @@ public class MajorSchedule {
             cegSchedule.put("EG1311", new int[]{1, 1});
             cegSchedule.put("MA1511", new int[]{1, 1});
             cegSchedule.put("MA1512", new int[]{1, 1});
+            cegSchedule.put("CS1010", new int[]{1, 1});
 
             cegSchedule.put("CG2111A", new int[]{1, 2});
             cegSchedule.put("DTK1234", new int[]{1, 2});
@@ -54,6 +60,7 @@ public class MajorSchedule {
             cegSchedule.put("CG2027", new int[]{3, 2});
             cegSchedule.put("CG2028", new int[]{3, 2});
             cegSchedule.put("CG3201", new int[]{3, 2});
+            cegSchedule.put("ST2334", new int[]{3, 2});
 
             cegSchedule.put("EE4204", new int[]{4, 1});
             cegSchedule.put("CG3207", new int[]{4, 1});

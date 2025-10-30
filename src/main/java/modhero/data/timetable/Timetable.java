@@ -3,6 +3,7 @@ package modhero.data.timetable;
 import static modhero.common.Constants.AcademicConstants;
 import static modhero.common.Constants.MessageConstants;
 
+import modhero.common.util.PrerequisiteUtil;
 import modhero.exceptions.InvalidYearOrSemException;
 import modhero.exceptions.ModHeroException;
 import modhero.exceptions.ModuleAlreadyExistsException;
@@ -67,8 +68,6 @@ public class Timetable {
         addModuleInternal(year - 1, semester - 1, module);
     }
 
-
-
     private boolean checkIsLevel1000Module(String moduleCode){
         if (moduleCode == null || moduleCode.isEmpty()) {
             return false;
@@ -86,27 +85,10 @@ public class Timetable {
             throw new ModuleAlreadyExistsException(moduleToAdd.getCode());
         }
 
-        //check if module is 1k, if yes then it has no prerequisites
-        boolean isLevel1000Module = checkIsLevel1000Module(moduleToAdd.getCode());
-        if (isLevel1000Module){
-            return;
-        }
-
-        List<Module> completedModules = getModulesTakenUpTo(year, semester);
+        List<Module> completedModules = getModulesTakenUpTo(year - 1, semester - 1);
         List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
 
-        Prerequisites prereqs = moduleToAdd.getPrerequisites();
-        List<List<String>> prereqSets = prereqs.getPrereq();
-
-        if (prereqSets == null || prereqSets.isEmpty()) return;
-
-        boolean satisfied = prereqSets.stream().anyMatch(option ->
-                option.stream().allMatch(completedCodes::contains)
-        );
-
-        if (!satisfied) {
-            throw new PrerequisiteNotMetException(moduleToAdd.getCode(), prereqs.toString());
-        }
+        PrerequisiteUtil.validatePrerequisites(moduleToAdd.getCode(), moduleToAdd.getPrerequisites(), completedCodes);
     }
 
     /**
@@ -355,7 +337,6 @@ public class Timetable {
             }
         }
         return modulesYetToDo;
-
     }
 
     /**
