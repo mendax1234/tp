@@ -142,6 +142,18 @@ This diagram illustrates the typical flow for adding a module that is *not* yet 
     <figcaption><em>Add Command Sequence Diagram</em></figcaption>
 </figure>
 
+The following two diagrams illustrate how modules are added to the timetable when the user declares a major.
+
+<figure align="center">
+    <img src="diagrams/majorCommand.png" alt="Major Command Sequence Diagram" />
+    <figcaption><em>Major Command Sequence Diagram</em></figcaption>
+</figure>
+<figure align="center">
+    <img src="diagrams/majorCommand-GetModuleFromMajorObject.png" alt="Get Module From Major Object Sequence Diagram" width="70%" />
+    <figcaption><em>Get Module From Major Object Sequence Diagram</em></figcaption>
+</figure>
+
+
 #### Detailed Execution Flow
 1.  **Initiation**: The `execute()` method of `AddCommand` is called.
 2.  **Cache Check**: It first attempts to get the `Module` object from the local `allModulesData` cache.

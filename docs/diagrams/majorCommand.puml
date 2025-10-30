@@ -1,0 +1,66 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant "result:MajorCommand"
+participant ":CommandResult"
+participant ":Major"
+participant "mm:TimetableData"
+participant ":Module"
+participant "timetable:Timetable"
+
+[-> "result:MajorCommand": execute()
+activate "result:MajorCommand"
+activate "timetable:Timetable"
+alt majorObject is null
+    "result:MajorCommand" -> ":CommandResult": CommandResult(feedbackToUser)
+    activate ":CommandResult"
+    "result:MajorCommand" <-- ":CommandResult"
+    deactivate ":CommandResult"
+end
+"result:MajorCommand" -> ":Major":getMajorModules()
+activate ":Major"
+"result:MajorCommand" <-- ":Major"
+destroy ":Major"
+loop number of modules for the major
+    ref over "result:MajorCommand", ":Module": get module from major object
+    destroy "mm:TimetableData"
+    "result:MajorCommand" -> "timetable:Timetable": addModule(year,semester,module)
+
+    "timetable:Timetable" -> "timetable:Timetable": checkModuleAddable(...)
+    activate "timetable:Timetable"
+    "timetable:Timetable" --> "timetable:Timetable"
+    deactivate "timetable:Timetable"
+
+    "timetable:Timetable" -> "timetable:Timetable": addModuleInternal(...)
+    activate "timetable:Timetable"
+    "timetable:Timetable" --> "timetable:Timetable"
+    deactivate "timetable:Timetable"
+
+    "timetable:Timetable" -> "timetable:Timetable": getModules(...)
+    activate "timetable:Timetable"
+    "timetable:Timetable" --> "timetable:Timetable"
+    deactivate "timetable:Timetable"
+
+    alt no. of modules in that year and sem > max modules
+        "timetable:Timetable" <- ":Module": getCode()
+        activate ":Module"
+        "timetable:Timetable" --> ":Module": getCode()
+        deactivate ":Module"
+
+    end alt
+
+    "timetable:Timetable" <- ":Module": getCode()
+    activate ":Module"
+    "timetable:Timetable" --> ":Module"
+    destroy ":Module"
+
+    "result:MajorCommand" <-- "timetable:Timetable"
+end
+
+"result:MajorCommand" -> ":CommandResult": CommandResult(feedbackToUser)
+"result:MajorCommand" <-- ":CommandResult"
+
+[<--"result:MajorCommand"
+
+
+@enduml

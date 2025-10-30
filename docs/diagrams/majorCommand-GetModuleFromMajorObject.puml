@@ -1,0 +1,30 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant "result:MajorCommand"
+participant "mm:TimetableData"
+participant ":Module"
+
+"result:MajorCommand" -> "mm:TimetableData": getCode()
+activate "result:MajorCommand"
+activate "mm:TimetableData"
+"result:MajorCommand" <-- "mm:TimetableData"
+deactivate "mm:TimetableData"
+"result:MajorCommand" -> ":Module": Module()
+activate ":Module"
+"result:MajorCommand" <-- ":Module": Module()
+deactivate ":Module"
+"result:MajorCommand" -> "mm:TimetableData": getYear()
+activate "result:MajorCommand"
+activate "mm:TimetableData"
+"result:MajorCommand" <-- "mm:TimetableData"
+deactivate "mm:TimetableData"
+"result:MajorCommand" -> "mm:TimetableData": getTerm()
+activate "result:MajorCommand"
+activate "mm:TimetableData"
+"result:MajorCommand" <-- "mm:TimetableData"
+deactivate "mm:TimetableData"
+
+
+
+@enduml
