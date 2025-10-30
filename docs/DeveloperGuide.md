@@ -214,10 +214,20 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 ### Product Scope
 
 #### Target User Profile
-{Describe the target user profile.}
+ModHero is designed for NUS undergraduate students who:
+- Are pursuing Computer Science (CS) or Computer Engineering (CEG) degrees.
+- Want to plan and visualise their academic journey over the 4-year duration.
+- Prefer using a command-line interface (CLI) for speed and minimal distraction.
+- Value automation, accuracy, and clarity when planning modules and checking prerequisites.
+- Are comfortable navigating structured text-based outputs instead of GUI-heavy planners.
 
 #### Value Proposition
-{Describe the value proposition: what problem does it solve?}
+ModHero simplifies and safeguards the process of academic planning for NUS students by:
+- Automatically loading core and elective modules based on the declared major.
+- Enforcing prerequisite validation when adding modules to prevent invalid study plans.
+- Providing a clear 4-year semester overview, allowing students to visualise module distribution and workload balance.
+- Detecting invalid or duplicate module entries before they cause conflicts.
+- Offering a lightweight, offline, and fast solution that stores all data locally for continued access without internet dependence.
 
 ### User Stories
 
