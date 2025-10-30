@@ -60,7 +60,7 @@ public class DataGenerator {
                 // Computer Engineering
                 "CG1111A", "EG1311", "MA1511", "MA1512", "CS1010",
                 "CG2111A", "DTK1234", "MA1508E", "EE2026", "CS2040C",
-                "CS2107", "CG2023", "CS2113", "CS1231", "EE2211",
+                "CS2107", "CG2023", "CS2113", "CS1231", "EE2211", "ST2334",
                 "CG2027", "CG2028", "CG2271", "CG3201", "EE4204", "CG3207"
         );
 
@@ -163,7 +163,7 @@ public class DataGenerator {
         // CEG
         List<String> cegCodes = Arrays.asList(
                 "CG1111A", "EG1311", "MA1511", "MA1512", "CS1010", "CG2111A", "DTK1234", "MA1508E",
-                "EE2026", "CS2040C", "CS2107", "CG2023", "CS2113", "CS1231", "EE2211",
+                "EE2026", "CS2040C", "CS2107", "CG2023", "CS2113", "CS1231", "EE2211", "ST2334",
                 "CG2027", "CG2028", "CG2271", "CG3201", "EE4204", "CG3207"
         );
         Map<String, int[]> cegSchedule = majorSchedule.getSchedule("computer engineering");

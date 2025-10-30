@@ -67,8 +67,6 @@ public class Timetable {
         addModuleInternal(year - 1, semester - 1, module);
     }
 
-
-
     private boolean checkIsLevel1000Module(String moduleCode){
         if (moduleCode == null || moduleCode.isEmpty()) {
             return false;
@@ -79,6 +77,47 @@ public class Timetable {
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if a single prerequisite code (which may contain a wildcard) is satisfied
+     * by any module in the completed list.
+     *
+     * @param prereqCode     The prerequisite code to check (e.g., "CS1010%").
+     * @param completedCodes The list of all completed module codes.
+     * @return {@code true} if any completed code matches the prerequisite, {@code false} otherwise.
+     */
+    private boolean isPrerequisiteSatisfied(String prereqCode, List<String> completedCodes) {
+        // "starts with" (e.g., CS1010%)
+        if (prereqCode.endsWith("%") && prereqCode.length() > 1) {
+            String prefix = prereqCode.substring(0, prereqCode.length() - 1);
+            return completedCodes.stream().anyMatch(c -> c.startsWith(prefix));
+        }
+
+        // Default - Exact match
+        return completedCodes.contains(prereqCode);
+    }
+
+    /**
+     * Checks if a set of prerequisite codes is satisfied by a list of completed module codes.
+     * This method centralizes the prerequisite checking logic.
+     *
+     * @param prereqSets     The list of prerequisite options (OR-groups).
+     * @param completedCodes The list of completed module codes.
+     * @return {@code true} if prerequisites are met, {@code false} otherwise.
+     */
+    private boolean arePrerequisitesMet(List<List<String>> prereqSets, List<String> completedCodes) {
+        if (prereqSets == null || prereqSets.isEmpty()) {
+            return true; // No prerequisites, so they are met.
+        }
+
+        // Check if any "OR" group (option) is satisfied
+        return prereqSets.stream().anyMatch(option ->
+                // Check if all "AND" modules (prereqCode) in that group are satisfied
+                option.stream().allMatch(prereqCode ->
+                        isPrerequisiteSatisfied(prereqCode, completedCodes)
+                )
+        );
     }
 
     private void checkModuleAddable(int year, int semester, Module moduleToAdd) throws ModHeroException {
@@ -92,7 +131,7 @@ public class Timetable {
             return;
         }
 
-        List<Module> completedModules = getModulesTakenUpTo(year, semester);
+        List<Module> completedModules = getModulesTakenUpTo(year-1, semester-1);
         List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
 
         Prerequisites prereqs = moduleToAdd.getPrerequisites();
@@ -100,9 +139,7 @@ public class Timetable {
 
         if (prereqSets == null || prereqSets.isEmpty()) return;
 
-        boolean satisfied = prereqSets.stream().anyMatch(option ->
-                option.stream().allMatch(completedCodes::contains)
-        );
+        boolean satisfied = arePrerequisitesMet(prereqSets, completedCodes);
 
         if (!satisfied) {
             throw new PrerequisiteNotMetException(moduleToAdd.getCode(), prereqs.toString());
