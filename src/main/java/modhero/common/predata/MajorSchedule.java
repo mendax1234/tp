@@ -17,14 +17,19 @@ public class MajorSchedule {
             Map<String, int[]> csSchedule = new HashMap<>();
             csSchedule.put("CS1101S", new int[]{1, 1});
             csSchedule.put("CS1231S", new int[]{1, 1});
+            csSchedule.put("MA1522", new int[]{1, 1});
+            csSchedule.put("ES2660", new int[]{1, 1});
             csSchedule.put("CS2030S", new int[]{1, 2});
             csSchedule.put("CS2040S", new int[]{1, 2});
-            csSchedule.put("CS2101", new int[]{1, 2});
+            csSchedule.put("MA1521", new int[]{1, 2});
             csSchedule.put("CS2100", new int[]{2, 1});
+            csSchedule.put("CS2101", new int[]{2, 1});
             csSchedule.put("CS2103T", new int[]{2, 1});
-            csSchedule.put("CS2106", new int[]{2, 1});
-            csSchedule.put("CS2109S", new int[]{2, 2});
-            csSchedule.put("CS3230", new int[]{3, 1});
+            csSchedule.put("IS1108", new int[]{2, 1});
+            csSchedule.put("CS2109S", new int[]{2, 1});
+            csSchedule.put("CS2106", new int[]{2, 2});
+            csSchedule.put("ST2334", new int[]{2, 2});
+            csSchedule.put("CS3230", new int[]{2, 2});
             return csSchedule;
         }
 

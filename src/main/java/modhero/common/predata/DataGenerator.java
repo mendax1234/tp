@@ -53,8 +53,10 @@ public class DataGenerator {
 
         List<String> allModules = Arrays.asList(
                 // Computer Science
-                "CS1101S", "CS1231S", "CS2030S", "CS2040S", "CS2101", "CS2100",
-                "CS2103T", "CS2106", "CS2109S", "CS3230",
+                "CS1101S", "MA1522", "CS1231S", "ES2660",
+                "CS2030S", "CS2040S", "MA1521",
+                "CS2100", "CS2101", "CS2103T", "CS2109S", "IS1108",
+                "CS2106", "CS3230", "ST2334",
                 // Computer Engineering
                 "CG1111A", "EG1311", "MA1511", "MA1512", "CG2111A", "DTK1234", "MA1508E",
                 "EE2026", "CS2040C", "CS2107", "CG2023", "CS2113", "CS1231", "EE2211",
@@ -148,8 +150,10 @@ public class DataGenerator {
 
         // CS
         List<String> csCodes = Arrays.asList(
-                "CS1101S", "CS1231S", "CS2030S", "CS2040S", "CS2100", "CS2101",
-                "CS2103T", "CS2106", "CS2109S", "CS3230"
+                "CS1101S", "MA1522", "CS1231S", "ES2660",
+                "CS2030S", "CS2040S", "MA1521",
+                "CS2100", "CS2101", "CS2103T", "CS2109S", "IS1108",
+                "CS2106", "CS3230", "ST2334"
         );
         Map<String, int[]> csSchedule = majorSchedule.getSchedule("computer science");
         fileContent.append(buildMajorLine("Computer Science", "CS", csCodes, csSchedule))
