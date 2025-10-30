@@ -4,9 +4,7 @@ import modhero.common.Constants;
 import modhero.data.major.Major;
 import modhero.data.timetable.TimetableData;
 import modhero.data.modules.Module;
-import modhero.exceptions.ModHeroException;
 
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,7 +71,7 @@ public class MajorCommand extends Command {
         //add all modules from the selected major into the timetable
             for (TimetableData mm : majorObject.getMajorModules()) {
                 Module m = allModulesData.get(mm.getCode());
-                timetable.addModuleInternal(mm.getYear() - 1, mm.getTerm() - 1, m);
+                timetable.addModuleDirect(mm.getYear() - 1, mm.getTerm() - 1, m);
             }
         logger.log(Level.INFO, () -> "Major successfully set to " + major);
 

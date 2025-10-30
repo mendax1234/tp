@@ -42,7 +42,6 @@ public class AddCommand extends Command {
             addModule(timetable, allModulesData, moduleCode, year, semester, exemptedModules);
 
             return new CommandResult(String.format("%s added successfully to Y%dS%d!", moduleCode, year, semester));
-
         } catch (ModHeroException e) {
             return new CommandResult(e.getMessage());
         } catch (Exception e) {

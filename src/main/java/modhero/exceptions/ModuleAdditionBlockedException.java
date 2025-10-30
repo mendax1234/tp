@@ -10,7 +10,7 @@ package modhero.exceptions;
  * constraints within the timetable.
  * </p>
  */
-public class PrerequisiteNotMetException extends ModHeroException {
+public class ModuleAdditionBlockedException extends ModHeroException {
     String moduleCode;
     String required;
 
@@ -21,7 +21,7 @@ public class PrerequisiteNotMetException extends ModHeroException {
      * @param moduleCode the code of the module whose prerequisites are not met
      * @param required a textual description of the required prerequisites
      */
-    public PrerequisiteNotMetException(String moduleCode, String required) {
+    public ModuleAdditionBlockedException(String moduleCode, String required) {
         super("Prerequisites not met for " + moduleCode + ". Requires: " + required);
         this.moduleCode = moduleCode;
         this.required = required;

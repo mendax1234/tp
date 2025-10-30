@@ -1,20 +1,15 @@
 package modhero.common.util;
 
 import modhero.data.modules.Prerequisites;
-import modhero.exceptions.PrerequisiteNotMetException;
+import modhero.exceptions.ModuleAdditionBlockedException;
+import modhero.exceptions.ModuleDeletionBlockedException;
+import modhero.data.modules.Module;
+
 import java.util.List;
 
 public final class PrerequisiteUtil {
 
     private PrerequisiteUtil() {} // prevent instantiation
-
-    public static boolean isLevel1000Module(String moduleCode) {
-        if (moduleCode == null || moduleCode.isEmpty()) return false;
-        for (char c : moduleCode.toCharArray()) {
-            if (Character.isDigit(c)) return c == '1';
-        }
-        return false;
-    }
 
     private static boolean isPrerequisiteSatisfied(String prereqCode, List<String> completedCodes, List<String> exemptedModules) {
         if (prereqCode.endsWith("%") && prereqCode.length() > 1) {
@@ -32,7 +27,7 @@ public final class PrerequisiteUtil {
     }
 
     public static void validatePrerequisites(String moduleCode, Prerequisites prereqs, List<String> completedCodes, List<String> exemptedModules)
-            throws PrerequisiteNotMetException {
+            throws ModuleAdditionBlockedException{
         if (isExemptedModule(moduleCode, exemptedModules)) {
             return;
         }
@@ -42,7 +37,24 @@ public final class PrerequisiteUtil {
         boolean satisfied = arePrerequisitesMet(prereqs.getPrereq(), completedCodes, exemptedModules);
 
         if (!satisfied) {
-            throw new PrerequisiteNotMetException(moduleCode, prereqs.toString());
+            throw new ModuleAdditionBlockedException(moduleCode, prereqs.toString());
+        }
+    }
+
+    public static void validateFutureDependencies(String moduleCodeToDelete, List<Module> futureModules,
+                                                  List<String> completedCodes, List<String> exemptedModules)
+            throws ModuleDeletionBlockedException {
+        for (Module futureModule : futureModules) {
+            try {
+                PrerequisiteUtil.validatePrerequisites(
+                        futureModule.getCode(),
+                        futureModule.getPrerequisites(),
+                        completedCodes,
+                        exemptedModules
+                );
+            } catch (ModuleAdditionBlockedException e) {
+                throw new ModuleDeletionBlockedException(moduleCodeToDelete, futureModule.getCode());
+            }
         }
     }
 

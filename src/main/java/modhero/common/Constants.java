@@ -19,8 +19,8 @@ public final class Constants {
                 │                                                                               │
                 │ Let's get you started:                                                        │
                 │  1. Specify your major so ModHero can load core modules                       │
-                │     (psst! Please only enter Computer Science or Computer Engineering)        │
-                │     Example: major Computer Engineering                                       │
+                │     (psst! Please only enter CS or CEG)                                       │
+                │     Example: major CEG                                                        │
                 │                                                                               │
                 │  2. See your recommended schedule!                                            │
                 │     Example: schedule                                                         │
@@ -50,7 +50,7 @@ public final class Constants {
             ├────────────┼───────────────────────────────────────────────────┤
             │ major      │ Specify your major                                │
             │            │ Format: major MAJOR_NAME                          │
-            │            │ Example: major Computer Science                   │
+            │            │ Example: major cs                                 │
             ├────────────┼───────────────────────────────────────────────────┤
             │ add        │ Add elective modules to specific Year & Semester  │
             │            │ Format: add MODULE_CODE to Y_S_                   │

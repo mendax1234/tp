@@ -1,16 +1,15 @@
 package modhero.data.timetable;
 
 import static modhero.common.Constants.AcademicConstants;
-import static modhero.common.Constants.MessageConstants;
 
 import modhero.common.util.PrerequisiteUtil;
 import modhero.exceptions.InvalidYearOrSemException;
 import modhero.exceptions.ModHeroException;
 import modhero.exceptions.ModuleAlreadyExistsException;
+import modhero.exceptions.ModuleDeletionBlockedException;
 import modhero.exceptions.ModuleNotFoundException;
 import modhero.data.modules.Module;
-import modhero.data.modules.Prerequisites;
-import modhero.exceptions.PrerequisiteNotMetException;
+import modhero.exceptions.ModuleAdditionBlockedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +51,6 @@ public class Timetable {
      * @param module   The Module object to add.
      * @param year     The academic year (1-based).
      * @param semester The semester (1-based).
-     * @return A CommandResult string indicating success, overload, or failure.
      */
     public void addModule(int year, int semester, Module module, List<String> exemptedModules) throws ModHeroException {
         // Bounds check
@@ -65,19 +63,7 @@ public class Timetable {
         checkModuleAddable(year, semester, module, exemptedModules);
 
         // Add to timetable
-        addModuleInternal(year - 1, semester - 1, module);
-    }
-
-    private boolean checkIsLevel1000Module(String moduleCode){
-        if (moduleCode == null || moduleCode.isEmpty()) {
-            return false;
-        }
-        for (char c : moduleCode.toCharArray()) {
-            if (Character.isDigit(c)) {
-                return c == '1';
-            }
-        }
-        return false;
+        addModuleDirect(year - 1, semester - 1, module);
     }
 
     private void checkModuleAddable(int year, int semester, Module moduleToAdd, List<String> exemptedModules) throws ModHeroException {
@@ -102,31 +88,65 @@ public class Timetable {
      * @param term   the term index (0-based)
      * @param module the module to add
      */
-    public void addModuleInternal(int year, int term, Module module) {
+    public void addModuleDirect(int year, int term, Module module) {
         timetable.get(year).get(term).add(module);
         logger.log(Level.FINEST, () -> String.format("Module %s added to year %d term %d", module.getCode(), year, term));
     }
 
     /**
-     * Removes a module from a specific year and term by module code.
+     * Deletes a module from the timetable, checking prerequisites.
+     *
+     * @param moduleCode the code of the module to delete
+     * @throws ModuleNotFoundException     if the module is not found in the timetable
+     * @throws ModuleAdditionBlockedException if other modules depend on this module as a prerequisite
+     */
+    public void deleteModule(String moduleCode, List<String> exemptedModules) throws ModHeroException {
+        // Find the module location
+        int[] location = findModuleLocation(moduleCode);
+        int year = location[0];
+        int semester = location[1];
+
+        // Check if deletion is safe
+        checkModuleDeletable(year, semester, moduleCode, exemptedModules);
+
+        // Delete the module
+        deleteModuleDirect(year, semester, moduleCode);
+    }
+
+    /**
+     * Checks if a module can be safely deleted without breaking prerequisites.
      *
      * @param year       the year index (0-based)
-     * @param term       the term index (0-based)
-     * @param moduleCode the code of the module to remove
-     * @return {@code true} if a module was removed, {@code false} otherwise
+     * @param semester   the semester index (0-based)
+     * @param moduleCode the code of the module to delete
+     * @throws ModuleDeletionBlockedException if other modules depend on this module
      */
-    public boolean removeModule(int year, int term, String moduleCode) throws ArrayIndexOutOfBoundsException {
-        if (year < 0 || year > AcademicConstants.NUM_YEARS || term < 0 || term > AcademicConstants.NUM_TERMS) {
-            throw new ArrayIndexOutOfBoundsException();
-        }
+    private void checkModuleDeletable(int year, int semester, String moduleCode, List<String> exemptedModules) throws ModuleDeletionBlockedException {
+        // Get all modules taken after this module
+        List<Module> futureModules = getModulesTakenAfter(year, semester);
 
-        boolean hasRemoved = timetable.get(year).get(term)
-                .removeIf(m -> m.getCode().equals(moduleCode));
+        // Simulate what completed modules would be if we delete this module
+        // Include the current semester here
+        List<Module> completedModules = getModulesTakenUpTo(year, semester + 1);
+        completedModules.removeIf(m -> m.getCode().equals(moduleCode));
+        List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
 
-        if (hasRemoved) {
-            logger.log(Level.FINEST, () -> String.format("Module %s removed from year %d term %d", moduleCode, year, term));
-        }
-        return hasRemoved;
+        PrerequisiteUtil.validateFutureDependencies(moduleCode, futureModules, completedCodes, exemptedModules);
+    }
+
+    /**
+     * Internal method to delete a module from a specific year and semester.
+     * No checks are performed here.
+     *
+     * @param year       the year index (0-based)
+     * @param semester   the semester index (0-based)
+     * @param moduleCode the code of the module to delete
+     */
+    private void deleteModuleDirect(int year, int semester, String moduleCode) {
+        List<Module> modules = timetable.get(year).get(semester);
+        modules.removeIf(m -> m.getCode().equals(moduleCode));
+        logger.log(Level.FINEST, () -> String.format("Module %s deleted from year %d semester %d",
+                moduleCode, year, semester));
     }
 
     /**
@@ -147,124 +167,7 @@ public class Timetable {
                 }
             }
         }
-
         throw new ModuleNotFoundException(moduleCode, "timetable");
-    }
-
-    /**
-     * Verifies that all prerequisite requirements for a specified module are satisfied
-     * based on the modules completed up to its scheduled year and semester.
-     * <p>
-     * The method first checks whether the target module is a level-1000 module, which
-     * has no prerequisites by definition. For other modules, it determines the module's
-     * position in the timetable, collects all completed modules up to that point, and
-     * verifies whether at least one valid prerequisite combination is fully met.
-     * </p>
-     * <p>
-     * If no prerequisite combination is satisfied, a {@link PrerequisiteNotMetException}
-     * is thrown to indicate that the module's requirements have not been fulfilled.
-     * </p>
-     *
-     * @param target the module whose prerequisites are to be validated
-     * @throws PrerequisiteNotMetException if the prerequisites for the specified module
-     *                                     are not satisfied by the completed modules
-     */
-    private void checkPrerequisitesSatisfied( Module target) throws PrerequisiteNotMetException {
-        //check if module is 1k, if yes then it has no prerequisites
-        boolean isLevel1000Module = checkIsLevel1000Module(target.getCode());
-        if (isLevel1000Module){
-            return ;
-        }
-        int year;
-        int semester;
-        int[] moduleLocation; // {year, term}
-        try {
-            moduleLocation = findModuleLocation(target.getCode());
-            year = moduleLocation[0];
-            semester = moduleLocation[1];
-        }catch (ModuleNotFoundException e){
-            return; //this is not going to happen
-        }
-
-
-        List<Module> completedModules = getModulesTakenUpTo(year, semester);
-        List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
-
-        Prerequisites prereqs = target.getPrerequisites();
-        List<List<String>> prereqSets = prereqs.getPrereq();
-
-        if (prereqSets == null || prereqSets.isEmpty()) return;
-
-        boolean satisfied = prereqSets.stream().anyMatch(option ->
-                option.stream().allMatch(completedCodes::contains)
-        );
-
-        if (!satisfied) {
-            throw new PrerequisiteNotMetException(target.getCode(), prereqs.toString());
-        }
-    }
-
-    /**
-     * Checks whether deleting a specified module would cause prerequisite violations
-     * for any modules scheduled after the given year and semester.
-     * <p>
-     * The method retrieves all modules that occur after the specified term in the
-     * user's timetable and verifies that each still satisfies its prerequisite
-     * requirements after the proposed deletion. If any subsequent module would have
-     * unmet prerequisites as a result, an exception is thrown.
-     * </p>
-     *
-     * @param year the academic year of the module being deleted
-     * @param semester the semester of the module being deleted
-     * @param moduleToDelete the module planned for deletion
-     * @throws PrerequisiteNotMetException if deleting the specified module would cause
-     *                                     prerequisite violations for any later module
-     */
-    private void checkPrerequisitesSatisfiedAfterDelete (int year, int semester, Module moduleToDelete) throws PrerequisiteNotMetException{
-
-        // check whether all subsequent modules have had their prerequisites affected
-        List<Module> modulesYetToComplete = getModulesTakenAfter(year, semester);
-        for (Module module: modulesYetToComplete){
-            try {
-                checkPrerequisitesSatisfied(module);
-            } catch (PrerequisiteNotMetException e) {
-                throw e;
-            }
-        }
-    }
-
-    /**
-     * Deletes the specified module from the timetable.
-     * <p>
-     * This method locates the module in the timetable, verifies that its removal will not violate
-     * any prerequisite requirements of other modules, and removes it if all checks pass.
-     * </p>
-     * <p>
-     * If the module cannot be found or removing it would break prerequisite constraints,
-     * the method throws the corresponding exception.
-     * </p>
-     *
-     * @param moduleCode the code of the module to delete
-     * @throws ModuleNotFoundException if the specified module does not exist in the timetable
-     *                                 or an invalid index is encountered during lookup
-     * @throws PrerequisiteNotMetException if deleting the module would violate a prerequisite
-     *                                     required by another module in the timetable
-     */
-    public void deleteModule(String moduleCode) throws ModuleNotFoundException, PrerequisiteNotMetException {
-        int[] moduleLocation; // {year, term}
-        try {
-            moduleLocation = findModuleLocation(moduleCode);
-            Module retrievedModule = retrieveModule( moduleCode);
-            checkPrerequisitesSatisfiedAfterDelete(moduleLocation[0], moduleLocation[1], retrievedModule);
-            removeModule(moduleLocation[0], moduleLocation[1], moduleCode);
-        } catch (ModuleNotFoundException e) {
-            throw e;
-        }
-         catch (ArrayIndexOutOfBoundsException e) {
-            throw new ModuleNotFoundException(moduleCode, "timetable. " + MessageConstants.ARRAY_INDEX_OUT_BOUND);
-        }catch (PrerequisiteNotMetException e){
-            throw e;
-        }
     }
 
     /**
@@ -282,64 +185,47 @@ public class Timetable {
     }
 
     /**
-     * Retrieves a particular module based on its module code
-     * @param targetModuleCode
-     * @return module
-     */
-    private Module retrieveModule( String targetModuleCode) throws ModuleNotFoundException{
-        List<Module> allModules = getAllModules();
-        for (Module module: allModules){
-            if (module.getCode().equals(targetModuleCode)){
-                return module;
-            }
-        }
-        throw new ModuleNotFoundException( targetModuleCode, "your timetable") ;
-    }
-
-    /**
-     * Retrieves all modules taken up to and including a specific year and term.
+     * Retrieves modules relative to a specific year and semester.
+     * Note: This method uses 0-based indices internally.
      *
-     * @param targetYear the target year (1-based)
-     * @param targetSem  the target semester (1-based)
-     * @return a flat list of all modules taken in or before the specified term
+     * @param targetYear the target year (0-based)
+     * @param targetSem  the target semester (0-based)
+     * @param range      whether to get modules before or after the target
+     * @return a flat list of modules matching the criteria
      */
-    private List<Module> getModulesTakenUpTo(int targetYear, int targetSem) {
-        List<Module> completedModules = new ArrayList<>();
-        int targetYearIdx = targetYear;
-        int targetSemIdx = targetSem;
+    private List<Module> getModulesRelativeTo(int targetYear, int targetSem, TimeRange range) {
+        List<Module> modules = new ArrayList<>();
 
         for (int y = 0; y < AcademicConstants.NUM_YEARS; y++) {
             for (int s = 0; s < AcademicConstants.NUM_TERMS; s++) {
-                if (y < targetYearIdx || (y == targetYearIdx && s <= targetSemIdx)) {
+                boolean shouldInclude;
+
+                if (range == TimeRange.BEFORE) {
+                    // Include if (year < target) OR (same year AND semester < target)
+                    shouldInclude = (y < targetYear) || (y == targetYear && s < targetSem);
+                } else { // TimeRange.AFTER
+                    // Include if (year > target) OR (same year AND semester > target)
+                    shouldInclude = (y > targetYear) || (y == targetYear && s > targetSem);
+                }
+
+                if (shouldInclude) {
                     try {
-                        completedModules.addAll(timetable.get(y).get(s));
+                        modules.addAll(timetable.get(y).get(s));
                     } catch (IndexOutOfBoundsException e) {
                         logger.log(Level.WARNING, "Error accessing timetable slot: Y" + y + " S" + s, e);
                     }
                 }
             }
         }
-        return completedModules;
+        return modules;
     }
 
-    private List<Module> getModulesTakenAfter( int targetYear, int targetSem){
-        List<Module> modulesYetToDo = new ArrayList<>();
-        int targetYearIdx = targetYear - 1;
-        int targetSemIdx = targetSem - 1;
+    private List<Module> getModulesTakenUpTo(int targetYear, int targetSem) {
+        return getModulesRelativeTo(targetYear, targetSem, TimeRange.BEFORE);
+    }
 
-        for (int y = 0; y < AcademicConstants.NUM_YEARS; y++) {
-            for (int s = 0; s < AcademicConstants.NUM_TERMS; s++) {
-                if (y > targetYearIdx || (y == targetYearIdx && s > targetSemIdx)) {
-                    try {
-                        modulesYetToDo.addAll(timetable.get(y).get(s));
-                    } catch (IndexOutOfBoundsException e) {
-                        // Should not happen, but good to log
-                        logger.log(Level.WARNING, "Error accessing timetable slot: Y" + y + " S" + s, e);
-                    }
-                }
-            }
-        }
-        return modulesYetToDo;
+    private List<Module> getModulesTakenAfter(int targetYear, int targetSem) {
+        return getModulesRelativeTo(targetYear, targetSem, TimeRange.AFTER);
     }
 
     /**
