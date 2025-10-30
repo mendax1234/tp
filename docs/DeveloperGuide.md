@@ -5,7 +5,7 @@
     - [Model Component](#model-component)
     - [Storage Component](#storage-component)
 - [Implementation](#implementation)
-  - [Add Feature](#add-feature)
+    - [Add Feature](#add-feature)
 - [Documentation, Logging and Testing](#documentation-logging-and-testing)
 - [Appendix: Requirements](#appendix-requirements)
     - [Product Scope](#product-scope)
@@ -105,10 +105,11 @@ To maintain data integrity and readability, all data should be serialized before
     <figcaption><em>UML class diagram showing relation between UI object and Modhero.</em></figcaption>
 </figure>
 
-The UI component is responsible for all interactions between the user and the program. This includes being the point at which all user inputs are collected 
+The UI component is responsible for all interactions between the user and the program. This includes being the point at which all user inputs are collected
 and all outputs to the user are displayed through. All inputs are read by the ```readCommand``` method which trims the user output.
-The output methods included in this class are the methods to show the welcome message, bye message, and the 
-feedback for executing any given command. 
+The output methods included in this class are the methods to show the welcome message, bye message, and the
+feedback for executing any given command.
+
 #### Serialiser
 
 All data are stored in a serialised format following this convention `[content length][start delimiter][content][end delimiter]`.
@@ -167,9 +168,9 @@ This diagram illustrates the typical flow for adding a module that is *not* yet 
 #### Overview
 The ```Delete``` feature allows the user to delete a given module from the timetable while making sure
 that it doesn't affect the prerequisites for one of the other modules in the timetable. The expected arguments taken in
-by the delete command is the list of all modules the user wants to delete and the feedback to the user is a list of 
+by the delete command is the list of all modules the user wants to delete and the feedback to the user is a list of
 modules that have successfully been deleted, and a list of modules that could not be deleted and the reason behind them.
-The details about how to use the feature are in the user guide. 
+The details about how to use the feature are in the user guide.
 
 #### Sequence Diagram
 <figure align="center">
@@ -178,27 +179,27 @@ The details about how to use the feature are in the user guide.
 </figure>
 
 #### Execution Flow of the Delete Command
-1. The Delete feature is encapsulated in the `DeleteCommand` Class, which is instantiated by the parser when the user 
-inputs the delete command
-2. The Constructor for the Delete command parses the list and stores the list of modules slated to be deleted by the user. 
-If any of the module codes contain lower case letters it capitalises them so that the timetable can recognise them.
+1. The Delete feature is encapsulated in the `DeleteCommand` Class, which is instantiated by the parser when the user
+   inputs the delete command
+2. The Constructor for the Delete command parses the list and stores the list of modules slated to be deleted by the user.
+   If any of the module codes contain lower case letters it capitalises them so that the timetable can recognise them.
 3. When the `execute()` method of the `DeleteCommand` is called, command calls the internal `deleteModule` method from the `Timetable`
-object for each of the modules
+   object for each of the modules
 4. The timetable silently deletes all the specified modules and only throws an exception if the module specified does not
-exist in the timetable or is a prerequisite to another module in the timetable.
+   exist in the timetable or is a prerequisite to another module in the timetable.
 5. Modules that could not be deleted due to prerequisites or not being in the Timetable is stored in a separate list, and
-the modules that could and couldn't be deleted with their reason are turned into a string and used to instantiate a command
-which is then returned to be displayed to the user by the UI.
+   the modules that could and couldn't be deleted with their reason are turned into a string and used to instantiate a command
+   which is then returned to be displayed to the user by the UI.
 
 #### Internal Details of the `deleteModule` method of the Timetable object
 1. The `deleteModule` method takes only the module to be deleted as the input
 2. The method then calls the `findModuleLocation` method to get the year and semester in which the module is located. If
-the module does not exist in the timetable, a `ModuleNotFound` exception is thrown
+   the module does not exist in the timetable, a `ModuleNotFound` exception is thrown
 3. Then the `checkPrerequisitesSatisfiedAfterDelete` method is called to check whether the user is deleting a prerequisite
-to another module in the timetable. This method is silently executed and returns nothing. Only if it detects a module for
-which the prerequisite is being violated, it throws a PrerequisiteNotMet exception and cancels the delete operation.
-4. Given that the module exists in the timetable and deleting it does not affect another module's prerequisites, it now 
-deletes the module.
+   to another module in the timetable. This method is silently executed and returns nothing. Only if it detects a module for
+   which the prerequisite is being violated, it throws a PrerequisiteNotMet exception and cancels the delete operation.
+4. Given that the module exists in the timetable and deleting it does not affect another module's prerequisites, it now
+   deletes the module.
 
 #### Error Handling
 Error handling is centralized within the `execute()` method of `AddCommand`. A `try-catch` block wraps the entire logic.
@@ -206,6 +207,28 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 - Any `ModHeroException` (e.g., `InvalidYearOrSemException`, `ModuleNotFoundException`, `ModuleAlreadyExistsException`,`PrerequisiteNotMetException`) thrown by `Timetable` or `ModuleRetriever` is caught.
 - The exception's message (`e.getMessage()`) is used to create a new `CommandResult`, ensuring that the user receives a clean, specific error message without crashing the application.
 - A general `Exception` catch block also exists to handle any unexpected errors, logging them and returning a generic error message.
+
+### Major feature
+#### Overview
+
+#### Sequence Diagram
+The following two diagrams illustrate how modules are added to the timetable when the user declares a major.
+
+<figure align="center">
+    <img src="diagrams/majorCommand.png" alt="Major Command Sequence Diagram" />
+    <figcaption><em>Major Command Sequence Diagram</em></figcaption>
+</figure>
+
+<figure align="center">
+    <img src="diagrams/majorCommand-GetModuleFromMajorObject.png" alt="Get Module From Major Object Sequence Diagram" width="70%" />
+    <figcaption><em>Get Module From Major Object Sequence Diagram</em></figcaption>
+</figure>
+
+#### Execution flow of the Major Command
+
+#### Internal Details
+
+#### Error Handling
 
 ## Documentation, Logging and Testing
 
@@ -249,10 +272,10 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 {Give instructions on how to do manual testing, e.g., how to load sample data or verify stored files.}
 
 ### Launch and shutdown
-1. Initial launch 
-2. Download the jar file and copy into an empty folder 
-3. Double-click the jar file Expected: Shows the Command prompt terminal. 
-4. Close the window or give the `exit` command. 
+1. Initial launch
+2. Download the jar file and copy into an empty folder
+3. Double-click the jar file Expected: Shows the Command prompt terminal.
+4. Close the window or give the `exit` command.
 5. Re-launch the app by double-clicking the jar file.
 
 ### Selecting a major
