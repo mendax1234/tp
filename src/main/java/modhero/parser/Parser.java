@@ -78,12 +78,16 @@ public class Parser {
         if (args.isEmpty()) {
             return new IncorrectCommand(String.format(MessageConstants.INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
         }
-        List<String> deleteList = new ArrayList<>();
-        String[] argsList =  args.split(" ");
-        for (String arg : argsList) {
-            deleteList.add(arg);
+
+        // Trim and get the module code
+        String moduleCode = args.trim();
+
+        // Validate that it's a single module code (no spaces)
+        if (moduleCode.contains(" ")) {
+            return new IncorrectCommand("Invalid format. Delete one module at a time. Use: delete MODULE_CODE");
         }
-        return new DeleteCommand(deleteList);
+
+        return new DeleteCommand(moduleCode);
     }
 
     private Command prepareAddCommand(String args) {

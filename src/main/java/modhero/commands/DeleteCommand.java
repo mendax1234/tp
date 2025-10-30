@@ -1,114 +1,57 @@
 package modhero.commands;
 
-import modhero.exceptions.ModuleNotFoundException;
-import modhero.exceptions.PrerequisiteNotMetException;
+import modhero.exceptions.ModHeroException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
- * Represents a command that removes one or more specified modules (electives) from the user's timetable plan.
- * <p>
- * The {@code DeleteCommand} converts all given module codes to uppercase to ensure consistency and attempts
- * to delete each from the current timetable. It reports which deletions succeeded, which modules were not found,
- * and which deletions were blocked due to prerequisite violations.
- * </p>
+ * Represents a command that removes a specified module from the user's timetable plan.
  */
 public class DeleteCommand extends Command {
     public static final Logger logger = Logger.getLogger(DeleteCommand.class.getName());
 
     public static final String COMMAND_WORD = "delete";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Deletes the person identified by the index number used in the last person listing.\n"
-            + "  Parameters: MODULE_CODE ...\n"
-            + "  Example: " + COMMAND_WORD + " CS2109S"
-            + "  Example: " + COMMAND_WORD + " CS2109S CS3230 CS3219";
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Deletes a module from your timetable.\n"
+            + "  Parameters: MODULE_CODE\n"
+            + "  Example: " + COMMAND_WORD + " CS2109S";
 
-    private final List<String> toDelete;
+    private final String moduleCode;
 
     /**
-     * Constructs a {@code DeleteCommand} with the list of module codes to delete.
-     * <p>
-     * All module codes are converted to uppercase for consistency before execution.
-     * </p>
+     * Constructs a {@code DeleteCommand} with the module code to delete.
      *
-     * @param toDelete the list of module codes to delete
+     * @param moduleCode the module code to delete
      */
-    public DeleteCommand(List<String> toDelete) {
-        ArrayList<String> toDeleteUpperCase = new ArrayList<String>();
-        for (String module: toDelete){
-            module = module.toUpperCase();
-            toDeleteUpperCase.add(module);
-        }
-        this.toDelete = toDeleteUpperCase;
-        logger.log(Level.FINEST, "Create delete electives: " + toDelete.toString());
+    public DeleteCommand(String moduleCode) {
+        this.moduleCode = moduleCode.toUpperCase();
+        logger.log(Level.FINEST, "Create delete command: " + this.moduleCode);
     }
-
 
     /**
      * Executes the delete command.
-     * <p>
-     * For each module code specified, the method attempts to delete it from the timetable.
-     * It tracks and reports:
-     * <ul>
-     *   <li>Modules successfully deleted</li>
-     *   <li>Modules not found in the timetable</li>
-     *   <li>Modules that cannot be deleted because doing so would violate prerequisites</li>
-     * </ul>
-     * If no modules are specified, an appropriate error message is returned.
-     * </p>
      *
      * @return a {@code CommandResult} summarizing the outcome of the delete operation
      */
     @Override
     public CommandResult execute() {
-        if (toDelete == null || toDelete.isEmpty()){
-            //handle exception
+        if (moduleCode == null || moduleCode.isEmpty()) {
             return new CommandResult("No module specified to delete");
         }
-        ArrayList<String> modulesSucessfullyDeleted = new ArrayList<>();
-        ArrayList<String> modulesNotInTimetable = new ArrayList<>();
-        ArrayList<String> prerequisiteViolations = new ArrayList<>();
-        for (String module: toDelete ){
-            try{
-                timetable.deleteModule(module);
-                modulesSucessfullyDeleted.add(module);
-            } catch (ModuleNotFoundException e) {
-                String moduleCodeNotFound = e.getModuleCode();
-                modulesNotInTimetable.add(moduleCodeNotFound);
-            } catch (PrerequisiteNotMetException e){
-               prerequisiteViolations.add(" { " + e.getRequisites() + " }");
-            }
-        }
 
-        String message = "";
-        if ( ! modulesSucessfullyDeleted.isEmpty()){
-            message = " Successfully deleted : ";
-            for ( String module: modulesSucessfullyDeleted){
-                message = message + module + " ,";
-            }
-            message = message.substring(0, message.length() - 1) + "\n";
-        }
+        try {
+            logger.log(Level.INFO, () -> String.format("Attempting to delete module: %s", moduleCode));
 
-        if (! modulesNotInTimetable.isEmpty()){
-               message = message + "The following modules were not found in timetable: ";
-            for ( String module: modulesNotInTimetable){
-                message = message + module + " ,";
-            }
-            message = message.substring(0, message.length() - 1) + "\n";
-        }
+            timetable.deleteModule(moduleCode);
 
-        if (!prerequisiteViolations.isEmpty()){
-            message = message + "The following modules could not be deleted as that would violate the " +
-                    "preRequisites for the following modules:";
-            for ( String violation: prerequisiteViolations){
-                message = message + violation ;
-            }
-        }
+            return new CommandResult(String.format("%s deleted successfully!", moduleCode));
 
-        return new CommandResult(message);
+        } catch (ModHeroException e) {
+            return new CommandResult(e.getMessage());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected error while deleting module", e);
+            return new CommandResult("An unexpected error occurred: " + e.getMessage());
+        }
     }
 }

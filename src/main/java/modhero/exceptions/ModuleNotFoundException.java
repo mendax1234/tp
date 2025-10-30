@@ -11,7 +11,6 @@ package modhero.exceptions;
  * @author sivanshno
  */
 public class ModuleNotFoundException extends ModHeroException {
-    private String moduleCode;
     /**
      * Constructs a new ModuleNotFoundException with a detailed error message
      * @param moduleCode  The module that could not be found
@@ -19,16 +18,6 @@ public class ModuleNotFoundException extends ModHeroException {
      * the module was expected but not found (e.g., "module list", "database").
      */
     public ModuleNotFoundException(String moduleCode, String message) {
-        super("OOPS!!!" + moduleCode + "is not found in " + message);
-        this.moduleCode = moduleCode;
-    }
-
-    /**
-     * Returns the code of the module that could not be found.
-     *
-     * @return the missing module’s code
-     */
-    public String getModuleCode() {
-        return moduleCode;
+        super("OOPS!!! " + moduleCode + " is not found in " + message);
     }
 }

@@ -1,7 +1,7 @@
 package modhero.common.util;
 
 import modhero.data.modules.Prerequisites;
-import modhero.exceptions.PrerequisiteNotMetException;
+import modhero.exceptions.ModuleAdditionBlockedException;
 import java.util.List;
 
 public final class PrerequisiteUtil {
@@ -32,13 +32,13 @@ public final class PrerequisiteUtil {
     }
 
     public static void validatePrerequisites(String moduleCode, Prerequisites prereqs, List<String> completedCodes)
-            throws PrerequisiteNotMetException {
+            throws ModuleAdditionBlockedException {
         if (isLevel1000Module(moduleCode)) return;
         if (prereqs == null || prereqs.getPrereq() == null || prereqs.getPrereq().isEmpty()) return;
 
         boolean satisfied = arePrerequisitesMet(prereqs.getPrereq(), completedCodes);
         if (!satisfied) {
-            throw new PrerequisiteNotMetException(moduleCode, prereqs.toString());
+            throw new ModuleAdditionBlockedException(moduleCode, prereqs.toString());
         }
     }
 }
