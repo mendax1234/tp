@@ -245,6 +245,77 @@ ModHero simplifies and safeguards the process of academic planning for NUS stude
 | v2.0 | NUS student | load my saved timetable | restore my plan without re-entering all modules |
 
 ### Use Cases
+(For all use cases below, the System is ModHero and the Actor is the user, unless otherwise specified.)
+
+#### Use Case: Add a Module
+MSS
+1. User enters a command to add a module (e.g. add CS1010 to Y1S1).
+2. ModHero checks if the module exists in the database.
+3. ModHero verifies that all prerequisites for the module are satisfied.
+4. ModHero adds the module to the specified year and semester in the timetable.
+5. ModHero confirms the successful addition with a message to the user.
+
+Extensions
+2a. Module does not exist in the database.
+2a1. ModHero fetches the module from the NUSMODS API. 
+2a2. If still not found, ModHero displays: “Module not found. Please check the module code.”
+
+3a. Prerequisites are not satisfied.
+3a1. ModHero displays: “Cannot add CS2113 — prerequisites not met.”
+
+4a. The module already exists in the timetable.
+4a1. ModHero displays: “Module already exists in your timetable.”
+
+#### Use Case: Delete a Module
+
+MSS
+1. User enters a command to delete a module (e.g. delete CS1010).
+2. ModHero checks if the module exists in the timetable.
+3. ModHero verifies that deleting the module does not violate any prerequisite dependencies.
+4. ModHero deletes the module.
+5. ModHero displays a confirmation message.
+
+Extensions
+2a. Module not found in timetable.
+2a1. ModHero displays: “No such module found in timetable.”
+
+3a. Module is a prerequisite for another module.
+3a1. ModHero displays: “Cannot delete CS1010 — required for CS2040C.”
+
+#### Use Case: Declare Major
+
+MSS
+1. User enters a command to declare a major (e.g. major cs).
+2. ModHero retrieves the matching Major object from storage.
+3. ModHero loads all core modules associated with that major.
+4. Timetable is cleared and replaced with the new major’s core modules.
+5. ModHero displays: “Timetable cleared! Major set to Computer Science.”
+
+Extensions
+2a. Unsupported or invalid major entered.
+2a1. ModHero displays: “Sorry, this major is not supported. Try 'CS' or 'CEG'.”
+
+#### Use Case: View Timetable
+
+MSS
+1. User enters the command schedule.
+2. ModHero generates and displays the full 4-year timetable.
+3. The timetable shows all modules organised by year and semester.
+
+Extensions
+1a. No modules have been added.
+1a1. ModHero displays: “No modules in timetable yet. Use 'add' to begin planning.”
+
+#### Use Case: Save and Load Timetable
+
+MSS
+1. ModHero automatically saves the timetable after each change (add, delete, or major).
+2. When ModHero restarts, it automatically loads the last saved timetable.
+3. The user resumes from the same state as the previous session.
+
+Extensions
+2a. Saved file is missing or corrupted.
+2a1. ModHero displays: “Data file corrupted. Starting with an empty timetable.”
 
 ### Non-Functional Requirements
 
