@@ -44,7 +44,7 @@ public class MajorStorage extends Storage{
         logger.log(Level.FINEST, "Loading all major data");
 
 
-        List<String> rawMajorsList = loadFromTextFile();
+        List<String> rawMajorsList = loadFromJarTextFile();
 
         for (String aa : rawMajorsList) {
             List<String> majorTop = DeserialisationUtil.deserialiseMessage(aa);

@@ -1,9 +1,12 @@
 package modhero.storage;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -62,6 +65,27 @@ public abstract class Storage {
             writeToFile(textToAdd);
         } catch (IOException e) {
             logger.log(Level.WARNING, "Failed to save file" + e);
+        }
+    }
+
+    public List<String> loadFromJarTextFile() {
+        try {
+            logger.log(Level.FINEST, "Reading in jar directory: " + filePath);
+            List<String> lines = new ArrayList<>();
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
+            if (inputStream != null) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        lines.add(line);
+                    }
+                }
+                return lines;
+            }
+            return new ArrayList<>();
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Failed to load text file in jar, " + e);
+            return new ArrayList<>();
         }
     }
 

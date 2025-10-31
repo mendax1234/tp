@@ -46,7 +46,7 @@ public abstract class Command {
                 allModulesData.size(),
                 allMajorsData.size()));
         logger.log(Level.FINEST, () -> String.format(
-                "%s%nModules: %s%nMajors: %s",
+                "Modules: %s Majors: %s",
                 allModulesData.keySet(),
                 allMajorsData.keySet()
         ));

@@ -38,7 +38,7 @@ public class ModuleStorage extends Storage{
         assert allModulesData != null : "loadAllModulesData allModulesData must not be null";
         logger.log(Level.FINEST, "Loading all modules data");
 
-        List<String> rawModulesList = loadFromTextFile();
+        List<String> rawModulesList = loadFromJarTextFile();
         List<List<String>> allModulesList = DeserialisationUtil.deserialiseList(rawModulesList);
 
         for (List<String> moduleArgs : allModulesList) {
