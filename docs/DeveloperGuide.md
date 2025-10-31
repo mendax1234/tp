@@ -6,6 +6,7 @@
     - [Storage Component](#storage-component)
 - [Implementation](#implementation)
     - [Add Feature](#add-feature)
+    - [Major Feature](#major-feature)
 - [Documentation, Logging and Testing](#documentation-logging-and-testing)
 - [Appendix: Requirements](#appendix-requirements)
     - [Product Scope](#product-scope)
@@ -127,7 +128,7 @@ This section describes some noteworthy details on how certain features are imple
 ### Add Feature
 
 #### Overview
-The `add` feature allows users to add a module to their timetable in a specific year and semester. (For the usage, please go to our [User Guide](UserGuide.md) for more information) The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModulesData` or the NUSMODS API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
+The `add` feature allows users to add a module to their timetable in a specific year and semester.  The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModulesData` or the NUSMODS API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
 
 #### Key Components
 - **`AddCommand.java`**: The command class that parses the user's intent. Its `execute()` method orchestrates the entire "add" operation.
@@ -141,17 +142,6 @@ This diagram illustrates the typical flow for adding a module that is *not* yet 
 <figure align="center">
     <img src="diagrams/addCommand.png" alt="Add Command Sequence Diagram" />
     <figcaption><em>Add Command Sequence Diagram</em></figcaption>
-</figure>
-
-The following two diagrams illustrate how modules are added to the timetable when the user declares a major.
-
-<figure align="center">
-    <img src="diagrams/majorCommand.png" alt="Major Command Sequence Diagram" />
-    <figcaption><em>Major Command Sequence Diagram</em></figcaption>
-</figure>
-<figure align="center">
-    <img src="diagrams/majorCommand-GetModuleFromMajorObject.png" alt="Get Module From Major Object Sequence Diagram" width="70%" />
-    <figcaption><em>Get Module From Major Object Sequence Diagram</em></figcaption>
 </figure>
 
 
@@ -222,6 +212,7 @@ Error handling is centralized within the `execute()` method of `AddCommand`. A `
 
 ### Major feature
 #### Overview
+The Major feature allows users to declare their university major (e.g. Computer Science or Computer Engineering) using the major command.
 
 #### Sequence Diagram
 The following two diagrams illustrate how modules are added to the timetable when the user declares a major.
@@ -237,10 +228,18 @@ The following two diagrams illustrate how modules are added to the timetable whe
 </figure>
 
 #### Execution flow of the Major Command
+1. The user types a command such as major cs.
+2. Parser identifies the command word major and creates a MajorCommand object with the argument "cs".
+3. When execute() is called, the MajorCommand retrieves the matching Major object from the pre-loaded hashmap in Storage.
+4. The command clears the current core module list (if any) and fills it with the modules listed in the Major object.
+5. UI then displays “Timetable cleared! Major set to (major)."
 
 #### Internal Details
+- We only allow users to declare their major as CS or CEG because the prerequisites for the other majors are not included in our major.txt preloaded data file.
+- You can update major.txt to add a new major. (For the serialised data format, please go to the [Serialiser](#serialiser) section for the details)
 
 #### Error Handling
+- If the user provides an invalid or unknown major short code (e.g. major ISE), the program returns an error message: "Sorry, [major] is not supported. Try 'CS' or 'CEG'."
 
 ## Documentation, Logging and Testing
 
@@ -249,10 +248,20 @@ The following two diagrams illustrate how modules are added to the timetable whe
 ### Product Scope
 
 #### Target User Profile
-{Describe the target user profile.}
+ModHero is designed for NUS undergraduate students who:
+- Are pursuing Computer Science (CS) or Computer Engineering (CEG) degrees.
+- Want to plan and visualise their academic journey over the 4-year duration.
+- Prefer using a command-line interface (CLI) for speed and minimal distraction.
+- Value automation, accuracy, and clarity when planning modules and checking prerequisites.
+- Are comfortable navigating structured text-based outputs instead of GUI-heavy planners.
 
 #### Value Proposition
-{Describe the value proposition: what problem does it solve?}
+ModHero simplifies and safeguards the process of academic planning for NUS students by:
+- Automatically loading core and elective modules based on the declared major.
+- Enforcing prerequisite validation when adding modules to prevent invalid study plans.
+- Providing a clear 4-year semester overview, allowing students to visualise module distribution and workload balance.
+- Detecting invalid or duplicate module entries before they cause conflicts.
+- Offering a lightweight, offline, and fast solution that stores all data locally for continued access without internet dependence.
 
 ### User Stories
 
@@ -270,10 +279,148 @@ The following two diagrams illustrate how modules are added to the timetable whe
 | v2.0 | NUS student | load my saved timetable | restore my plan without re-entering all modules |
 
 ### Use Cases
+(For all use cases below, the System is ModHero and the Actor is the user, unless otherwise specified.)
+
+#### Use Case: Add a Module
+MSS
+1. User enters a command to add a module (e.g. add CS1010 to Y1S1).
+2. ModHero checks if the module exists in the database.
+3. ModHero verifies that all prerequisites for the module are satisfied.
+4. ModHero adds the module to the specified year and semester in the timetable.
+5. ModHero confirms the successful addition with a message to the user.
+
+Extensions
+2a. Module does not exist in the database.
+2a1. ModHero fetches the module from the NUSMODS API. 
+2a2. If still not found, ModHero displays: “Module not found. Please check the module code.”
+
+3a. Prerequisites are not satisfied.
+3a1. ModHero displays: “Cannot add CS2113 — prerequisites not met.”
+
+4a. The module already exists in the timetable.
+4a1. ModHero displays: “Module already exists in your timetable.”
+
+#### Use Case: Delete a Module
+
+MSS
+1. User enters a command to delete a module (e.g. delete CS1010).
+2. ModHero checks if the module exists in the timetable.
+3. ModHero verifies that deleting the module does not violate any prerequisite dependencies.
+4. ModHero deletes the module.
+5. ModHero displays a confirmation message.
+
+Extensions
+2a. Module not found in timetable.
+2a1. ModHero displays: “No such module found in timetable.”
+
+3a. Module is a prerequisite for another module.
+3a1. ModHero displays: “Cannot delete CS1010 — required for CS2040C.”
+
+#### Use Case: Declare Major
+
+MSS
+1. User enters a command to declare a major (e.g. major cs).
+2. ModHero retrieves the matching Major object from storage.
+3. ModHero loads all core modules associated with that major.
+4. Timetable is cleared and replaced with the new major’s core modules.
+5. ModHero displays: “Timetable cleared! Major set to Computer Science.”
+
+Extensions
+2a. Unsupported or invalid major entered.
+2a1. ModHero displays: “Sorry, this major is not supported. Try 'CS' or 'CEG'.”
+
+#### Use Case: View Timetable
+
+MSS
+1. User enters the command schedule.
+2. ModHero generates and displays the full 4-year timetable.
+3. The timetable shows all modules organised by year and semester.
+
+Extensions
+1a. No modules have been added.
+1a1. ModHero displays: “No modules in timetable yet. Use 'add' to begin planning.”
+
+#### Use Case: Save and Load Timetable
+
+MSS
+1. ModHero automatically saves the timetable after each change (add, delete, or major).
+2. When ModHero restarts, it automatically loads the last saved timetable.
+3. The user resumes from the same state as the previous session.
+
+Extensions
+2a. Saved file is missing or corrupted.
+2a1. ModHero displays: “Data file corrupted. Starting with an empty timetable.”
 
 ### Non-Functional Requirements
 
-{Give non-functional requirements.}
+Non-Functional Requirements
+1. Performance
+
+- ModHero should respond to user commands within 1 second under normal usage.
+
+- The system should handle up to 500 modules and 10,000 prerequisite links without noticeable delay.
+
+- File read/write operations (saving and loading) should complete within 2 seconds.
+
+2. Reliability
+
+- Data should be automatically saved after every major operation (e.g. add, delete, major).
+
+- The system must detect and recover gracefully from corrupted or missing data files by showing a clear error message and loading a clean state. 
+
+- All deserialization processes must validate file structure before parsing to prevent data loss.
+
+3. Compatibility
+
+- ModHero must run on any operating system with Java 17 or higher installed.
+
+- It should work consistently across Windows, macOS, and Linux.
+
+4. Usability
+
+- Commands should follow a consistent command ARGUMENTS syntax.
+
+- Error messages must clearly explain what went wrong and how to fix it.
+
+- The CLI output should be formatted using monospaced alignment to improve timetable readability.
+
+5. Maintainability
+
+- The codebase must remain modular — each component (UI, Logic, Model, Storage) should be independently testable.
+
+- Logging should use Java’s built-in java.util.logging framework with appropriate levels (INFO, WARNING, SEVERE).
+
+- All public classes and methods must include concise Javadoc comments describing their purpose and behavior.
+
+6. Extensibility
+
+- New commands or data types should be implementable without modifying core logic, following the Command pattern.
+
+- The modular architecture should allow easy integration of new features such as undo, export, or recommend.
+
+7. Security
+
+- File operations should be restricted to ModHero’s working directory to prevent unauthorized access.
+
+- Deserialization must reject malformed or unexpected input to ensure application safety.
+
+8. Portability
+
+- The application must be distributable as a single standalone .jar file with no external dependencies.
+
+- All file paths should be relative, ensuring consistent behavior across machines.
+
+9. Scalability
+
+- The data model should support adding new majors, module types, or academic structures without restructuring the architecture.
+
+- The storage format should remain human-readable and backward-compatible with future versions.
+
+10. Testing Coverage
+
+- Each component should achieve at least 80% unit test coverage.
+
+- Core features (Add, Delete, Major, Schedule) must include both valid and invalid JUnit test cases.
 
 ### Glossary
 
