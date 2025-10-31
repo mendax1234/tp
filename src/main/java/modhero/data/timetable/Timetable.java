@@ -127,7 +127,7 @@ public class Timetable {
 
         // Simulate what completed modules would be if we delete this module
         // Include the current semester here
-        List<Module> completedModules = getModulesTakenUpTo(year, semester + 1);
+        List<Module> completedModules = getAllModules();
         completedModules.removeIf(m -> m.getCode().equals(moduleCode));
         List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
 
