@@ -6,9 +6,8 @@ import modhero.data.modules.Module;
 import modhero.storage.MajorStorage;
 import modhero.storage.ModuleStorage;
 import modhero.data.timetable.Timetable;
-import modhero.storage.TimetableStorage;
+import modhero.storage.SaveStorage;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,9 +50,12 @@ public class DataManager {
             moduleStorage.load(allModulesData);
             majorStorage.load(allModulesData, allMajorsData);
             logger.log(Level.INFO, "Data loaded successfully");
-            TimetableStorage timetableStorage = new TimetableStorage(timetablePath);
-            timetableStorage.load(timetable, allModulesData, exemptedModules);
+            SaveStorage saveStorage = new SaveStorage(timetablePath);
+            saveStorage.setLoadData(allModulesData, exemptedModules);
+            saveStorage.load(timetable);
         } catch (CorruptedDataFileException e) {
+            timetable.clearTimetable();
+            exemptedModules.clear();
             logger.log(Level.SEVERE, "Data file is corrupted", e);
         }
     }

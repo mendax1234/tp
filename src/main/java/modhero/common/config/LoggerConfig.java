@@ -1,15 +1,22 @@
 package modhero.common.config;
 
 import modhero.ModHero;
-import modhero.commands.*;
+import modhero.commands.ClearCommand;
+import modhero.commands.Command;
+import modhero.commands.DeleteCommand;
+import modhero.commands.ExitCommand;
+import modhero.commands.HelpCommand;
+import modhero.commands.MajorCommand;
+import modhero.commands.ScheduleCommand;
+import modhero.data.DataManager;
 import modhero.data.major.Major;
 import modhero.data.modules.Module;
 import modhero.data.modules.ModuleList;
-import modhero.parser.Parser;
 import modhero.data.timetable.Timetable;
+import modhero.parser.Parser;
 import modhero.storage.MajorStorage;
 import modhero.storage.ModuleStorage;
-import modhero.storage.TimetableStorage;
+import modhero.storage.SaveStorage;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,13 +41,14 @@ public class LoggerConfig {
         setLoggerLevel(ClearCommand.class, level);
         setLoggerLevel(HelpCommand.class, level);
         setLoggerLevel(ExitCommand.class, level);
+        setLoggerLevel(DataManager.class, level);
         setLoggerLevel(Major.class, level);
         setLoggerLevel(Module.class, level);
         setLoggerLevel(ModuleList.class, level);
         setLoggerLevel(Timetable.class, level);
         setLoggerLevel(MajorStorage.class, level);
         setLoggerLevel(ModuleStorage.class, level);
-        setLoggerLevel(TimetableStorage.class, level);
+        setLoggerLevel(SaveStorage.class, level);
     }
 
     private static void setLoggerLevel(Class<?> clazz, Level level) {
