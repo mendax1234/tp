@@ -38,7 +38,7 @@ public class ModHero {
      * starting the command loop, and performing cleanup.
      */
     public void run() {
-        LoggerConfig.configureLoggers(Level.WARNING);
+        LoggerConfig.configureLoggers(Level.OFF);
         logger.log(Level.INFO, "Starting ModHero");
         start();
         runCommandLoopUntilExitCommand();

@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class ModuleStorage extends Storage{
     private static final Logger logger = Logger.getLogger(ModuleStorage.class.getName());
-    private static final int EXPECTED_MODULE_ARGS = 5;
+    private static final int EXPECTED_MODULE_ARGS = 6;
 
     /**
      * Constructs a ModuleStorage with the specified file path.
@@ -38,7 +38,7 @@ public class ModuleStorage extends Storage{
         assert allModulesData != null : "loadAllModulesData allModulesData must not be null";
         logger.log(Level.FINEST, "Loading all modules data");
 
-        List<String> rawModulesList = loadFromTextFile();
+        List<String> rawModulesList = loadFromJarTextFile();
         List<List<String>> allModulesList = DeserialisationUtil.deserialiseList(rawModulesList);
 
         for (List<String> moduleArgs : allModulesList) {
@@ -72,8 +72,9 @@ public class ModuleStorage extends Storage{
         String name = moduleArgs.get(1);
         int credits = Integer.parseInt(moduleArgs.get(2));
         String description = moduleArgs.get(3);
-        Prerequisites prerequisites = parsePrerequisites(moduleArgs.get(4));
-        return new Module(code, name, credits, description, prerequisites);
+        String preclusion = moduleArgs.get(4);
+        Prerequisites prerequisites = parsePrerequisites(moduleArgs.get(5));
+        return new Module(code, name, credits, description, preclusion, prerequisites);
     }
 
     /**

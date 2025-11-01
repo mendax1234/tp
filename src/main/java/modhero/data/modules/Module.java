@@ -17,6 +17,7 @@ public class Module {
     private String name;    // e.g. Software Engineering
     private int mc;         // e.g. modular credits
     private String type;    // e.g. core, elective, etc.
+    private String preclude;    // e.g. core, elective, etc.
     private Prerequisites prerequisites; // e.g. ["CS1010", "CS1231"]
 
     /**
@@ -26,18 +27,21 @@ public class Module {
      * @param name the module name
      * @param mc the number of modular credits
      * @param type the module type (e.g., core, elective)
+     * @param preclude the string of preclude module codes
      * @param prerequisites the object of prerequisite module codes
      */
-    public Module(String code, String name, int mc, String type, Prerequisites prerequisites) {
+    public Module(String code, String name, int mc, String type, String preclude, Prerequisites prerequisites) {
         assert code != null && !code.isEmpty() : "Module code must not be empty";
         assert name != null && !name.isEmpty() : "Module name must not be empty";
         assert type != null && !type.isEmpty() : "Module type must not be empty";
+        assert preclude != null && !preclude.isEmpty() : "Module type must not be empty";
         assert prerequisites != null : "Prerequisites list must not be null";
 
         this.code = code;
         this.name = name;
         this.mc = mc;
         this.type = type;
+        this.preclude = preclude;
         this.prerequisites = prerequisites;
 
         logger.log(Level.FINEST, "Module created: " + name + " (" + code + ")");
@@ -63,6 +67,11 @@ public class Module {
         return type;
     }
 
+    /** @return the string of preclusion module codes */
+    public String getPreclude() {
+        return preclude;
+    }
+
     /** @return the list of prerequisite module codes */
     public Prerequisites getPrerequisites() {
         return prerequisites;
@@ -76,12 +85,12 @@ public class Module {
     public String toFormatedString() {
         logger.log(Level.FINEST, "Serialising module: " + code);
 
-        SerialisationUtil serialisationUtil = new SerialisationUtil();
-        String formattedString = serialisationUtil.serialiseMessage(code)
-                + serialisationUtil.serialiseMessage(name)
-                + serialisationUtil.serialiseMessage(Integer.toString(mc))
-                + serialisationUtil.serialiseMessage(type)
-                + serialisationUtil.serialiseMessage(prerequisites.toFormatedString());
+        String formattedString = SerialisationUtil.serialiseMessage(code)
+                + SerialisationUtil.serialiseMessage(name)
+                + SerialisationUtil.serialiseMessage(Integer.toString(mc))
+                + SerialisationUtil.serialiseMessage(type)
+                + SerialisationUtil.serialiseMessage(preclude)
+                + SerialisationUtil.serialiseMessage(prerequisites.toFormatedString());
 
         logger.log(Level.FINEST, "Successful serialising module: " + code);
         return formattedString;

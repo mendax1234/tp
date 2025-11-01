@@ -18,6 +18,7 @@ public class ModuleParser {
     public static final String CODE = "moduleCode";
     public static final String NAME = "title";
     public static final String MC = "moduleCredit";
+    public static final String PRECLUDE = "preclusionRule";
     public static final String PREREQ = "prereqTree";
     private static final int MAX_MC = 20;
 
@@ -36,11 +37,12 @@ public class ModuleParser {
         String code = JsonUtil.getArg(json, CODE);
         String name = JsonUtil.getArg(json, NAME);
         String mc = JsonUtil.getArg(json, MC);
+        String preclude = JsonUtil.getArg(json, PRECLUDE);
         String prereq = JsonUtil.getArg(json, PREREQ);
 
         if (!isValidRawData(code, name, mc)) {
             logger.log(Level.WARNING, () ->
-                    String.format("Module retrieved contains null %s, %s, %s, %s", code, name, mc, prereq)
+                    String.format("Module retrieved contains null %s, %s, %s", code, name, mc)
             );
             return null;
         }
@@ -51,13 +53,17 @@ public class ModuleParser {
             return null;
         }
 
+        if (preclude == null) {
+            preclude = "";
+        }
+
         Prerequisites parsedPrereqObj = new Prerequisites();
         if (prereq != null) {
             List<List<String>> parsedPrereq = parsePrereq(prereq);
             parsedPrereqObj = new Prerequisites(parsedPrereq);
         }
 
-        return new Module(code, name, parsedMc, "core", parsedPrereqObj);
+        return new Module(code, name, parsedMc, "core", preclude, parsedPrereqObj);
     }
 
     /**

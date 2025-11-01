@@ -67,6 +67,7 @@ public class MajorCommand extends Command {
 
         //clear the timetable to prevent clashes when user redeclares major
         timetable.clearTimetable();
+        exemptedModules.clear();
 
         //add all modules from the selected major into the timetable
             for (TimetableData mm : majorObject.getMajorModules()) {

@@ -70,12 +70,14 @@ public class DataGenerator {
                 String moduleCode = code;
                 String moduleName;
                 String moduleMc;
+                String preclude;
                 String serialisedPrereqsBlob;
 
                 if (json == null) {
                     System.err.println("Failed to fetch data for " + code + ": null response. Using dummy data.");
                     moduleName = code;
                     moduleMc = "4";
+                    preclude = "";
                     serialisedPrereqsBlob = serializePrereqList(new ArrayList<>()); // Empty prerequisites
                 } else {
                     Module module = parser.parseModule(json);
@@ -84,10 +86,12 @@ public class DataGenerator {
                         System.err.println("ModuleParser failed to parse " + code + ". Using dummy data.");
                         moduleName = code;
                         moduleMc = "4";
+                        preclude = "";
                         serialisedPrereqsBlob = serializePrereqList(new ArrayList<>());
                     } else {
                         moduleName = module.getName();
                         moduleMc = String.valueOf(module.getMc());
+                        preclude = module.getPreclude();
                         Prerequisites prereqs = module.getPrerequisites();
 
                         // Get the prerequisite combinations from the Prerequisites object
@@ -103,6 +107,7 @@ public class DataGenerator {
                         + SerialisationUtil.serialiseMessage(moduleName)
                         + SerialisationUtil.serialiseMessage(moduleMc)
                         + SerialisationUtil.serialiseMessage(desc)
+                        + SerialisationUtil.serialiseMessage(preclude)
                         + SerialisationUtil.serialiseMessage(serialisedPrereqsBlob);
 
                 fileContent.append(line).append(System.lineSeparator());
