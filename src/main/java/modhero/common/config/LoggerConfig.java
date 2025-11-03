@@ -1,6 +1,7 @@
 package modhero.common.config;
 
 import modhero.ModHero;
+import modhero.commands.AddCommand;
 import modhero.commands.ClearCommand;
 import modhero.commands.Command;
 import modhero.commands.DeleteCommand;
@@ -42,6 +43,7 @@ public class LoggerConfig {
         setLoggerLevel(Parser.class, level);
         setLoggerLevel(Command.class, level);
         setLoggerLevel(MajorCommand.class, level);
+        setLoggerLevel(AddCommand.class, level);
         setLoggerLevel(DeleteCommand.class, level);
         setLoggerLevel(ScheduleCommand.class, level);
         setLoggerLevel(ClearCommand.class, level);

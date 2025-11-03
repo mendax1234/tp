@@ -59,11 +59,11 @@ public class AddCommand extends Command {
                 module = moduleRetriever.getModule(AcademicConstants.ACAD_YEAR, moduleCode);
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Failed to fetch module from API", e);
-                throw new ModuleNotFoundException(moduleCode, "NUSMODS");
+                throw new ModuleNotFoundException(moduleCode, "NUSMODS\nPlease ensure you are connected to the internet and provide valid module code");
             }
             // In case ModuleRetreiver return null without an Exception
             if (module == null) {
-                throw new ModuleNotFoundException(moduleCode, "NUSMODS");
+                throw new ModuleNotFoundException(moduleCode, "NUSMODS\nPlease ensure you are connected to the internet and provide valid module code");
             }
             allModulesData.put(module.getCode(), module);
         }

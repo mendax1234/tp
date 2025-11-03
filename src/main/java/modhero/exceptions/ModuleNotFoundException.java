@@ -18,6 +18,6 @@ public class ModuleNotFoundException extends ModHeroException {
      * the module was expected but not found (e.g., "module list", "database").
      */
     public ModuleNotFoundException(String moduleCode, String message) {
-        super("OOPS!!! " + moduleCode + " is not found in " + message);
+        super("This " + moduleCode + " cannot be found in the " + message);
     }
 }

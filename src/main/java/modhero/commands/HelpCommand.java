@@ -12,7 +12,7 @@ public class HelpCommand extends Command {
 
     public static final String COMMAND_WORD = "help";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Exits the program.\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Display list of available commands.\n"
             + "  Example: " + COMMAND_WORD;
 
     @Override
