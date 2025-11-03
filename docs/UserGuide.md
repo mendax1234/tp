@@ -29,14 +29,14 @@ It helps you build and adapt your 4-year course roadmap more efficiently than tr
    cd path/to/folder
    java -jar modhero.jar
    ```
-5. A GUI should appear after a few seconds, with some sample data preloaded.
+5. A CLI interface should appear after a few seconds, with some sample data preloaded.
 6. Type a command in the **command box** and press **Enter** to execute.
 
    **Examples:**
    ```bash
    help
    major CEG
-   generate
+   schedule
    add CS2113 to Y1S1
    delete CS2113
    clear
@@ -84,6 +84,7 @@ help
 
 ### Specifying Your Major: `major`
 Defines your primary degree major, which ModHero uses to load graduation requirements.
+Currently, the supported majors are CEG and CS.
 
 **Format:**
 ```
@@ -131,28 +132,28 @@ If any of these checks fail, ModHero will display an error message explaining th
 > Currently, our modhero doesn't support check if the mod you add is mutually exclusive to any of the existing module.
 
 ### Deleting an Elective: `delete`
-Removes one or more electives from your plan.
+Removes one module from your plan.
 
 #### Format:
-Specify modules you want to delete with a space between them, letters can be both upper and lower case
+Specify module you want to delete, letters can be both upper and lower case
 ```
-delete MODULE_CODE1 MODULE_CODE2 ...
+delete MODULE_CODE1
 ```
 
 **Examples:**
 ```
-delete CS2109S CS2040C
+delete CS2109S 
 ```
 #### Expected output
 1.  If all module codes are valid and deleting those modules does not affect any prerequisites only the list of sucessfully
     deleted modules will be output:
     ```
-    Successfully deleted : CS2113, CS2100
+    CS1010 deleted successfully!
     ```
 
 2.  If there are invalid module codes, the following will be added to the output:
     ```
-    The following modules were not found in timetable: CS6767, COM420 
+    Cannot delete CS1010 as it is a prerequisite for CS2040C
     ```
 
 3.  If deleting any modules would violate another module's prerequisites, the affected module will be output along with its
