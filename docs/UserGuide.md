@@ -215,14 +215,14 @@ ModHero stores your degree plan in:
 
 ## Command Summary
 
-| Action       | Format / Examples                                                                                                                               |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Major**    | `major MAJOR_NAME [specialisation SPECIALISATION] [minor MINOR_NAME]`<br>_e.g._ `major Computer Science specialisation Artificial Intelligence` |
-| **Add**      | `add MODULE_CODE to YxSy`<br>_e.g._ `add CS2109S to Y1S1`                                                                                       |
-| **Delete**   | `delete MODULE_CODE ...`<br>_e.g._ `delete CS2109S`                                                                                             |
-| **Schedule** | `schedule`                                                                                                                                      |
-| **Clear**    | `clear`                                                                                                                                         |a
-| **Help**     | `help`                                                                                                                                          |
+| Action       | Format / Examples                                                                                                                              |
+|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Major**    | `major MAJOR_NAME `<br>_e.g._ `major Computer Science` |
+| **Add**      | `add MODULE_CODE to YxSy`<br>_e.g._ `add CS2109S to Y1S1`                                                                                      |
+| **Delete**   | `delete MODULE_CODE ...`<br>_e.g._ `delete CS2109S`                                                                                            |
+| **Schedule** | `schedule`                                                                                                                                     |
+| **Clear**    | `clear`                                                                                                                                        |a
+| **Help**     | `help`                                                                                                                                         |
 
 2025 ModHero Team - CS2113-T10-4  
 Based on SE-EDU framework.

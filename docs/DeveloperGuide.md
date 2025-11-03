@@ -232,7 +232,7 @@ The following two diagrams illustrate how modules are added to the timetable whe
 2. Parser identifies the command word major and creates a MajorCommand object with the argument "cs".
 3. When execute() is called, the MajorCommand retrieves the matching Major object from the pre-loaded hashmap in Storage.
 4. The command clears the current core module list (if any) and fills it with the modules listed in the Major object.
-5. UI then displays “Timetable cleared! Major set to (major)."
+5. UI then displays “Reset to default Timetable for Major in (major)."
 
 #### Internal Details
 - We only allow users to declare their major as CS or CEG because the prerequisites for the other majors are not included in our major.txt preloaded data file.
@@ -323,7 +323,7 @@ MSS
 2. ModHero retrieves the matching Major object from storage.
 3. ModHero loads all core modules associated with that major.
 4. Timetable is cleared and replaced with the new major’s core modules.
-5. ModHero displays: “Timetable cleared! Major set to Computer Science.”
+5. ModHero displays: “Reset to default Timetable for Major in Computer Science.”
 
 Extensions
 2a. Unsupported or invalid major entered.

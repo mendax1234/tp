@@ -17,7 +17,7 @@ public class ExitCommand extends Command {
     @Override
     public CommandResult execute() {
         logger.log(Level.INFO, "Executing Exit Command");
-        return new CommandResult("Goodbye!");
+        return new CommandResult("Hold on while we exit the application");
     }
 
     public static boolean isExit(Command command) {
