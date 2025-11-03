@@ -59,15 +59,15 @@ public class MajorCommand extends Command {
                     + " is not supported. Try 'CS' or 'CEG'.");
         }
 
+        //clear the timetable to prevent clashes when user redeclares major
+        timetable.clearTimetable();
+        exemptedModules.clear();
+
         if (majorObject.getAbbrName().equals("CS")) {
             exemptedModules.addAll(Constants.ExemptedModulesConstants.CS_EXEMPTED_MODULES);
         } else if (majorObject.getAbbrName().equals("CEG")) {
             exemptedModules.addAll(Constants.ExemptedModulesConstants.CEG_EXEMPTED_MODULES);
         }
-
-        //clear the timetable to prevent clashes when user redeclares major
-        timetable.clearTimetable();
-        exemptedModules.clear();
 
         //add all modules from the selected major into the timetable
             for (TimetableData mm : majorObject.getMajorModules()) {
