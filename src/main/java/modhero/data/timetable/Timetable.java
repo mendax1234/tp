@@ -2,9 +2,11 @@ package modhero.data.timetable;
 
 import static modhero.common.Constants.AcademicConstants;
 
+import modhero.common.util.PreclusionUtil;
 import modhero.common.util.PrerequisiteUtil;
 import modhero.exceptions.InvalidYearOrSemException;
 import modhero.exceptions.ModHeroException;
+import modhero.exceptions.ModuleAlreadyExemptedException;
 import modhero.exceptions.ModuleAlreadyExistsException;
 import modhero.exceptions.ModuleDeletionBlockedException;
 import modhero.exceptions.ModuleNotFoundException;
@@ -67,13 +69,21 @@ public class Timetable {
     }
 
     private void checkModuleAddable(int year, int semester, Module moduleToAdd, List<String> exemptedModules) throws ModHeroException {
+        // If module already exists in the Timetable
         if (getAllModules().stream().anyMatch(m -> m.getCode().equalsIgnoreCase(moduleToAdd.getCode()))) {
             throw new ModuleAlreadyExistsException(moduleToAdd.getCode());
         }
+
+        // Module is exempted
         if (PrerequisiteUtil.isExemptedModule(moduleToAdd.getCode(), exemptedModules)) {
-            return;
+            throw new ModuleAlreadyExemptedException(moduleToAdd.getCode());
         }
 
+        // Preclusion check
+        List<Module> allExistingModules = getAllModules(); // Get all modules first
+        PreclusionUtil.validatePreclusions(moduleToAdd, allExistingModules);
+
+        // Check whether meeting prerequisite
         List<Module> completedModules = getModulesTakenUpTo(year - 1, semester - 1);
         List<String> completedCodes = completedModules.stream().map(Module::getCode).toList();
 

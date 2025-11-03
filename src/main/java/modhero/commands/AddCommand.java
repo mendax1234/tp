@@ -55,7 +55,13 @@ public class AddCommand extends Command {
         Module module = allModulesData.get(moduleCode);
         if (module == null) {
             logger.log(Level.INFO, "Module " + moduleCode + " not in local data, trying API fetch...");
-            module = moduleRetriever.getModule(AcademicConstants.ACAD_YEAR, moduleCode);
+            try {
+                module = moduleRetriever.getModule(AcademicConstants.ACAD_YEAR, moduleCode);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Failed to fetch module from API", e);
+                throw new ModuleNotFoundException(moduleCode, "NUSMODS");
+            }
+            // In case ModuleRetreiver return null without an Exception
             if (module == null) {
                 throw new ModuleNotFoundException(moduleCode, "NUSMODS");
             }

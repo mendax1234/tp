@@ -28,10 +28,6 @@ public final class PrerequisiteUtil {
 
     public static void validatePrerequisites(String moduleCode, Prerequisites prereqs, List<String> completedCodes, List<String> exemptedModules)
             throws ModuleAdditionBlockedException{
-        if (isExemptedModule(moduleCode, exemptedModules)) {
-            return;
-        }
-
         if (prereqs == null || prereqs.getPrereq() == null || prereqs.getPrereq().isEmpty()) return;
 
         boolean satisfied = arePrerequisitesMet(prereqs.getPrereq(), completedCodes, exemptedModules);
