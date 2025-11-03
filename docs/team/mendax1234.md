@@ -14,9 +14,8 @@ course roadmap more efficiently than traditional spreadsheet or browser-based to
 - Test code contributed: The link
   is [here](https://nus-cs2113-ay2526s1.github.io/tp-dashboard/?search=&sort=groupTitle&sortWithin=title&timeframe=commit&mergegroup=&groupSelect=groupByRepos&breakdown=true&checkedFileTypes=docs~functional-code~test-code~other&since=2025-09-19T00%3A00%3A00&filteredFileName=&tabOpen=true&tabType=authorship&tabAuthor=mendax1234&tabRepo=AY2526S1-CS2113-T10-4%2Ftp%5Bmaster%5D&authorshipIsMergeGroup=false&authorshipFileTypes=test-code&authorshipIsBinaryFileTypeChecked=false&authorshipIsIgnoredFilesChecked=false)
     - `AddCommandTest.java`
-    - `MajorStorageTest.java`
-    - `ParserTest.java`
-    - `DeserialisationUtilTest.java`
+    - `PrerequisiteUtil.java`
+    - `PreclusionUtil.java`
 - Enhancements implemented:
     - Implemented **Prerequisite Check** for `add` command.
     - Implemented **Preclusion Check** for `add` command.
