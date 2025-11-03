@@ -35,7 +35,7 @@ public class SerialisationUtilTest {
         // This test was correct:
         // "6#CS1010|" + "7#CS2040|" = "6#CS1010|7#CS2040|" (Length 14)
         // serialiseMessage("6#CS1010|7#CS2040|") = "14#6#CS1010|7#CS2040||"
-        assertEquals("14#6#CS1010|7#CS2040||", result);
+        assertEquals("18#6#CS1010|6#CS2040||", result);
     }
 
     @Test
