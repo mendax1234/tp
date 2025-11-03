@@ -44,7 +44,7 @@ At shutdown, it ensures all data is saved correctly to persistent storage.
 
 ### Logic Component
 <figure align="center">
-    <img src="diagrams/ParserUML.png" alt="Parser Class Diagram" />
+    <img src="diagrams/ParserUML.png" alt="Parser Class Diagram" style="width:100%; height:auto;" />
     <figcaption><em>UML class diagram showing relationships within the Parser component.</em></figcaption>
 </figure>
 
@@ -83,7 +83,7 @@ This separation allows the Model to remain cohesive yet modular, enabling clean 
 
 ### Storage Component
 <figure align="center">
-    <img src="diagrams/StorageUML.png" alt="Storage Class Diagram" />
+    <img src="diagrams/StorageUML.png" alt="Storage Class Diagram" style="width:100%; height:auto;" />
     <figcaption><em>UML class diagram showing relationships within the Storage component.</em></figcaption>
 </figure>
 
@@ -462,7 +462,7 @@ Non-Functional Requirements
 3. Test case: `add ES1000 to Y1S1`  
    Expected: Will be added successfully as there is no prerequisites for this module
 
-4. Test case: `add ES1000 to Y1S2`  
+4. Test case: `add ES1000 to Y1S2`
    Expected: Will not be added as this module is already in the timetable
 
 ### Deleting a module

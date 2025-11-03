@@ -27,7 +27,7 @@ public class SaveStorage extends Storage {
     public static final String TIMETABLE_STARTLINE = "Timetable data";
     public static final String EXEMPTED_MODULES_STARTLINE = "Exempted Modules data";
 
-    public static final char DELIMITER = '|';
+    private static final char DELIMITER = '|';
     private static final int EXEMPTED_MODULES_DELIMITER_COUNT = 0;
     private static final int TIMETABLE_DELIMITER_COUNT = 2;
 
@@ -138,7 +138,7 @@ public class SaveStorage extends Storage {
      * @return a list of strings [moduleCode, year, term]
      */
     private List<String> parseModule(String line) {
-        String[] moduleCodeYearTerm = line.split("\\" + DELIMITER,3);
+        String[] moduleCodeYearTerm = line.split("\\" + DELIMITER, 3);
         return List.of(moduleCodeYearTerm);
     }
 
