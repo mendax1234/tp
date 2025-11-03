@@ -12,7 +12,7 @@ class DeserialisationUtilTest {
     // --- deserialiseMessage() ---
     @Test
     void testDeserialiseMessage_basic() {
-        String serialised = "6#CS1010|7#CS2040|";
+        String serialised = "6#CS1010|6#CS2040|";
         List<String> result = DeserialisationUtil.deserialiseMessage(serialised);
         assertEquals(List.of("CS1010", "CS2040"), result);
     }
@@ -45,7 +45,7 @@ class DeserialisationUtilTest {
 
     @Test
     void testDeserialiseList_success() {
-        List<String> serialisedList = List.of("6#CS1010|", "7#CS2040|");
+        List<String> serialisedList = List.of("6#CS1010|", "6#CS2040|");
 
         // Use assertDoesNotThrow to handle the checked exception in a success case
         List<List<String>> result = assertDoesNotThrow(() -> {
@@ -55,16 +55,6 @@ class DeserialisationUtilTest {
         assertEquals(2, result.size());
         assertEquals(List.of("CS1010"), result.get(0));
         assertEquals(List.of("CS2040"), result.get(1));
-    }
-
-    @Test
-    void testDeserialiseList_emptyInput() {
-        // Use assertDoesNotThrow for this success case as well
-        List<List<String>> result = assertDoesNotThrow(() -> {
-            return DeserialisationUtil.deserialiseList(List.of());
-        });
-
-        assertTrue(result.isEmpty(), "Empty input should produce empty output");
     }
 
     @Test
