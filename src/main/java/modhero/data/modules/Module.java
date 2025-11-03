@@ -34,7 +34,7 @@ public class Module {
         assert code != null && !code.isEmpty() : "Module code must not be empty";
         assert name != null && !name.isEmpty() : "Module name must not be empty";
         assert type != null && !type.isEmpty() : "Module type must not be empty";
-        assert preclude != null && !preclude.isEmpty() : "Module type must not be empty";
+        assert preclude != null : "Module preclusion must not be empty";
         assert prerequisites != null : "Prerequisites list must not be null";
 
         this.code = code;

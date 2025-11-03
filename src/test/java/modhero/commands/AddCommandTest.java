@@ -31,7 +31,7 @@ public class AddCommandTest {
                 "Test Module " + code,
                 4,
                 "Core",
-                "Nothing", // empty preclude
+                "", // empty preclude
                 new Prerequisites(Collections.emptyList()) // empty prereq
         );
     }
