@@ -143,7 +143,7 @@ Deserialising it will reconstruct the same data structure as the original.
 </figure>
 
 The UI component is responsible for all interactions between the user and the program. This includes being the point at which all user inputs are collected
-and all outputs to the user are displayed through. All inputs are read by the ```readCommand``` method which trims the user output.
+and all outputs to the user are displayed through. All inputs are read by the ```readCommand``` method which trims the user input.
 The output methods included in this class are the methods to show the welcome message, bye message, and the
 feedback for executing any given command.
 
@@ -196,8 +196,8 @@ This diagram illustrates the typical flow for adding a module that is *not* yet 
 #### Overview
 The ```Delete``` feature allows the user to delete a given module from the timetable while making sure
 that it doesn't affect the prerequisites for one of the other modules in the timetable. The expected arguments taken in
-by the delete command is the list of all modules the user wants to delete and the feedback to the user is a list of
-modules that have successfully been deleted, and a list of modules that could not be deleted and the reason behind them.
+by the delete command is the module the user wants to delete and the feedback to the user is confirmation of the delete or
+if the delete failed, the reason why the module could not be deleted.
 The details about how to use the feature are in the user guide.
 
 #### Sequence Diagram
@@ -451,6 +451,42 @@ Non-Functional Requirements
 ### Glossary
 
 - `[details]` — should substitute the whole expression with value according to description in the bracket
+
+- **API (Application Programming Interface)** — A set of methods and protocols that allow different software components to communicate with each other. In ModHero, this refers to both the NUSMods API (external) and internal interfaces between components.
+
+- **CLI (Command-Line Interface)** — A text-based user interface where users interact with the application by typing commands rather than using graphical elements like buttons or menus.
+
+- **Core Module** — A compulsory module that must be completed as part of a degree program's graduation requirements.
+
+- **Deserialization** — The process of converting serialized data (stored in a specific text format) back into program objects like Module, Major, or Prerequisites.
+
+- **Elective Module** — An optional module that students can choose to fulfill certain credit requirements or pursue specific interests within their degree program.
+
+- **JAR (Java Archive)** — A package file format used to bundle Java class files and associated resources into a single file for distribution.
+
+- **Major** — A student's primary field of study (e.g., Computer Science, Computer Engineering) that determines core module requirements and graduation criteria.
+
+- **MC (Modular Credits)** — The unit of measurement for academic workload at NUS. Most modules are worth 4 MCs, and students typically need 160 MCs to graduate.
+
+- **Module** — An academic course offered by NUS, identified by a unique module code (e.g., CS2113, MA1521) with associated properties like name, credits, and prerequisites.
+
+- **Module Code** — A unique alphanumeric identifier for a module (e.g., CS2113, EE2026) consisting of a department prefix and number.
+
+- **NUSMods** — An external web service and API that provides comprehensive information about NUS modules, including prerequisites, schedules, and descriptions.
+
+- **Prerequisite** — A module or set of modules that must be completed before a student is eligible to take another module. Prerequisites can be simple (single module) or complex (combinations with AND/OR logic).
+
+- **Serialization** — The process of converting program objects into a text format for storage, following the pattern `[length]#[content]|` to ensure data integrity.
+
+- **Semester** — One of two academic terms in an academic year at NUS (Semester 1 or Semester 2), typically lasting about 13 weeks.
+
+- **Storage** — The component responsible for reading and writing data to persistent files, ensuring timetable and module information is preserved between sessions.
+
+- **Timetable** — A 4-year academic plan organizing modules by year and semester, representing a student's complete degree roadmap.
+
+- **UML (Unified Modeling Language)** — A standardized visual modeling language used to represent software architecture, class relationships, and system behavior through diagrams.
+
+- **Y_S_ (Year-Semester notation)** — A shorthand format for specifying academic periods (e.g., Y2S1 = Year 2, Semester 1; Y3S2 = Year 3, Semester 2).
 
 ## Appendix: Instructions for Manual Testing
 
