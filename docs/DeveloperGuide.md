@@ -102,6 +102,7 @@ Exempted Modules data
 MA1301
 ```
 The `Timetable data` and `Exempted Modules data` marks the starting of each section respectively.
+Timetable format is `[module code]|[selected year]|[selected term]`
 
 `ModuleStorage` and `MajorStorage` then deserialize the loaded text into objects such as Module, Major, and Prerequisites, which are stored in in-memory hash maps for efficient access.
 The process is supported by two utility classes, `SerialisationUtil` and `DeserialisationUtil`, which enhance data conversion and validation.
@@ -368,7 +369,7 @@ Extensions
 #### Use Case: Save and Load Timetable
 
 MSS
-1. ModHero automatically saves the timetable after each change (add, delete, or major).
+1. ModHero saves the timetable after 'schedule' command.
 2. When ModHero restarts, it automatically loads the last saved timetable.
 3. The user resumes from the same state as the previous session.
 
@@ -449,11 +450,9 @@ Non-Functional Requirements
 
 ### Glossary
 
-- *glossary item* — Definition.
+- `[details]` — should substitute the whole expression with value according to description in the bracket
 
 ## Appendix: Instructions for Manual Testing
-
-{Give instructions on how to do manual testing, e.g., how to load sample data or verify stored files.}
 
 ### Launch and shutdown
 1. Initial launch
