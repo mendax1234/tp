@@ -1,14 +1,14 @@
 @startuml
 'https://plantuml.com/sequence-diagram
 
+participant "caller"
 participant "result:MajorCommand"
 participant ":CommandResult"
 participant ":Major"
-participant "mm:TimetableData"
 participant ":Module"
 participant "timetable:Timetable"
 
-[-> "result:MajorCommand": execute()
+caller-> "result:MajorCommand": execute()
 activate "result:MajorCommand"
 activate "timetable:Timetable"
 alt majorObject is null
@@ -23,7 +23,6 @@ activate ":Major"
 destroy ":Major"
 loop number of modules for the major
     ref over "result:MajorCommand", ":Module": get module from major object
-    destroy "mm:TimetableData"
     "result:MajorCommand" -> "timetable:Timetable": addModule(year,semester,module)
 
     "timetable:Timetable" -> "timetable:Timetable": checkModuleAddable(...)
@@ -60,7 +59,7 @@ end
 "result:MajorCommand" -> ":CommandResult": CommandResult(feedbackToUser)
 "result:MajorCommand" <-- ":CommandResult"
 
-[<--"result:MajorCommand"
+caller<--"result:MajorCommand"
 
 
 @enduml
