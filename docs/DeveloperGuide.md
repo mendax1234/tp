@@ -107,7 +107,7 @@ To maintain data integrity and readability, all data should be serialized before
 </figure>
 
 The UI component is responsible for all interactions between the user and the program. This includes being the point at which all user inputs are collected
-and all outputs to the user are displayed through. All inputs are read by the ```readCommand``` method which trims the user output.
+and all outputs to the user are displayed through. All inputs are read by the ```readCommand``` method which trims the user input.
 The output methods included in this class are the methods to show the welcome message, bye message, and the
 feedback for executing any given command.
 
