@@ -25,6 +25,10 @@ public class Parser {
         assert userInput != null : "User input must not be null";
         logger.log(Level.FINEST, "Parsing command: " + userInput);
 
+        if (!userInput.matches("[a-zA-Z0-9 ]+")) {
+            return new IncorrectCommand(String.format(MessageConstants.INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
+        }
+
         String[] words = userInput.trim().split(" ", 2);  // split the input into command and arguments
         if (words.length == 0) {
             return new IncorrectCommand(String.format(MessageConstants.INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
@@ -65,13 +69,8 @@ public class Parser {
         if (args.isEmpty()) {
             return new IncorrectCommand(String.format(MessageConstants.INVALID_COMMAND_FORMAT, MajorCommand.MESSAGE_USAGE));
         }
-        String[] majorAndMinor = args.split(MajorCommand.MINOR_REGEX, 2);
-        String minor = majorAndMinor.length > 1 ? majorAndMinor[1].trim() : "";
-        String[] majorAndSpecialise = majorAndMinor[0].split(MajorCommand.SPECIALISATION_REGEX, 2);
-        String specialisation = majorAndSpecialise.length > 1 ? majorAndSpecialise[1].trim() : "";
-        String major = majorAndSpecialise[0].trim();
 
-        return new MajorCommand(major, specialisation, minor);
+        return new MajorCommand(args);
     }
 
     private Command prepareDeleteCommand(String args) {

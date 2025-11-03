@@ -67,6 +67,7 @@ public class MajorStorage extends Storage{
 
             Major major = new Major(name, abbrName.toUpperCase(), timetableData);
             allMajorsData.put(abbrName.toLowerCase(), major);
+            allMajorsData.put(name.toLowerCase(), major);
 
         }
     }

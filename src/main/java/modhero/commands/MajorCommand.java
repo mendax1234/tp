@@ -17,33 +17,25 @@ public class MajorCommand extends Command {
     private static final Logger logger = Logger.getLogger(MajorCommand.class.getName());
 
     public static final String COMMAND_WORD = "major";
-    public static final String SPECIALISATION_REGEX = "specialisation";
-    public static final String MINOR_REGEX = "minor";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Specify your major.\n"
-            + "  Parameters: MAJOR_NAME [" + SPECIALISATION_REGEX + " SPECIALISATION] [" + MINOR_REGEX + " MINOR_NAME]\n"
-            + "  Example: " + COMMAND_WORD + " Computer Science specialisation Artificial Intelligence";
+            + "  Parameters: MAJOR_NAME \n"
+            + "  Example: " + COMMAND_WORD + " Computer Science";
 
     private final String major;
-    private final String specialisation;
-    private final String minor;
 
     /**
      * Creates a MajorCommand to set the user's major.
      *
      * @param major          The user's major (e.g., "Computer Science" or "Computer Engineering")
-     * @param specialisation The chosen specialisation (optional)
-     * @param minor          The chosen minor (optional)
      */
-    public MajorCommand(String major, String specialisation, String minor) {
+    public MajorCommand(String major) {
         assert major != null && !major.isEmpty() : "Major name must not be empty";
         this.major = major.trim().toLowerCase();
-        this.specialisation = specialisation;
-        this.minor = minor;
 
         logger.log(Level.FINEST, () -> String.format(
-                "Created MajorCommand: major=%s, specialisation=%s, minor=%s",
-                this.major, this.specialisation, this.minor));
+                "Created MajorCommand: major=%s",
+                this.major));
     }
 
     @Override
@@ -76,6 +68,6 @@ public class MajorCommand extends Command {
             }
         logger.log(Level.INFO, () -> "Major successfully set to " + major);
 
-        return new CommandResult("Timetable cleared! Major set to " + major + ". Type 'schedule' to view your 4-year plan!");
+        return new CommandResult("Reset to default Timetable for Major in " + major + ". Type 'schedule' to view your 4-year plan!");
     }
 }
