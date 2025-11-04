@@ -170,7 +170,7 @@ The `add` feature allows users to add a module to their timetable in a specific 
 This diagram illustrates the typical flow for adding a module that is *not* yet in the local cache (`allModulesData`) but *is* found in the NUSMods API, and for which the user *meets* the prerequisites.
 
 <figure align="center">
-    <img src="diagrams/addCommand.svg" alt="Add Command Sequence Diagram" />
+    <img src="diagrams/addCommand.png" alt="Add Command Sequence Diagram" />
     <figcaption><em>Add Command Sequence Diagram</em></figcaption>
 </figure>
 
