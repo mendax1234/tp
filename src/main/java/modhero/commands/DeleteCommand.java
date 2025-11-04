@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 /**
  * Represents a command that removes a specified module from the user's timetable plan.
+ * @author sivanshno
  */
 public class DeleteCommand extends Command {
     public static final Logger logger = Logger.getLogger(DeleteCommand.class.getName());

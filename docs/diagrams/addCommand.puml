@@ -1,103 +1,83 @@
 @startuml
 !theme plain
-
-' --- Participants (colored based on your examples) ---
-participant "caller" as Caller
+' --- Participants ---
+actor "caller" as Caller
 participant "cmd:AddCommand" as AddCmd #LightGreen
+participant "AddCommand.addModule()" as AddHelper #LightGreen
 participant "allModulesData:Map" as Cache
-participant "retriever:ModuleRetriever" as Retriever #Plum
 participant "tt:Timetable" as Timetable #LightBlue
-participant "module:Module" as Module #Orange
-
-' --- Flow Start ---
+' --- Dotted lifeline style ---
+skinparam lifeline {
+    strategy dotted
+}
+' --- Flow ---
 Caller -> AddCmd : execute()
 activate AddCmd
+AddCmd -> AddHelper : addModule(timetable, allModulesData, ...)
+activate AddHelper
 
-AddCmd -> Cache : get(moduleCode)
+' Retriever is created at the start of the addModule method,
+' before the cache check.
+create participant "retriever:ModuleRetriever" as Retriever #Plum
+AddHelper -> Retriever ** : <<create>>
+
+AddHelper -> Cache : get(moduleCode)
 activate Cache
-Cache --> AddCmd : null
+Cache --> AddHelper : module / null
 deactivate Cache
 
-' --- Optional fragment for API fetch (matches image_7ccae0.png) ---
 opt module not in local data
-    AddCmd -> Retriever : getModule(acadYear, moduleCode)
+    AddHelper -> Retriever : getModule(acadYear, moduleCode)
     activate Retriever
 
-    ' --- Alternative for API result ---
-    alt module not found in API
-        Retriever --> AddCmd : null
-        deactivate Retriever
-
-        ' Exception is caught by AddCommand's try-catch block
-        AddCmd -->> AddCmd : throw ModuleNotFoundException
-
-        ' Object creation (matches image_7cca86.png style)
-        create participant "result:CommandResult" as ResultFail
-        AddCmd -> ResultFail : new CommandResult(e.getMessage())
-        AddCmd --> Caller : result
-        deactivate AddCmd
-
-    else module found in API
-        Retriever --> AddCmd : module
-        deactivate Retriever
-
-        AddCmd -> Cache : put(moduleCode, module)
+    alt module found
+        Retriever --> AddHelper : module
+        AddHelper -> Cache : put(moduleCode, module)
         activate Cache
-        Cache --> AddCmd
+        Cache --> AddHelper
         deactivate Cache
+    else module not found (Exception or null)
+        Retriever --> AddHelper : Exception / null
+        deactivate Retriever
+        AddHelper -->> AddHelper : throw ModuleNotFoundException
+        AddHelper --> AddCmd : ModuleNotFoundException
+
+        AddCmd -->> AddCmd : catch ModHeroException
+        create participant "result:CommandResult" as ResultFail
+        AddCmd -> ResultFail ** : <<create>>
+        AddCmd --> Caller : result
+
+        ' --- MISSING LINE ---
     end
 end
-
-' --- Continue with add logic ---
-AddCmd -> Timetable : addModule(year, sem, module)
+' --- Timetable add logic ---
+AddHelper -> Timetable : addModule(year, term, module, exemptedModules)
 activate Timetable
-
-' Nested activation for internal checks (matches image_7cca9d.png)
-Timetable -> Timetable : checkModuleAddable(...)
-activate Timetable #DarkGray
-
-Timetable -> Timetable : getAllModules()
-Timetable -> Timetable : getModulesTakenUpTo(year, sem)
-
-Timetable -> Module : getPrerequisites()
-activate Module
-Module --> Timetable : prereqs
-deactivate Module
-
 note right of Timetable
-  Internal logic validates prerequisites
-  against modules taken up to this point.
+  Validates prerequisites and conflicts.
+  Throws exception if requirements unmet.
 end note
-
-' --- Alternative for Prerequisite Check ---
 alt prerequisites not met
-    ' Dashed return arrow for exception
-    Timetable -->> AddCmd : throw PrerequisiteNotMetException
-    deactivate Timetable #DarkGray
-    deactivate Timetable
+    Timetable -->> AddHelper : throw PrerequisiteNotMetException
+    AddHelper --> AddCmd : PrerequisiteNotMetException
 
-    note left of AddCmd
-      Exception caught by
-      try-catch in execute()
-    end note
-
+    AddCmd -->> AddCmd : catch ModHeroException
     create participant "result:CommandResult" as ResultPrereq
-    AddCmd -> ResultPrereq : new CommandResult(e.getMessage())
+    AddCmd -> ResultPrereq ** : <<create>>
     AddCmd --> Caller : result
-    deactivate AddCmd
 
-else prerequisites met
-    Timetable -> Timetable : addModuleInternal(...)
-    deactivate Timetable #DarkGray
-
-    Timetable --> AddCmd
+else success
+    Timetable --> AddHelper : void
     deactivate Timetable
+
+    AddHelper --> AddCmd : void
 
     create participant "result:CommandResult" as ResultSuccess
-    AddCmd -> ResultSuccess : new CommandResult(successMsg)
-
+    AddCmd -> ResultSuccess ** : <<create>>
     AddCmd --> Caller : result
-    deactivate AddCmd
+
 end
+    ' Destroy the retriever before deactivating the helper
+    AddHelper -> Retriever !! : <<destroy>>
 
 @enduml

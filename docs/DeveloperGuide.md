@@ -44,9 +44,13 @@ At shutdown, it ensures all data is saved correctly to persistent storage.
 
 ### Logic Component
 <figure align="center">
-    <img src="diagrams/ParserUML.png" alt="Parser Class Diagram" />
+    <img src="diagrams/ParserUML.png" alt="Parser Class Diagram" style="width:100%; height:auto;" />
     <figcaption><em>UML class diagram showing relationships within the Parser component.</em></figcaption>
 </figure>
+
+The Logic Component is responsible for handling user input and determining the corresponding action to execute.
+It interprets commands entered by the user, parses them into structured representations, and routes them to the appropriate handler for execution.
+This ensures that the system correctly translates user intentions into operations, maintaining consistency and clarity in command processing.
 
 ### Model Component
 **API:** `Model.java`
@@ -83,22 +87,58 @@ This separation allows the Model to remain cohesive yet modular, enabling clean 
 
 ### Storage Component
 <figure align="center">
-    <img src="diagrams/StorageUML.png" alt="Storage Class Diagram" />
+    <img src="diagrams/StorageUML.png" alt="Storage Class Diagram" style="width:100%; height:auto;" />
     <figcaption><em>UML class diagram showing relationships within the Storage component.</em></figcaption>
 </figure>
 
-The Storage component is responsible for loading and saving essential application data.
+The `Storage` component is responsible for loading and saving essential application data.
 It reads text files from predefined directories and converts their contents into a structured, accessible format for other components to process.
 
-Three primary classes, ModuleStorage, MajorStorage and TimetableStorage, rely on Storage to retrieve module and major data to construct the timetable.
-These loaders then deserialize the loaded text into objects such as Module, Major, and Prerequisites, which are stored in in-memory hash maps for efficient access.
-The process is supported by two utility classes, SerialisationUtil and DeserialisationUtil, which enhance data conversion and validation.
+Three primary classes, `ModuleStorage`, `MajorStorage` and `SaveStorage`, rely on `Storage` to retrieve module and major data to construct the timetable.
 
+`SaveStorage` stores the user timetable data and exempted modules. It is store in a simple format to allow user to edit it quickly.
+The data is loaded everytime the application starts a fresh run and saved when 'schedule' command is given.
+The format of the save file is:
+```
+Timetable data
+CG1111A|1|1
+Exempted Modules data
+MA1301
+```
+The `Timetable data` and `Exempted Modules data` marks the starting of each section respectively.
+Timetable format is `MODULE_CODE|SELECTED_YEAR|SELECTED_TERM`
+
+`ModuleStorage` and `MajorStorage` then deserialize the loaded text into objects such as Module, Major, and Prerequisites, which are stored in in-memory hash maps for efficient access.
+The process is supported by two utility classes, `SerialisationUtil` and `DeserialisationUtil`, which enhance data conversion and validation.
 Each text file is stored in a unique, well-defined format, ensuring accurate data retrieval without missing words or parsing errors.
 Deserialization also serves as a validation step, confirming that the entire file has been successfully read and processed.
+To maintain data integrity and readability, all resources data should be in serialized form, ensuring a consistent and reliable file structure for future loading operations.
 
-To maintain data integrity and readability, all data should be serialized before saving, ensuring a consistent and reliable file structure for future loading operations.
+#### Serialiser and Deserialiser
 
+All resources data are stored in a serialised format following this convention `CONTENT_LENGTH` `START_DELIMITER` `CONTENT` `END_DELIMITER.`.
+This format ensures that any characters and symbols in the content will not be able to interfere with splitting the content into the correct component.
+Furthermore, it is able to ensure that all the text required for the component has been read successfully without any data corruption.
+
+It can be used to serialise a string or a one dimension list of strings. Deserialising it will return it back to it original list form.
+Nested List can also be serialised by performing serialised on each dimension of the list and combining them together as a string.
+It is also able to serialise objects with different data types. For example, the module data consist of module code and prerequisite which is in String and Nested List.
+It can be serialised by performing serialised on each data type and combining them together.
+
+A simple example.
+Let the start delimiter be `#` and end delimiter be `|`
+Information to be saved:
+- Module Code (String): `CS2113`
+- Description (String): `Algorithmic proof: An infinite set has a countably infinite subset.`
+- Prerequisites (List): `[MA1301X,MA1301]`
+
+Serialised output:
+- Module Code (String): `6#CS2113|`
+- Description (String): `67#Algorithmic proof: An infinite set has a countably infinite subset.|`
+- Prerequisites (String): `19#7#MA1301X|6#MA1301||`
+
+Saved in text file: `6#CS2113|67#Algorithmic proof: An infinite set has a countably infinite subset.|19#7#MA1301X|6#MA1301||`
+Deserialising it will reconstruct the same data structure as the original.
 
 ### UI Component
 <figure align="center">
@@ -111,16 +151,6 @@ and all outputs to the user are displayed through. All inputs are read by the ``
 The output methods included in this class are the methods to show the welcome message, bye message, and the
 feedback for executing any given command.
 
-#### Serialiser
-
-All data are stored in a serialised format following this convention `[content length][start delimiter][content][end delimiter]`.
-This format ensures that any characters and symbols in the content will not be able to interfere with splitting the content into the correct component.
-Furthermore, it is able to ensure that all the text required for the component has been read successfully without any data corruption.
-
-It can be used to serialise a string or a one dimension list of strings. Deserialising it will return it back to it original list form.
-Nested List can also be serialised by performing serialised on each dimension of the list and combining them together as a string.
-It is also able to serialise objects with different data types. For example, the module data consist of module code and prerequisite which is in String and Nested List.
-It can be serialised by performing serialised on each data type and combing them together.
 
 ## Implementation
 This section describes some noteworthy details on how certain features are implemented.
@@ -128,7 +158,7 @@ This section describes some noteworthy details on how certain features are imple
 ### Add Feature
 
 #### Overview
-The `add` feature allows users to add a module to their timetable in a specific year and semester.  The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModulesData` or the NUSMODS API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
+The `add` feature allows users to add a module to their timetable in a specific year and semester.  The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModulesData` or the NUSMods API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
 
 #### Key Components
 - **`AddCommand.java`**: The command class that parses the user's intent. Its `execute()` method orchestrates the entire "add" operation.
@@ -137,10 +167,10 @@ The `add` feature allows users to add a module to their timetable in a specific 
 - **`allModulesData` (Map)**: A map that acts as a local cache for module data to minimize API calls.
 
 #### Sequence Diagram
-This diagram illustrates the typical flow for adding a module that is *not* yet in the local cache (`allModulesData`) but *is* found in the NUSMODS API, and for which the user *meets* the prerequisites.
+This diagram illustrates the typical flow for adding a module that is *not* yet in the local cache (`allModulesData`) but *is* found in the NUSMods API, and for which the user *meets* the prerequisites.
 
 <figure align="center">
-    <img src="diagrams/addCommand.png" alt="Add Command Sequence Diagram" />
+    <img src="diagrams/addCommand.svg" alt="Add Command Sequence Diagram" />
     <figcaption><em>Add Command Sequence Diagram</em></figcaption>
 </figure>
 
@@ -170,8 +200,8 @@ This diagram illustrates the typical flow for adding a module that is *not* yet 
 #### Overview
 The ```Delete``` feature allows the user to delete a given module from the timetable while making sure
 that it doesn't affect the prerequisites for one of the other modules in the timetable. The expected arguments taken in
-by the delete command is the list of all modules the user wants to delete and the feedback to the user is a list of
-modules that have successfully been deleted, and a list of modules that could not be deleted and the reason behind them.
+by the delete command is the module the user wants to delete and the feedback to the user is confirmation of the delete or
+if the delete failed, the reason why the module could not be deleted.
 The details about how to use the feature are in the user guide.
 
 #### Sequence Diagram
@@ -236,7 +266,7 @@ The following two diagrams illustrate how modules are added to the timetable whe
 
 #### Internal Details
 - We only allow users to declare their major as CS or CEG because the prerequisites for the other majors are not included in our major.txt preloaded data file.
-- You can update major.txt to add a new major. (For the serialised data format, please go to the [Serialiser](#serialiser) section for the details)
+- You can update major.txt to add a new major. (For the serialised data format, please go to the [Serialiser and Deserialiser](#Serialiser-and-Deserialiser) section for the details)
 
 #### Error Handling
 - If the user provides an invalid or unknown major short code (e.g. major ISE), the program returns an error message: "Sorry, [major] is not supported. Try 'CS' or 'CEG'."
@@ -248,7 +278,7 @@ The following two diagrams illustrate how modules are added to the timetable whe
 ### Product Scope
 
 #### Target User Profile
-ModHero is designed for NUS undergraduate students who:
+ModHero is designed for NUS freshman undergraduate students who:
 - Are pursuing Computer Science (CS) or Computer Engineering (CEG) degrees.
 - Want to plan and visualise their academic journey over the 4-year duration.
 - Prefer using a command-line interface (CLI) for speed and minimal distraction.
@@ -265,21 +295,23 @@ ModHero simplifies and safeguards the process of academic planning for NUS stude
 
 ### User Stories
 
-| Version | As a ... | I want to ... | So that I can ... |
-|----------|-----------|---------------|-------------------|
-| v1.0 | NUS student | view a list of available commands | understand how to use ModHero efficiently |
-| v1.0 | NUS student | specify my major | load the correct core and elective modules for my degree |
-| v1.0 | NUS student | generate a recommended 4-year study plan | visualize my academic progression and ensure graduation requirements are met |
-| v1.0 | NUS student | add a specific module to a semester | customize my study plan according to my interests or scheduling needs |
-| v1.0 | NUS student | delete a module from my timetable | adjust my plan when I drop or change modules |
-| v1.0 | NUS student | list all core and elective modules for my major | plan my semesters with awareness of compulsory and optional modules |
-| v2.0 | NUS student | check prerequisites of a module | avoid planning invalid module combinations |
-| v2.0 | NUS student | automatically verify that all prerequisites are met | ensure my plan is valid before registration |
-| v2.0 | NUS student | save my timetable to a file | persist my customized schedule for later use |
-| v2.0 | NUS student | load my saved timetable | restore my plan without re-entering all modules |
+| Version | As a ...                               | I want to ...                                       | So that I can ...                                                            |
+| ------- |----------------------------------------|-----------------------------------------------------|------------------------------------------------------------------------------|
+| v1.0    | **New NUS student**                    | view a list of available commands                   | understand how to use ModHero efficiently for the first time                 |
+| v1.0    | **NUS student choosing a major**       | specify my major                                    | load the correct core and elective modules for my degree                     |
+| v1.0    | **Planner-oriented student**           | generate a recommended 4-year study plan            | visualize my academic progression and ensure graduation requirements are met |
+| v1.0    | **Customising student**                | add a specific module to a semester                 | personalize my study plan according to my interests or scheduling needs      |
+| v1.0    | **Student revising timetable**         | delete a module from my timetable                   | adjust my plan when I drop or change modules                                 |
+| v1.0    | **Student exploring degree structure** | list all core and elective modules for my major     | plan my semesters with awareness of compulsory and optional modules          |
+| v2.0    | **Student verifying eligibility**      | ensure that no repeated modules are taken           | avoid planning invalid timetable schedule                                    |
+| v2.0    | **Advanced user**                      | automatically verify that all prerequisites are met | ensure my plan is valid before module registration                           |
+| v2.0    | **Returning user**                     | save my timetable to a file                         | persist my customized schedule for later use                                 |
+| v2.0    | **Returning user**                     | load my saved timetable                             | restore my plan without re-entering all modules                              |
+| v2.0    | **Advanced user**                      | be able to understand the save file format easily   | edit the save file quickly to create my customised timtable                  |
 
 ### Use Cases
 (For all use cases below, the System is ModHero and the Actor is the user, unless otherwise specified.)
+MSS stands for Main Success Scenario
 
 #### Use Case: Add a Module
 MSS
@@ -291,7 +323,7 @@ MSS
 
 Extensions
 2a. Module does not exist in the database.
-2a1. ModHero fetches the module from the NUSMODS API. 
+2a1. ModHero fetches the module from the NUSMods API. 
 2a2. If still not found, ModHero displays: “Module not found. Please check the module code.”
 
 3a. Prerequisites are not satisfied.
@@ -343,7 +375,7 @@ Extensions
 #### Use Case: Save and Load Timetable
 
 MSS
-1. ModHero automatically saves the timetable after each change (add, delete, or major).
+1. ModHero saves the timetable after 'schedule' command.
 2. When ModHero restarts, it automatically loads the last saved timetable.
 3. The user resumes from the same state as the previous session.
 
@@ -424,11 +456,45 @@ Non-Functional Requirements
 
 ### Glossary
 
-- *glossary item* — Definition.
+- `[details]` — should substitute the whole expression with value according to description in the bracket
+
+- **API (Application Programming Interface)** — A set of methods and protocols that allow different software components to communicate with each other. In ModHero, this refers to both the NUSMods API (external) and internal interfaces between components.
+
+- **CLI (Command-Line Interface)** — A text-based user interface where users interact with the application by typing commands rather than using graphical elements like buttons or menus.
+
+- **Core Module** — A compulsory module that must be completed as part of a degree program's graduation requirements.
+
+- **Deserialization** — The process of converting serialized data (stored in a specific text format) back into program objects like Module, Major, or Prerequisites.
+
+- **Elective Module** — An optional module that students can choose to fulfill certain credit requirements or pursue specific interests within their degree program.
+
+- **JAR (Java Archive)** — A package file format used to bundle Java class files and associated resources into a single file for distribution.
+
+- **Major** — A student's primary field of study (e.g., Computer Science, Computer Engineering) that determines core module requirements and graduation criteria.
+
+- **MC (Modular Credits)** — The unit of measurement for academic workload at NUS. Most modules are worth 4 MCs, and students typically need 160 MCs to graduate.
+
+- **Module** — An academic course offered by NUS, identified by a unique module code (e.g., CS2113, MA1521) with associated properties like name, credits, and prerequisites.
+
+- **Module Code** — A unique alphanumeric identifier for a module (e.g., CS2113, EE2026) consisting of a department prefix and number.
+
+- **NUSMods** — An external web service and API that provides comprehensive information about NUS modules, including prerequisites, schedules, and descriptions.
+
+- **Prerequisite** — A module or set of modules that must be completed before a student is eligible to take another module. Prerequisites can be simple (single module) or complex (combinations with AND/OR logic).
+
+- **Serialization** — The process of converting program objects into a text format for storage, following the pattern `[length]#[content]|` to ensure data integrity.
+
+- **Semester** — One of two academic terms in an academic year at NUS (Semester 1 or Semester 2), typically lasting about 13 weeks.
+
+- **Storage** — The component responsible for reading and writing data to persistent files, ensuring timetable and module information is preserved between sessions.
+
+- **Timetable** — A 4-year academic plan organizing modules by year and semester, representing a student's complete degree roadmap.
+
+- **UML (Unified Modeling Language)** — A standardized visual modeling language used to represent software architecture, class relationships, and system behavior through diagrams.
+
+- **Y_S_ (Year-Semester notation)** — A shorthand format for specifying academic periods (e.g., Y2S1 = Year 2, Semester 1; Y3S2 = Year 3, Semester 2).
 
 ## Appendix: Instructions for Manual Testing
-
-{Give instructions on how to do manual testing, e.g., how to load sample data or verify stored files.}
 
 ### Launch and shutdown
 1. Initial launch
@@ -462,7 +528,7 @@ Non-Functional Requirements
 3. Test case: `add ES1000 to Y1S1`  
    Expected: Will be added successfully as there is no prerequisites for this module
 
-4. Test case: `add ES1000 to Y1S2`  
+4. Test case: `add ES1000 to Y1S2`
    Expected: Will not be added as this module is already in the timetable
 
 ### Deleting a module

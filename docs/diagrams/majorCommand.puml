@@ -1,14 +1,14 @@
 @startuml
 'https://plantuml.com/sequence-diagram
 
+participant "caller"
 participant "result:MajorCommand"
 participant ":CommandResult"
 participant ":Major"
-participant "mm:TimetableData"
 participant ":Module"
 participant "timetable:Timetable"
 
-[-> "result:MajorCommand": execute()
+caller-> "result:MajorCommand": execute()
 activate "result:MajorCommand"
 activate "timetable:Timetable"
 alt majorObject is null
@@ -20,12 +20,12 @@ end
 "result:MajorCommand" -> ":Major":getMajorModules()
 activate ":Major"
 "result:MajorCommand" <-- ":Major"
+deactivate ":Major"
+"result:MajorCommand" -[#white]-> ":Major"
 destroy ":Major"
 loop number of modules for the major
     ref over "result:MajorCommand", ":Module": get module from major object
-    destroy "mm:TimetableData"
     "result:MajorCommand" -> "timetable:Timetable": addModule(year,semester,module)
-
     "timetable:Timetable" -> "timetable:Timetable": checkModuleAddable(...)
     activate "timetable:Timetable"
     "timetable:Timetable" --> "timetable:Timetable"
@@ -52,15 +52,16 @@ loop number of modules for the major
     "timetable:Timetable" <- ":Module": getCode()
     activate ":Module"
     "timetable:Timetable" --> ":Module"
-    destroy ":Module"
+    deactivate ":Module"
 
     "result:MajorCommand" <-- "timetable:Timetable"
 end
 
 "result:MajorCommand" -> ":CommandResult": CommandResult(feedbackToUser)
+destroy ":Module"
 "result:MajorCommand" <-- ":CommandResult"
 
-[<--"result:MajorCommand"
+caller<--"result:MajorCommand"
 
 
 @enduml

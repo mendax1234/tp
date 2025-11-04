@@ -1,6 +1,6 @@
 # ModHero User Guide
 
-_ModHero_ is a **CLI-first desktop app** for planning your university degree, designed to give you the speed and precision of command-line input while retaining the clarity of a graphical overview.  
+_ModHero_ is a **CLI-first desktop app** for CS and CEG freshman to plan your university degree, designed to give you the speed and precision of command-line input while retaining the clarity of a graphical overview.  
 It helps you build and adapt your 4-year course roadmap more efficiently than traditional spreadsheet or browser-based tools.
 
 ## Contents
@@ -29,14 +29,14 @@ It helps you build and adapt your 4-year course roadmap more efficiently than tr
    cd path/to/folder
    java -jar modhero.jar
    ```
-5. A GUI should appear after a few seconds, with some sample data preloaded.
+5. A CLI interface should appear after a few seconds, with some sample data preloaded.
 6. Type a command in the **command box** and press **Enter** to execute.
 
    **Examples:**
    ```bash
    help
    major CEG
-   generate
+   schedule
    add CS2113 to Y1S1
    delete CS2113
    clear
@@ -82,8 +82,15 @@ Shows a message explaining how to access the help page.
 help
 ```
 
+**Example:**
+```
+schedule
+-> Returns the timetable in a ui-friendly format
+```
+
 ### Specifying Your Major: `major`
 Defines your primary degree major, which ModHero uses to load graduation requirements.
+Currently, the supported majors are CEG and CS.
 
 **Format:**
 ```
@@ -97,6 +104,16 @@ major CEG
 major cs
 major CS
 ```
+
+
+#### Example with Expected output
+```
+major cs
+Reset to default Timetable for Major in cs. Type 'schedule' to view your 4-year plan!
+```
+
+> [!CAUTION]
+> Running major command will clear your timetable and replace it with core modules for that major.
 
 ### Adding a Module: `add`
 Adds a specific module (core, elective, or any valid NUS module) to a chosen year and semester in your degree plan.
@@ -115,6 +132,24 @@ add CS2109S to Y2S1
 add MA1511 to Y1S1
 add CS3230 to Y3S2
 ```
+
+#### Example with Expected output
+1. Empty Timetable
+    ```
+    add CS1010 to Y1S1
+    CS1010 added successfully to Y1S1!
+    ```
+2. Similar module in timetable
+    ```
+   add CS1010 to Y1S1
+   Module CS1010 cannot be taken together with Module CS1101S
+    ```
+3. Prerequisites not satisfy
+    ```
+    add CS2113 to Y1S1
+    Prerequisites not met for CS2113. Requires: Prerequisites: [[CS2040C] OR [CS2030, CS2040S] OR [CS2030, CS2040] OR [CS2030, CS2040DE] OR [CS2030S, CS2040S] OR [CS2030S, CS2040] OR [CS2030S, CS2040DE] OR [CS2030DE, CS2040S] OR [CS2030DE, CS2040] OR [CS2030DE, CS2040DE]]
+   ```
+
 Details:
 - `MODULE_CODE` must be a valid NUS module code (e.g., CS2109S, MA1511).
 - `YxSy` specifies the academic year and semester (e.g., Y2S1 = Year 2 Semester 1).
@@ -127,32 +162,29 @@ Details:
 
 If any of these checks fail, ModHero will display an error message explaining the issue.
 
-> [!CAUTION]
-> Currently, our modhero doesn't support check if the mod you add is mutually exclusive to any of the existing module.
-
 ### Deleting an Elective: `delete`
-Removes one or more electives from your plan.
+Removes one module from your plan.
 
 #### Format:
-Specify modules you want to delete with a space between them, letters can be both upper and lower case
+Specify module you want to delete, letters can be both upper and lower case
 ```
-delete MODULE_CODE1 MODULE_CODE2 ...
+delete MODULE_CODE1
 ```
 
 **Examples:**
 ```
-delete CS2109S CS2040C
+delete CS2109S 
 ```
 #### Expected output
 1.  If all module codes are valid and deleting those modules does not affect any prerequisites only the list of sucessfully
     deleted modules will be output:
     ```
-    Successfully deleted : CS2113, CS2100
+    CS1010 deleted successfully!
     ```
 
 2.  If there are invalid module codes, the following will be added to the output:
     ```
-    The following modules were not found in timetable: CS6767, COM420 
+    Cannot delete CS1010 as it is a prerequisite for CS2040C
     ```
 
 3.  If deleting any modules would violate another module's prerequisites, the affected module will be output along with its
@@ -184,6 +216,9 @@ Deletes all modules and resets your plan.
 clear
 ```
 
+#### Example with Expected output
+`Reset the timetable.`
+
 ### Exiting the Program: `exit`
 Closes the program.
 
@@ -192,18 +227,27 @@ Closes the program.
 exit
 ```
 
-### Saving the Data
-All changes - adding electives, setting majors, generating schedules - are **saved automatically**.  
-No manual saving is required.
+#### Example with Expected output
+```
+Hold on while we exit the application
+Bye
+```
+
+### Loading and Saving the Data
+1. ModHero saves the timetable after 'schedule' command.
+2. When ModHero restarts, it automatically loads the last saved timetable.
+3. The user resumes from the same state as the previous session.
 
 ### Loading and Editing Data Files
 ModHero stores your degree plan in:
 
 ```
-[JAR file location]/data/modhero.json
+[JAR file location]/data/save.txt
 ```
 
-- Advanced users can manually edit this JSON file if needed.
+- Advanced users can manually edit this text file if needed.
+- The `Timetable data` and `Exempted Modules data` marks the starting of each section respectively.
+- Timetable format is `MODULE_CODE|SELECTED_YEAR|SELECTED_TERM`
 - **Caution:** Invalid edits may cause ModHero to reset your plan. Always back up before editing.
 
 ## FAQ
