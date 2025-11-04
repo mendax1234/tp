@@ -24,7 +24,7 @@ ModHero is a CLI-first desktop app for planning your university degree (CEG and 
 - Junit test for NUSMods related component
 - Junit test for SaveStorage
 - Convert preloaded resource file into JAR for better security
-- Exemption list
+- Exempted module list
 - Simplify save file format to allow advance user to edit
 - FIx PED bugs
 
