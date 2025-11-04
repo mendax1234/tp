@@ -47,6 +47,23 @@ public class Module {
         logger.log(Level.FINEST, "Module created: " + name + " (" + code + ")");
     }
 
+    public Module(String code, String name, int mc, String type, Prerequisites prerequisites) {
+        assert code != null && !code.isEmpty() : "Module code must not be empty";
+        assert name != null && !name.isEmpty() : "Module name must not be empty";
+        assert type != null && !type.isEmpty() : "Module type must not be empty";
+        assert preclude != null : "Module preclusion must not be empty";
+        assert prerequisites != null : "Prerequisites list must not be null";
+
+        this.code = code;
+        this.name = name;
+        this.mc = mc;
+        this.type = type;
+        this.preclude = "";
+        this.prerequisites = prerequisites;
+
+        logger.log(Level.FINEST, "Module created: " + name + " (" + code + ")");
+    }
+
     /** @return the module code */
     public String getCode() {
         return code;

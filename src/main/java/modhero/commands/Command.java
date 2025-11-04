@@ -51,6 +51,7 @@ public abstract class Command {
                 allMajorsData.keySet()
         ));
     }
+    public void setTimetable(Timetable timetable) { this.timetable = timetable; }
 
     /**
      * Executes the command.

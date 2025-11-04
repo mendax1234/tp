@@ -164,6 +164,7 @@ public class Timetable {
      *
      * @param moduleCode the code of the module to find
      * @return an int array [year, term] where the module is found, or null if not found
+     * @author sivanshno
      */
     public int[] findModuleLocation(String moduleCode) throws ModuleNotFoundException {
         for (int year = 0; year < timetable.size(); year++) {

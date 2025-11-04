@@ -168,7 +168,7 @@ Removes one module from your plan.
 #### Format:
 Specify module you want to delete, letters can be both upper and lower case
 ```
-delete MODULE_CODE1
+delete MODULE_CODE
 ```
 
 **Examples:**
@@ -176,22 +176,20 @@ delete MODULE_CODE1
 delete CS2109S 
 ```
 #### Expected output
-1.  If all module codes are valid and deleting those modules does not affect any prerequisites only the list of sucessfully
-    deleted modules will be output:
+1.  If the module code is valid and deleting that module does not affect any prerequisites, a successful delete message 
+will be output: 
     ```
     CS1010 deleted successfully!
     ```
 
-2.  If there are invalid module codes, the following will be added to the output:
+2.  If the module code is invalid, or the given module is not in the timetable, the following will be added to the output:
     ```
-    Cannot delete CS1010 as it is a prerequisite for CS2040C
+    This CS9999 cannot be found in the timetable
     ```
 
-3.  If deleting any modules would violate another module's prerequisites, the affected module will be output along with its
-    possible prerequisite combinations:
+3.  If deleting the module would violate the prerequisites for other modules, the first affected module will be output. 
     ```
-    The following modules could not be deleted as that would violate the preRequisites for 
-    the following modules: {CS2040C Requires: CS1010} {CS2109 Requires: CS1231}
+    Cannot delete CS1010 as it is a prerequisite for CS2040C
     ```
 
 ### Printing a Recommended Schedule: `schedule`
