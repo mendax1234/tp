@@ -311,6 +311,7 @@ ModHero simplifies and safeguards the process of academic planning for NUS stude
 
 ### Use Cases
 (For all use cases below, the System is ModHero and the Actor is the user, unless otherwise specified.)
+MSS stands for Main Success Scenario
 
 #### Use Case: Add a Module
 MSS
