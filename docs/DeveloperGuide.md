@@ -48,6 +48,10 @@ At shutdown, it ensures all data is saved correctly to persistent storage.
     <figcaption><em>UML class diagram showing relationships within the Parser component.</em></figcaption>
 </figure>
 
+The Logic Component is responsible for handling user input and determining the corresponding action to execute.
+It interprets commands entered by the user, parses them into structured representations, and routes them to the appropriate handler for execution.
+This ensures that the system correctly translates user intentions into operations, maintaining consistency and clarity in command processing.
+
 ### Model Component
 **API:** `Model.java`
 
@@ -102,7 +106,7 @@ Exempted Modules data
 MA1301
 ```
 The `Timetable data` and `Exempted Modules data` marks the starting of each section respectively.
-Timetable format is `[module code]|[selected year]|[selected term]`
+Timetable format is `MODULE_CODE|SELECTED_YEAR|SELECTED_TERM`
 
 `ModuleStorage` and `MajorStorage` then deserialize the loaded text into objects such as Module, Major, and Prerequisites, which are stored in in-memory hash maps for efficient access.
 The process is supported by two utility classes, `SerialisationUtil` and `DeserialisationUtil`, which enhance data conversion and validation.
@@ -112,7 +116,7 @@ To maintain data integrity and readability, all resources data should be in seri
 
 #### Serialiser and Deserialiser
 
-All resources data are stored in a serialised format following this convention `[content length][start delimiter][content][end delimiter]`.
+All resources data are stored in a serialised format following this convention `CONTENT_LENGTH` `START_DELIMITER` `CONTENT` `END_DELIMITER.`.
 This format ensures that any characters and symbols in the content will not be able to interfere with splitting the content into the correct component.
 Furthermore, it is able to ensure that all the text required for the component has been read successfully without any data corruption.
 
@@ -154,7 +158,7 @@ This section describes some noteworthy details on how certain features are imple
 ### Add Feature
 
 #### Overview
-The `add` feature allows users to add a module to their timetable in a specific year and semester.  The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModulesData` or the NUSMODS API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
+The `add` feature allows users to add a module to their timetable in a specific year and semester.  The feature is encapsulated by the `AddCommand` class, which serves as the controller for this operation. It coordinates fetching module data (from a local cache `allModulesData` or the NUSMods API) and then delegates the core logic of adding the module and checking business rules to the Timetable model.
 
 #### Key Components
 - **`AddCommand.java`**: The command class that parses the user's intent. Its `execute()` method orchestrates the entire "add" operation.
@@ -163,7 +167,7 @@ The `add` feature allows users to add a module to their timetable in a specific 
 - **`allModulesData` (Map)**: A map that acts as a local cache for module data to minimize API calls.
 
 #### Sequence Diagram
-This diagram illustrates the typical flow for adding a module that is *not* yet in the local cache (`allModulesData`) but *is* found in the NUSMODS API, and for which the user *meets* the prerequisites.
+This diagram illustrates the typical flow for adding a module that is *not* yet in the local cache (`allModulesData`) but *is* found in the NUSMods API, and for which the user *meets* the prerequisites.
 
 <figure align="center">
     <img src="diagrams/addCommand.svg" alt="Add Command Sequence Diagram" />
@@ -262,7 +266,7 @@ The following two diagrams illustrate how modules are added to the timetable whe
 
 #### Internal Details
 - We only allow users to declare their major as CS or CEG because the prerequisites for the other majors are not included in our major.txt preloaded data file.
-- You can update major.txt to add a new major. (For the serialised data format, please go to the [Serialiser](#serialiser) section for the details)
+- You can update major.txt to add a new major. (For the serialised data format, please go to the [Serialiser and Deserialiser](#Serialiser-and-Deserialiser) section for the details)
 
 #### Error Handling
 - If the user provides an invalid or unknown major short code (e.g. major ISE), the program returns an error message: "Sorry, [major] is not supported. Try 'CS' or 'CEG'."
@@ -274,7 +278,7 @@ The following two diagrams illustrate how modules are added to the timetable whe
 ### Product Scope
 
 #### Target User Profile
-ModHero is designed for NUS undergraduate students who:
+ModHero is designed for NUS freshman undergraduate students who:
 - Are pursuing Computer Science (CS) or Computer Engineering (CEG) degrees.
 - Want to plan and visualise their academic journey over the 4-year duration.
 - Prefer using a command-line interface (CLI) for speed and minimal distraction.
@@ -292,21 +296,22 @@ ModHero simplifies and safeguards the process of academic planning for NUS stude
 ### User Stories
 
 | Version | As a ...                               | I want to ...                                       | So that I can ...                                                            |
-| ------- | -------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------- |
+| ------- |----------------------------------------|-----------------------------------------------------|------------------------------------------------------------------------------|
 | v1.0    | **New NUS student**                    | view a list of available commands                   | understand how to use ModHero efficiently for the first time                 |
 | v1.0    | **NUS student choosing a major**       | specify my major                                    | load the correct core and elective modules for my degree                     |
 | v1.0    | **Planner-oriented student**           | generate a recommended 4-year study plan            | visualize my academic progression and ensure graduation requirements are met |
 | v1.0    | **Customising student**                | add a specific module to a semester                 | personalize my study plan according to my interests or scheduling needs      |
 | v1.0    | **Student revising timetable**         | delete a module from my timetable                   | adjust my plan when I drop or change modules                                 |
 | v1.0    | **Student exploring degree structure** | list all core and elective modules for my major     | plan my semesters with awareness of compulsory and optional modules          |
-| v2.0    | **Student verifying eligibility**      | check prerequisites of a module                     | avoid planning invalid module combinations                                   |
+| v2.0    | **Student verifying eligibility**      | ensure that no repeated modules are taken           | avoid planning invalid timetable schedule                                    |
 | v2.0    | **Advanced user**                      | automatically verify that all prerequisites are met | ensure my plan is valid before module registration                           |
 | v2.0    | **Returning user**                     | save my timetable to a file                         | persist my customized schedule for later use                                 |
 | v2.0    | **Returning user**                     | load my saved timetable                             | restore my plan without re-entering all modules                              |
-
+| v2.0    | **Advanced user**                      | be able to understand the save file format easily   | edit the save file quickly to create my customised timtable                  |
 
 ### Use Cases
 (For all use cases below, the System is ModHero and the Actor is the user, unless otherwise specified.)
+MSS stands for Main Success Scenario
 
 #### Use Case: Add a Module
 MSS
@@ -318,7 +323,7 @@ MSS
 
 Extensions
 2a. Module does not exist in the database.
-2a1. ModHero fetches the module from the NUSMODS API. 
+2a1. ModHero fetches the module from the NUSMods API. 
 2a2. If still not found, ModHero displays: “Module not found. Please check the module code.”
 
 3a. Prerequisites are not satisfied.
