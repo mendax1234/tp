@@ -131,9 +131,6 @@ Details:
 
 If any of these checks fail, ModHero will display an error message explaining the issue.
 
-> [!CAUTION]
-> Currently, our modhero doesn't support check if the mod you add is mutually exclusive to any of the existing module.
-
 ### Deleting an Elective: `delete`
 Removes one module from your plan.
 
