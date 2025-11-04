@@ -99,6 +99,9 @@ major cs
 major CS
 ```
 
+> [!CAUTION]
+> Running major command will clear your timetable and replace it with core modules for that major.
+
 ### Adding a Module: `add`
 Adds a specific module (core, elective, or any valid NUS module) to a chosen year and semester in your degree plan.
 
