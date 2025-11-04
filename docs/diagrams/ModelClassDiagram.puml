@@ -1,7 +1,6 @@
 @startuml
-title ModHero Model Component (CS2113 UML conventions)
+title ModHero — Model Component (Final CS2113-Compliant)
 
-' ======== CS2113 STYLE SETTINGS ========
 hide circle
 hide stereotypes
 skinparam monochrome true
@@ -12,61 +11,57 @@ skinparam ArrowColor black
 skinparam ClassBorderColor black
 skinparam ClassBackgroundColor white
 
-' ======== CLASSES ========
-
+' ===== CLASSES =====
 class DataManager {
-  - timetable : Timetable
-  - coreList : ModuleList
-  - electiveList : ModuleList
-  - allModulesData : Map<String, Module>
   - allMajorsData : Map<String, Major>
+  - exemptedModules : List<String>
   + getTimetable() : Timetable
+  + getAllMajorsData() : Map<String, Major>
+  + getExemptedModules() : List<String>
 }
 
-class Major {
-  - name : String
-  - abbrName : String
-  + getModules() : List<Module>
+class Timetable {
+  - timetable : List<List<List<Module>>>
+  + addModule(year:int, sem:int, module:Module, exempted:List<String>)
+  + deleteModule(code:String, exempted:List<String>)
+  + getAllModules() : List<Module>
+  + clearTimetable()
 }
-
-class MajorData
 
 class Module {
   - code : String
   - name : String
   - mc : int
   - type : String
-  - prerequisites : Prerequisites
+  - preclude : String
 }
-
-class TimetableModule {
-  + year : int
-  + term : int
-}
-
-class ModuleList
 
 class Prerequisites {
   - prereq : List<List<String>>
+  + toFormatedString() : String
 }
 
-class Timetable {
-  - timetable : List<List<List<TimetableModule>>>
+class Major {
+  - name : String
+  - abbrName : String
+  + getName() : String
+  + getAbbrName() : String
+  + getMajorModules() : List<TimetableData>
 }
 
-' ======== RELATIONSHIPS ========
+class TimetableData {
+  - code : String
+  - year : int
+  - term : int
+  + getCode() : String
+  + getYear() : int
+  + getTerm() : int
+}
 
-DataManager "1" *-- "1" Timetable : manages >
-DataManager "1" *-- "1" ModuleList : coreList >
-DataManager "1" *-- "1" ModuleList : electiveList >
-DataManager "1" o-- "*" Module : allModulesData >
-DataManager "1" o-- "*" Major : allMajorsData >
-
-Major "1" o-- "*" Module : defines >
-ModuleList "1" o-- "*" Module : contains >
-Module "1" *-- "0..1" Prerequisites : has >
-Timetable "1" o-- "*" TimetableModule : schedules >
-MajorData ..> Major : depends on >
-
-TimetableModule --|> Module
+' ===== RELATIONSHIPS =====
+DataManager *-- Timetable : manages >
+DataManager *-- Major : loads >
+Timetable *-- Module : contains >
+Module *-- Prerequisites : has >
+Major *-- TimetableData : defines >
 @enduml
