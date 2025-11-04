@@ -20,13 +20,13 @@ end
 "result:MajorCommand" -> ":Major":getMajorModules()
 activate ":Major"
 "result:MajorCommand" <-- ":Major"
-destroy ":Major"
+deactivate ":Major"
 loop number of modules for the major
     ref over "result:MajorCommand", ":Module": get module from major object
     "result:MajorCommand" -> "timetable:Timetable": addModule(year,semester,module)
-
     "timetable:Timetable" -> "timetable:Timetable": checkModuleAddable(...)
     activate "timetable:Timetable"
+    destroy ":Major"
     "timetable:Timetable" --> "timetable:Timetable"
     deactivate "timetable:Timetable"
 
@@ -51,12 +51,13 @@ loop number of modules for the major
     "timetable:Timetable" <- ":Module": getCode()
     activate ":Module"
     "timetable:Timetable" --> ":Module"
-    destroy ":Module"
+    deactivate ":Module"
 
     "result:MajorCommand" <-- "timetable:Timetable"
 end
 
 "result:MajorCommand" -> ":CommandResult": CommandResult(feedbackToUser)
+destroy ":Module"
 "result:MajorCommand" <-- ":CommandResult"
 
 caller<--"result:MajorCommand"
