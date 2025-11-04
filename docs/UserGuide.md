@@ -1,6 +1,6 @@
 # ModHero User Guide
 
-_ModHero_ is a **CLI-first desktop app** for planning your university degree, designed to give you the speed and precision of command-line input while retaining the clarity of a graphical overview.  
+_ModHero_ is a **CLI-first desktop app** for CS and CEG freshman to plan your university degree, designed to give you the speed and precision of command-line input while retaining the clarity of a graphical overview.  
 It helps you build and adapt your 4-year course roadmap more efficiently than traditional spreadsheet or browser-based tools.
 
 ## Contents
@@ -82,6 +82,12 @@ Shows a message explaining how to access the help page.
 help
 ```
 
+**Example:**
+```
+schedule
+-> Returns the timetable in a ui-friendly format
+```
+
 ### Specifying Your Major: `major`
 Defines your primary degree major, which ModHero uses to load graduation requirements.
 Currently, the supported majors are CEG and CS.
@@ -97,6 +103,13 @@ major ceg
 major CEG
 major cs
 major CS
+```
+
+
+#### Example with Expected output
+```
+major cs
+Reset to default Timetable for Major in cs. Type 'schedule' to view your 4-year plan!
 ```
 
 > [!CAUTION]
@@ -119,6 +132,24 @@ add CS2109S to Y2S1
 add MA1511 to Y1S1
 add CS3230 to Y3S2
 ```
+
+#### Example with Expected output
+1. Empty Timetable
+    ```
+    add CS1010 to Y1S1
+    CS1010 added successfully to Y1S1!
+    ```
+2. Similar module in timetable
+    ```
+   add CS1010 to Y1S1
+   Module CS1010 cannot be taken together with Module CS1101S
+    ```
+3. Prerequisites not satisfy
+    ```
+    add CS2113 to Y1S1
+    Prerequisites not met for CS2113. Requires: Prerequisites: [[CS2040C] OR [CS2030, CS2040S] OR [CS2030, CS2040] OR [CS2030, CS2040DE] OR [CS2030S, CS2040S] OR [CS2030S, CS2040] OR [CS2030S, CS2040DE] OR [CS2030DE, CS2040S] OR [CS2030DE, CS2040] OR [CS2030DE, CS2040DE]]
+   ```
+
 Details:
 - `MODULE_CODE` must be a valid NUS module code (e.g., CS2109S, MA1511).
 - `YxSy` specifies the academic year and semester (e.g., Y2S1 = Year 2 Semester 1).
@@ -188,12 +219,21 @@ Deletes all modules and resets your plan.
 clear
 ```
 
+#### Example with Expected output
+`Reset the timetable.`
+
 ### Exiting the Program: `exit`
 Closes the program.
 
 **Format:**
 ```
 exit
+```
+
+#### Example with Expected output
+```
+Hold on while we exit the application
+Bye
 ```
 
 ### Loading and Saving the Data
@@ -209,6 +249,8 @@ ModHero stores your degree plan in:
 ```
 
 - Advanced users can manually edit this text file if needed.
+- The `Timetable data` and `Exempted Modules data` marks the starting of each section respectively.
+- Timetable format is `MODULE_CODE|SELECTED_YEAR|SELECTED_TERM`
 - **Caution:** Invalid edits may cause ModHero to reset your plan. Always back up before editing.
 
 ## FAQ
