@@ -21,12 +21,13 @@ end
 activate ":Major"
 "result:MajorCommand" <-- ":Major"
 deactivate ":Major"
+"result:MajorCommand" -[#white]-> ":Major"
+destroy ":Major"
 loop number of modules for the major
     ref over "result:MajorCommand", ":Module": get module from major object
     "result:MajorCommand" -> "timetable:Timetable": addModule(year,semester,module)
     "timetable:Timetable" -> "timetable:Timetable": checkModuleAddable(...)
     activate "timetable:Timetable"
-    destroy ":Major"
     "timetable:Timetable" --> "timetable:Timetable"
     deactivate "timetable:Timetable"
 
