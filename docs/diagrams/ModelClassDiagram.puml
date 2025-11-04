@@ -1,7 +1,7 @@
 @startuml
-title ModHero Model Component
+title ModHero Model Component (CS2113 UML conventions)
 
-' CS2113 STYLE SETTINGS
+' ======== CS2113 STYLE SETTINGS ========
 hide circle
 hide stereotypes
 skinparam monochrome true
@@ -12,7 +12,8 @@ skinparam ArrowColor black
 skinparam ClassBorderColor black
 skinparam ClassBackgroundColor white
 
-' CLASSES
+' ======== CLASSES ========
+
 class DataManager {
   - timetable : Timetable
   - coreList : ModuleList
@@ -25,7 +26,7 @@ class DataManager {
 class Major {
   - name : String
   - abbrName : String
-  + getModules() : List<TimetableModule>
+  + getModules() : List<Module>
 }
 
 class MajorData
@@ -53,7 +54,7 @@ class Timetable {
   - timetable : List<List<List<TimetableModule>>>
 }
 
-' RELATIONSHIPS
+' ======== RELATIONSHIPS ========
 
 DataManager "1" *-- "1" Timetable : manages >
 DataManager "1" *-- "1" ModuleList : coreList >
@@ -61,11 +62,11 @@ DataManager "1" *-- "1" ModuleList : electiveList >
 DataManager "1" o-- "*" Module : allModulesData >
 DataManager "1" o-- "*" Major : allMajorsData >
 
-Major "1" o-- "*" TimetableModule : has >
+Major "1" o-- "*" Module : defines >
 ModuleList "1" o-- "*" Module : contains >
-Module "1" o-- "0..1" Prerequisites : has >
+Module "1" *-- "0..1" Prerequisites : has >
 Timetable "1" o-- "*" TimetableModule : schedules >
 MajorData ..> Major : depends on >
 
-Module <|-- TimetableModule : inherits >
+TimetableModule --|> Module
 @enduml

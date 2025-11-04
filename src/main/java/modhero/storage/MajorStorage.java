@@ -61,7 +61,6 @@ public class MajorStorage extends Storage{
                 int year    = Integer.parseInt(triplet.get(1));
                 int sem     = Integer.parseInt(triplet.get(2));
                 TimetableData mod = new TimetableData(code.toUpperCase(), year, sem);
-                //TODO: add code here when allModulesData is implemented
                 timetableData.add(mod);
             }
 
