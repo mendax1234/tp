@@ -23,7 +23,7 @@ deactivate "mm:TimetableData"
 activate "result:MajorCommand"
 activate "mm:TimetableData"
 "result:MajorCommand" <-- "mm:TimetableData"
-deactivate "mm:TimetableData"
+destroy "mm:TimetableData"
 
 
 
