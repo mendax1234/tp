@@ -291,18 +291,19 @@ ModHero simplifies and safeguards the process of academic planning for NUS stude
 
 ### User Stories
 
-| Version | As a ... | I want to ... | So that I can ... |
-|----------|-----------|---------------|-------------------|
-| v1.0 | NUS student | view a list of available commands | understand how to use ModHero efficiently |
-| v1.0 | NUS student | specify my major | load the correct core and elective modules for my degree |
-| v1.0 | NUS student | generate a recommended 4-year study plan | visualize my academic progression and ensure graduation requirements are met |
-| v1.0 | NUS student | add a specific module to a semester | customize my study plan according to my interests or scheduling needs |
-| v1.0 | NUS student | delete a module from my timetable | adjust my plan when I drop or change modules |
-| v1.0 | NUS student | list all core and elective modules for my major | plan my semesters with awareness of compulsory and optional modules |
-| v2.0 | NUS student | check prerequisites of a module | avoid planning invalid module combinations |
-| v2.0 | NUS student | automatically verify that all prerequisites are met | ensure my plan is valid before registration |
-| v2.0 | NUS student | save my timetable to a file | persist my customized schedule for later use |
-| v2.0 | NUS student | load my saved timetable | restore my plan without re-entering all modules |
+| Version | As a ...                               | I want to ...                                       | So that I can ...                                                            |
+| ------- | -------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------- |
+| v1.0    | **New NUS student**                    | view a list of available commands                   | understand how to use ModHero efficiently for the first time                 |
+| v1.0    | **NUS student choosing a major**       | specify my major                                    | load the correct core and elective modules for my degree                     |
+| v1.0    | **Planner-oriented student**           | generate a recommended 4-year study plan            | visualize my academic progression and ensure graduation requirements are met |
+| v1.0    | **Customising student**                | add a specific module to a semester                 | personalize my study plan according to my interests or scheduling needs      |
+| v1.0    | **Student revising timetable**         | delete a module from my timetable                   | adjust my plan when I drop or change modules                                 |
+| v1.0    | **Student exploring degree structure** | list all core and elective modules for my major     | plan my semesters with awareness of compulsory and optional modules          |
+| v2.0    | **Student verifying eligibility**      | check prerequisites of a module                     | avoid planning invalid module combinations                                   |
+| v2.0    | **Advanced user**                      | automatically verify that all prerequisites are met | ensure my plan is valid before module registration                           |
+| v2.0    | **Returning user**                     | save my timetable to a file                         | persist my customized schedule for later use                                 |
+| v2.0    | **Returning user**                     | load my saved timetable                             | restore my plan without re-entering all modules                              |
+
 
 ### Use Cases
 (For all use cases below, the System is ModHero and the Actor is the user, unless otherwise specified.)
