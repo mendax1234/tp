@@ -24,7 +24,7 @@ class PrerequisitesTest {
     @Test
     void toFormatedStringOnNoInput() {
         Prerequisites prerequisites = new Prerequisites();
-        assertEquals("0#|",prerequisites.toFormatedString());
+        assertEquals("",prerequisites.toFormatedString());
     }
 
     @Test
@@ -32,6 +32,6 @@ class PrerequisitesTest {
         List<List<String>> input = List.of(List.of("CS2113"), List.of("CS2040C","CS2040"));
         Prerequisites prerequisites = new Prerequisites(input);
         System.out.println(input);
-        assertEquals("35#9#6#CS2113||19#7#CS2040C|6#CS2040|||",prerequisites.toFormatedString());
+        assertEquals("9#6#CS2113||19#7#CS2040C|6#CS2040||",prerequisites.toFormatedString());
     }
 }

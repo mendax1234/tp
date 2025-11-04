@@ -44,7 +44,7 @@ At shutdown, it ensures all data is saved correctly to persistent storage.
 
 ### Logic Component
 <figure align="center">
-    <img src="diagrams/ParserUML.png" alt="Parser Class Diagram" />
+    <img src="diagrams/ParserUML.png" alt="Parser Class Diagram" style="width:100%; height:auto;" />
     <figcaption><em>UML class diagram showing relationships within the Parser component.</em></figcaption>
 </figure>
 
@@ -83,22 +83,58 @@ This separation allows the Model to remain cohesive yet modular, enabling clean 
 
 ### Storage Component
 <figure align="center">
-    <img src="diagrams/StorageUML.png" alt="Storage Class Diagram" />
+    <img src="diagrams/StorageUML.png" alt="Storage Class Diagram" style="width:100%; height:auto;" />
     <figcaption><em>UML class diagram showing relationships within the Storage component.</em></figcaption>
 </figure>
 
-The Storage component is responsible for loading and saving essential application data.
+The `Storage` component is responsible for loading and saving essential application data.
 It reads text files from predefined directories and converts their contents into a structured, accessible format for other components to process.
 
-Three primary classes, ModuleStorage, MajorStorage and TimetableStorage, rely on Storage to retrieve module and major data to construct the timetable.
-These loaders then deserialize the loaded text into objects such as Module, Major, and Prerequisites, which are stored in in-memory hash maps for efficient access.
-The process is supported by two utility classes, SerialisationUtil and DeserialisationUtil, which enhance data conversion and validation.
+Three primary classes, `ModuleStorage`, `MajorStorage` and `SaveStorage`, rely on `Storage` to retrieve module and major data to construct the timetable.
 
+`SaveStorage` stores the user timetable data and exempted modules. It is store in a simple format to allow user to edit it quickly.
+The data is loaded everytime the application starts a fresh run and saved when 'schedule' command is given.
+The format of the save file is:
+```
+Timetable data
+CG1111A|1|1
+Exempted Modules data
+MA1301
+```
+The `Timetable data` and `Exempted Modules data` marks the starting of each section respectively.
+Timetable format is `[module code]|[selected year]|[selected term]`
+
+`ModuleStorage` and `MajorStorage` then deserialize the loaded text into objects such as Module, Major, and Prerequisites, which are stored in in-memory hash maps for efficient access.
+The process is supported by two utility classes, `SerialisationUtil` and `DeserialisationUtil`, which enhance data conversion and validation.
 Each text file is stored in a unique, well-defined format, ensuring accurate data retrieval without missing words or parsing errors.
 Deserialization also serves as a validation step, confirming that the entire file has been successfully read and processed.
+To maintain data integrity and readability, all resources data should be in serialized form, ensuring a consistent and reliable file structure for future loading operations.
 
-To maintain data integrity and readability, all data should be serialized before saving, ensuring a consistent and reliable file structure for future loading operations.
+#### Serialiser and Deserialiser
 
+All resources data are stored in a serialised format following this convention `[content length][start delimiter][content][end delimiter]`.
+This format ensures that any characters and symbols in the content will not be able to interfere with splitting the content into the correct component.
+Furthermore, it is able to ensure that all the text required for the component has been read successfully without any data corruption.
+
+It can be used to serialise a string or a one dimension list of strings. Deserialising it will return it back to it original list form.
+Nested List can also be serialised by performing serialised on each dimension of the list and combining them together as a string.
+It is also able to serialise objects with different data types. For example, the module data consist of module code and prerequisite which is in String and Nested List.
+It can be serialised by performing serialised on each data type and combining them together.
+
+A simple example.
+Let the start delimiter be `#` and end delimiter be `|`
+Information to be saved:
+- Module Code (String): `CS2113`
+- Description (String): `Algorithmic proof: An infinite set has a countably infinite subset.`
+- Prerequisites (List): `[MA1301X,MA1301]`
+
+Serialised output:
+- Module Code (String): `6#CS2113|`
+- Description (String): `67#Algorithmic proof: An infinite set has a countably infinite subset.|`
+- Prerequisites (String): `19#7#MA1301X|6#MA1301||`
+
+Saved in text file: `6#CS2113|67#Algorithmic proof: An infinite set has a countably infinite subset.|19#7#MA1301X|6#MA1301||`
+Deserialising it will reconstruct the same data structure as the original.
 
 ### UI Component
 <figure align="center">
@@ -111,16 +147,6 @@ and all outputs to the user are displayed through. All inputs are read by the ``
 The output methods included in this class are the methods to show the welcome message, bye message, and the
 feedback for executing any given command.
 
-#### Serialiser
-
-All data are stored in a serialised format following this convention `[content length][start delimiter][content][end delimiter]`.
-This format ensures that any characters and symbols in the content will not be able to interfere with splitting the content into the correct component.
-Furthermore, it is able to ensure that all the text required for the component has been read successfully without any data corruption.
-
-It can be used to serialise a string or a one dimension list of strings. Deserialising it will return it back to it original list form.
-Nested List can also be serialised by performing serialised on each dimension of the list and combining them together as a string.
-It is also able to serialise objects with different data types. For example, the module data consist of module code and prerequisite which is in String and Nested List.
-It can be serialised by performing serialised on each data type and combing them together.
 
 ## Implementation
 This section describes some noteworthy details on how certain features are implemented.
@@ -343,7 +369,7 @@ Extensions
 #### Use Case: Save and Load Timetable
 
 MSS
-1. ModHero automatically saves the timetable after each change (add, delete, or major).
+1. ModHero saves the timetable after 'schedule' command.
 2. When ModHero restarts, it automatically loads the last saved timetable.
 3. The user resumes from the same state as the previous session.
 
@@ -424,6 +450,8 @@ Non-Functional Requirements
 
 ### Glossary
 
+- `[details]` — should substitute the whole expression with value according to description in the bracket
+
 - **API (Application Programming Interface)** — A set of methods and protocols that allow different software components to communicate with each other. In ModHero, this refers to both the NUSMods API (external) and internal interfaces between components.
 
 - **CLI (Command-Line Interface)** — A text-based user interface where users interact with the application by typing commands rather than using graphical elements like buttons or menus.
@@ -462,8 +490,6 @@ Non-Functional Requirements
 
 ## Appendix: Instructions for Manual Testing
 
-{Give instructions on how to do manual testing, e.g., how to load sample data or verify stored files.}
-
 ### Launch and shutdown
 1. Initial launch
 2. Download the jar file and copy into an empty folder
@@ -496,7 +522,7 @@ Non-Functional Requirements
 3. Test case: `add ES1000 to Y1S1`  
    Expected: Will be added successfully as there is no prerequisites for this module
 
-4. Test case: `add ES1000 to Y1S2`  
+4. Test case: `add ES1000 to Y1S2`
    Expected: Will not be added as this module is already in the timetable
 
 ### Deleting a module

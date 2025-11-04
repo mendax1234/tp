@@ -191,18 +191,19 @@ Closes the program.
 exit
 ```
 
-### Saving the Data
-All changes - adding electives, setting majors, generating schedules - are **saved automatically**.  
-No manual saving is required.
+### Loading and Saving the Data
+1. ModHero saves the timetable after 'schedule' command.
+2. When ModHero restarts, it automatically loads the last saved timetable.
+3. The user resumes from the same state as the previous session.
 
 ### Loading and Editing Data Files
 ModHero stores your degree plan in:
 
 ```
-[JAR file location]/data/modhero.json
+[JAR file location]/data/save.txt
 ```
 
-- Advanced users can manually edit this JSON file if needed.
+- Advanced users can manually edit this text file if needed.
 - **Caution:** Invalid edits may cause ModHero to reset your plan. Always back up before editing.
 
 ## FAQ

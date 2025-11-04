@@ -161,7 +161,7 @@ public class ModuleParser {
      * Splits a string by a delimiter, but only at the top level (ignoring delimiters inside nested structures).
      * This method respects quoted strings and nested JSON objects/arrays.
      *
-     * @param input     The string to split (typically the content inside a JSON array).
+     * @param input The string to split (typically the content inside a JSON array).
      * @param delimiter The character to split by (typically ',').
      * @return A list of substrings split at top-level delimiters only.
      */
@@ -197,7 +197,7 @@ public class ModuleParser {
     /**
      * Computes the cartesian product of multiple lists of module code combinations.
      * Used to combine results from "and" prerequisite branches.
-     * <p>
+     *
      * Example: Given [[A, B], [C]] and [[X], [Y]], produces:
      * [[A, X], [A, Y], [B, X], [B, Y], [C, X], [C, Y]]
      *

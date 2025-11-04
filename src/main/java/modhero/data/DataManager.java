@@ -57,6 +57,7 @@ public class DataManager {
             timetable.clearTimetable();
             exemptedModules.clear();
             logger.log(Level.SEVERE, "Data file is corrupted", e);
+            System.out.println("Data file is corrupted");
         }
     }
 
