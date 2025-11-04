@@ -198,48 +198,44 @@ This diagram illustrates the typical flow for adding a module that is *not* yet 
 
 ### Delete Feature
 #### Overview
-The ```Delete``` feature allows the user to delete a given module from the timetable while making sure
-that it doesn't affect the prerequisites for one of the other modules in the timetable. The expected arguments taken in
-by the delete command is the module the user wants to delete and the feedback to the user is confirmation of the delete or
-if the delete failed, the reason why the module could not be deleted.
-The details about how to use the feature are in the user guide.
+The `Delete` feature allows the user to delete a given module from the timetable while ensuring that the deletion does not violate any prerequisite requirements for other modules already present in the timetable.  
+The expected argument for the delete command is the code of the module the user wishes to delete. The feedback to the user is either a confirmation message indicating a successful deletion or an explanation of why the module could not be deleted.  
+Detailed usage instructions can be found in the User Guide.
 
 #### Sequence Diagram
 <figure align="center">
-    <img src="diagrams/Delete_sequence_diagram.png" alt="Add Command Sequence Diagram" />
+    <img src="diagrams/Delete_sequence_diagram.png" alt="Delete Command Sequence Diagram" />
     <figcaption><em>Delete Command Sequence Diagram</em></figcaption>
 </figure>
 
-#### Execution Flow of the Delete Command
-1. The Delete feature is encapsulated in the `DeleteCommand` Class, which is instantiated by the parser when the user
-   inputs the delete command
-2. The Constructor for the Delete command parses the list and stores the list of modules slated to be deleted by the user.
-   If any of the module codes contain lower case letters it capitalises them so that the timetable can recognise them.
-3. When the `execute()` method of the `DeleteCommand` is called, command calls the internal `deleteModule` method from the `Timetable`
-   object for each of the modules
-4. The timetable silently deletes all the specified modules and only throws an exception if the module specified does not
-   exist in the timetable or is a prerequisite to another module in the timetable.
-5. Modules that could not be deleted due to prerequisites or not being in the Timetable is stored in a separate list, and
-   the modules that could and couldn't be deleted with their reason are turned into a string and used to instantiate a command
-   which is then returned to be displayed to the user by the UI.
+---
 
-#### Internal Details of the `deleteModule` method of the Timetable object
-1. The `deleteModule` method takes only the module to be deleted as the input
-2. The method then calls the `findModuleLocation` method to get the year and semester in which the module is located. If
-   the module does not exist in the timetable, a `ModuleNotFound` exception is thrown
-3. Then the `checkPrerequisitesSatisfiedAfterDelete` method is called to check whether the user is deleting a prerequisite
-   to another module in the timetable. This method is silently executed and returns nothing. Only if it detects a module for
-   which the prerequisite is being violated, it throws a PrerequisiteNotMet exception and cancels the delete operation.
-4. Given that the module exists in the timetable and deleting it does not affect another module's prerequisites, it now
-   deletes the module.
+#### Execution Flow of the Delete Command
+1. The Delete feature is encapsulated in the `DeleteCommand` class, which is instantiated by the parser when the user inputs the `delete` command.
+2. The constructor of `DeleteCommand` parses and stores the module (or list of modules) to be deleted. Any module codes containing lowercase letters are capitalised so they can be correctly matched in the timetable.
+3. When the `execute()` method of `DeleteCommand` is called, it calls the `deleteModule()` method from the `Timetable` object for each specified module.
+4. For each deletion request, the `Timetable` validates the operation and deletes the module only if doing so does not affect any other module's prerequisites.
+    - If the module does not exist in the timetable, a `ModuleNotFoundException` is thrown.
+    - If the module is a prerequisite of another module currently in the timetable, a `ModuleDeletionBlockedException` is thrown.
+5. The modules that could not be deleted, along with their respective reasons, are recorded in a separate list. A combined success and error summary message is then created and used to construct a `CommandResult`, which is returned to the caller and displayed to the user by the UI.
+
+---
+
+#### Internal Details of the `deleteModule()` Method in the Timetable
+1. The `deleteModule()` method takes the code of the module to be deleted as input.
+2. It first calls `findModuleLocation()` to determine the year and semester in which the module is located. If the module is not found, a `ModuleNotFoundException` is thrown.
+3. It then checks whether deleting the module will affect other modules by calling `PrerequisiteUtil.validateFutureDependencies()`. This helper method examines all modules that occur after the target module and verifies that none depend on it.
+    - If any future module depends on the target module, a `ModuleDeletionBlockedException` is thrown, and the deletion is aborted.
+4. If the module exists and deleting it does not violate any dependency rules, the timetable proceeds to remove it using the internal `deleteModuleDirect(year, semester, moduleCode)` method.
+
+---
 
 #### Error Handling
-Error handling is centralized within the `execute()` method of `AddCommand`. A `try-catch` block wraps the entire logic.
+Error handling is centralized within the `execute()` method of `DeleteCommand`. A `try-catch` block wraps the entire logic.
 
-- Any `ModHeroException` (e.g., `InvalidYearOrSemException`, `ModuleNotFoundException`, `ModuleAlreadyExistsException`,`PrerequisiteNotMetException`) thrown by `Timetable` or `ModuleRetriever` is caught.
-- The exception's message (`e.getMessage()`) is used to create a new `CommandResult`, ensuring that the user receives a clean, specific error message without crashing the application.
-- A general `Exception` catch block also exists to handle any unexpected errors, logging them and returning a generic error message.
-
+- Any `ModHeroException` (e.g., `ModuleNotFoundException`, `ModuleDeletionBlockedException`) thrown by `Timetable` or `PrerequisiteUtil` is caught.
+- The exception’s message (`e.getMessage()`) is used to create a new `CommandResult`, ensuring the user receives a clear, context-specific error message without crashing the application.
+- A general `Exception` catch block also exists to handle unexpected errors, logging them and returning a generic failure message.
 ### Major feature
 #### Overview
 The Major feature allows users to declare their university major (e.g. Computer Science or Computer Engineering) using the major command.
